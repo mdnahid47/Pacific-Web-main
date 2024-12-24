@@ -1,0 +1,21 @@
+
+
+h2{
+    position: relative;
+}
+h2:after{
+    content: "";
+    position: absolute;
+    background: #000;
+    height: 2px;
+    width: 0%;
+    left: 0;
+    bottom: -10px;
+    transition: 0.3s;
+
+}
+
+h2:hover:after{
+    width: 50%;
+}
+

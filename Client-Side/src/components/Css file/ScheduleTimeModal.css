@@ -1,0 +1,53 @@
+/* src/DatePicker.css */
+.date-picker {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.calendar {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+ 
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.date-cell {
+    background-color: #fafafa;
+}
+
+.date-cell:hover {
+    background-color: #e0e0e0;
+}
+
+.today {
+    background-color: #e0f7fa;
+}
+
+.selected {
+    background-color: #3c8ce7;
+    font-weight: bold;
+    color: white;
+}
+
+.selected-date {
+    margin-top: 20px;
+}
