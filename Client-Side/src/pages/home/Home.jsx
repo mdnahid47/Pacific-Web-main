@@ -5,7 +5,7 @@ import Content from './Content'
 
 const Home = () => {
   return (
-    <div>
+    <div className='overflow-hidden'>
       <Banner />
       <Categories/>
       <Content/>

@@ -10,13 +10,13 @@ const Categories = () => {
             <div className='text-3xl mb-10 flex items-center justify-center '>
                 <h1>Why Choose Us </h1>
             </div>
-            <div className='flex flex-col md:flex-row gap-4 md:gap-2 md:px-0'>
+            <div className='flex flex-col container  justify-center items-center md:flex-row gap-4 md:gap-2 md:px-0'>
                 <div className='w-[375px] bg-gradient-to-r from-blue to-olympic border-none rounded-xl shadow-lg'>
                     <div className='card-body text-white'>
                         <h2 className='card-title'>Quality Service</h2>
                         <p>Service quality is a measure of how an organization understands its users’ needs and fulfills their expectations.</p>
-                        <div className='card-actions justify-end text-6xl'>
-                            <GrUserExpert />
+                        <div className='card-actions justify-end  '>
+                            <GrUserExpert className='h-[40px]  w-[60px]' />
                         </div>
                     </div>
                 </div>

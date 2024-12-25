@@ -9,7 +9,7 @@ const Content = () => {
         <div className='text-3xl mb-10 flex items-center justify-center'>
             <h1>Our Service</h1>
         </div>
-      <div className='flex flex-col md:flex-row gap-4'>
+      <div className='flex flex-col justify-center items-center md:flex-row gap-4'>
         <div className='w-96 rounded-xl border shadow-lg'>
             <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
             <div className='card-body'>
