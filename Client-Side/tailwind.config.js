@@ -15,6 +15,11 @@ export default {
         "golden":"#ecd115",
         "green":"#417505"
       },
+      zIndex: {
+        '100': '100',
+        '110': '110',
+        '9999': '9999',
+      },
       keyframes:{
         move:{
           "50%":{transform: 'translateY(-1rem)'}

@@ -1,41 +1,51 @@
-/* eslint-disable react/prop-types */
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../contexts/AuthProvider";
+import Avatar from "../assets/user-avatar.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-import React, { useEffect } from 'react'
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthProvider';
-import { auth, db } from '../firebase/firebase.config';
-import { useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore/lite';
-import Avatar from '../assets/user-avatar.png'
-
-
-
-const Profile = ({user}) => {
-  const {logOut} = useContext(AuthContext)
+const Profile = () => {
+  const { logOut, user } = useContext(AuthContext);
   const [userDetails, setUserDetails] = useState(null);
-  const fetchUserData = async () => {
-    auth.onAuthStateChanged(async (user) => {
-      // console.log(user);
+  const navigate = useNavigate();
 
-      const docRef = doc(db, "Users", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setUserDetails(docSnap.data());
-        console.log(docSnap.data());
-      } else {
-        console.log("User is not logged in");
+  // Fetch user data using JWT
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/signin");
+        return;
       }
-    });
+
+      // Set Authorization header with token
+      const response = await axios.get("/api/user/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setUserDetails(response.data); // Assuming your API returns user data
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+
+      if (error.response && error.response.status === 401) {
+        // If token is invalid or expired
+        logOut();
+      } else {
+        // General error handling
+        alert("An error occurred while fetching user data. Please try again.");
+      }
+    }
   };
+
   useEffect(() => {
     fetchUserData();
   }, []);
 
   async function handleLogout() {
     try {
-      await auth.signOut();
-      console.log("User logged out successfully!");
-      window.location.href = "/";
+      logOut(); // Use the `logOut` method from AuthContext
+      navigate("/"); // Client-side navigation
     } catch (error) {
       console.error("Error logging out:", error.message);
     }
@@ -46,18 +56,16 @@ const Profile = ({user}) => {
       <div className="drawer drawer-end z-50">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content">
-          {/* Page content here */}
           <label
             htmlFor="my-drawer-4"
             className="drawer-button btn btn-ghost btn-circle avatar"
           >
             <div className="w-10 rounded-full">
-            {
-                user.photoURL ? <img
-                alt="User"
-                src={user.photoURL}
-              /> : <img alt="user" src={Avatar} />
-              }
+              {userDetails?.photoURL ? (
+                <img alt="User" src={userDetails.photoURL} />
+              ) : (
+                <img alt="User Avatar" src={Avatar} />
+              )}
             </div>
           </label>
         </div>
@@ -68,15 +76,16 @@ const Profile = ({user}) => {
             className="drawer-overlay"
           ></label>
           <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-            {/* Sidebar content here */}
             <li>
               <a href="/user-profile">Profile</a>
             </li>
             <li>
-              <a>Order</a>
+              <a href="/orders">Orders</a>
             </li>
             <li>
-              <a onClick={handleLogout}>Logout</a>
+              <button onClick={handleLogout} className="btn btn-link">
+                Logout
+              </button>
             </li>
           </ul>
         </div>
@@ -85,4 +94,6 @@ const Profile = ({user}) => {
   );
 };
 
-export default Profile
+export default Profile;
+
+

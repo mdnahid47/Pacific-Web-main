@@ -1,55 +1,55 @@
 [
     {
-        "_id": "642c155b2c4774f05c36eeaa",
+        "_id": "AcBs",
         "name": "1-2.5 Ton",
         "category": "Ac Basic Service",
         "image": "/images/ac-service.jpg",
         "price": 500 
     },
     {
-        "_id": "642c155b2c4774f05c36eea5",
+        "_id": "AcBs2",
         "name": "3-5 Ton",
         "category": "Ac Basic Service",
         "image": "/images/ac-service.jpg",
         "price": 800 
     },
     {
-        "_id": "642c155b2c4774f05c36ee7c",
+        "_id": "ACCheckup",
         "name": "Ac Checkup",
         "image": "/images/ac-service.jpg",
         "category": "Ac Checkup",
         "price": 500
     },
     {
-        "_id": "642c155b2c4774f05c36ee88",
+        "_id": "AcJetWash1",
         "name": "1-2.5 Ton",
         "image": "/images/ac-service.jpg",
         "category": "AC Jet Wash",
         "price": 1200
     },
     {
-        "_id": "642c155b2c4774f05c36ee7a",
+        "_id": "AcJetWash2",
         "name": "3-5 Ton",
         "image": "/images/ac-service.jpg",
         "category": "AC Jet Wash",
         "price": 2200
     },
     {
-        "_id": "642c155b2c4774f05c36ee74",
+        "_id": "AcFoamWash1",
         "name": "1-2.5 Ton",
        "image": "/images/ac-service.jpg",
         "category": "AC Foom Wash",
         "price": 1500
     },
     {
-        "_id": "642c155b2c4774f05c36ee712",
+        "_id": "AcFoamWash2",
         "name": "3-5 Ton",
         "image": "/images/ac-service.jpg",
         "category": "AC Foom Wash",
         "price": 2400
     },
     {
-        "_id": "642c155b2c4774f05c36ee7x",
+        "_id": "AcWDSolution",
         "name": "Ac Waterdrop Solution",
         "image": "/images/ac-service.jpg",
         "category": "Ac Waterdrop Solution",

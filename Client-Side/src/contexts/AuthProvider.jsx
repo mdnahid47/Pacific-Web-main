@@ -1,82 +1,86 @@
-/* eslint-disable react/prop-types */
-import React, { Children, createContext, useEffect, useState ,user} from 'react'
-import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from "firebase/auth";
-import { GoogleAuthProvider } from 'firebase/auth';
-import { FacebookAuthProvider } from 'firebase/auth';
-import app from '../firebase/firebase.config';
+// import React, { createContext, useState, useEffect } from "react";
 
+// export const AuthContext = createContext();
 
+// const AuthProvider = ({ children, navigate }) => {
+//   const [user, setUser] = useState(null);
+
+//   useEffect(() => {
+//     const token = localStorage.getItem("token");
+
+//     if (token) {
+//       setUser({ name: "John Doe" });
+//     } else {
+//       setUser(null);
+//       if (navigate) navigate("/signin");
+//     }
+//   }, [navigate]);
+
+//   const logOut = () => {
+//     localStorage.removeItem("token");
+//     setUser(null);
+//     if (navigate) navigate("/signin");
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ user, logOut }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export default AuthProvider;
+
+import { createContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 export const AuthContext = createContext();
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
 
-
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Create A Account
-  const createUser = (email, password) => {
-    return createUserWithEmailAndPassword(auth, email, password);
-  }
-
-  // Signup with gmail
-  
-  // Signup With facebook
-  const signUpWithFacebook = () => {
-    setLoading(true);
-    return signInWithPopup(auth, facebookProvider)
-  }
-
-  // login using email & password 
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-
-  }
-
-  // logout 
-  const logOut = () =>{
-    return signOut(auth);
-}
-
-  // update profile 
-  const updateUserProfile = (name, photoURL) => {
-    updateProfile(auth.currentUser, {
-      displayName: name, photoURL: photoURL
-    })
-  }
-  // check signed user 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser)
-        setLoading(false)
-      } else {
-        // User is signed out
-        // ...
+    // Check for user in localStorage when component mounts
+    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (storedUser && token) {
+      try {
+        setUser(JSON.parse(storedUser));
+        // Set axios default headers
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      } catch (error) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
-    })
-    return () => {
-      return unsubscribe();
     }
-  }, [])
+    setLoading(false);
+  }, []);
 
-  const authInfo = {
-    user,
-    createUser,
-    signUpWithFacebook,
-    login,
-    logOut,
-    updateUserProfile,
-    loading,
+  const handleLogin = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', userData.token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
   };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
+  };
+
   return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
+    <AuthContext.Provider value={{ 
+      user, 
+      loading,
+      handleLogin, 
+      handleLogout 
+    }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthProvider
+export default AuthProvider;

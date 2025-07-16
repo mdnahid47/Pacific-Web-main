@@ -10,6 +10,14 @@ import UpdateProfile from "../pages/UpdateProfile/UpdateProfile";
 import ForgotPassword from "../components/ForgotPassword";
 import CheckoutPage from "../pages/CheckoutPage/CheckoutPage";
 import RequireAuth from "../contexts/RequireAuth ";
+import OrdersPage from "../pages/Order/OrdersPage";
+import Dashboard from "../admin/Dashboard";
+import ProtectedRoute from "../components/ProtectedRoute";
+import OrdersList from "../admin/OrdersList";
+import UsersList from "../admin/UsersList";
+import VendorsPage from "../admin/VendorsPage";
+import AdminAddService from "../admin/AdminAddService";
+
 
 
 
@@ -38,7 +46,7 @@ const router = createBrowserRouter([
         element:<AcInstallation />
       },
       {
-        path:'/user-profile',
+        path:'/profile',
         element:<UserProfile/>
       },
       {
@@ -50,22 +58,48 @@ const router = createBrowserRouter([
         element:<ForgotPassword/>
       },
     
-
-      
-
-    ]
+      {
+    path:'/orders',
+    element:
+      <OrdersPage/>
+   
   },
- 
-  {
+   {
     path:'/signup',
     element:<SignUp/>
   },
   {
     path:'/checkout',
-    element:<RequireAuth>
+    element:
       <CheckoutPage/>
-    </RequireAuth>
+   
   }
+      
+
+    ]
+  },
+ 
+ {
+  path: '/admin/dashboard',
+  element: <ProtectedRoute role="admin"><Dashboard /></ProtectedRoute>,
+ },
+ {
+  path: '/admin/orders',
+  element: <ProtectedRoute role={["admin", "superadmin"]}><OrdersList /></ProtectedRoute>,
+ },
+ {
+  path: '/admin/users',
+  element: <ProtectedRoute role={["admin", "superadmin"]}><UsersList/></ProtectedRoute>,
+ },
+ {
+  path: '/admin/vendors',
+  element: <ProtectedRoute role={["admin", "superadmin"]}><VendorsPage/></ProtectedRoute>,
+ },
+ {
+  path: '/admin/Services',
+  element: <ProtectedRoute role={["admin", "superadmin"]}><AdminAddService/></ProtectedRoute>,
+ }
+   
 ]);
 
 

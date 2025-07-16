@@ -251,3 +251,112 @@ app.get('/orders', (req, res) => {
   // user: 'root',
   // password: 'nahid0088@',
   // database: 'pacific'
+
+  // ========== Vendor Self Registration ==========//
+
+app.post('/api/vendor/register', upload.fields([
+  { name: 'nidFront', maxCount: 1 },
+  { name: 'nidBack', maxCount: 1 },
+  { name: 'selfie', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    const { name, email, phone, dob, nid, password } = req.body;
+
+    if (!name || !email || !phone || !dob || !nid || !password) {
+      return res.status(400).json({ success: false, message: "All fields are required" });
+    }
+
+    // Check duplicate vendor by email or phone
+    const [existingVendors] = await db.query(
+      "SELECT id FROM vendors WHERE email = ? OR phone = ?",
+      [email, phone]
+    );
+    if (existingVendors.length > 0) {
+      return res.status(400).json({ success: false, message: "Vendor with this email or phone already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const nidFront = req.files['nidFront']?.[0]?.filename || null;
+    const nidBack = req.files['nidBack']?.[0]?.filename || null;
+    const selfie = req.files['selfie']?.[0]?.filename || null;
+
+    await db.query(
+      `INSERT INTO vendors 
+      (name, email, phone, dob, nid, password, nidFront, nidBack, selfie, status) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, email, phone, dob, nid, hashedPassword, nidFront, nidBack, selfie, 'pending']
+    );
+
+    res.json({ success: true, message: "Vendor registered successfully. Please wait for admin approval." });
+  } catch (err) {
+    console.error("Vendor registration error:", err);
+    res.status(500).json({ success: false, message: "Vendor registration failed" });
+  }
+});
+
+// ========== Admin APIs for Vendor Management ==========
+
+// Get all vendors with stats
+app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const [vendors] = await db.query('SELECT * FROM vendors ORDER BY id DESC');
+
+    const stats = {
+      totalVendors: vendors.length,
+      pendingApproval: vendors.filter(v => v.status === 'pending').length,
+      activeVendors: vendors.filter(v => v.status === 'active').length,
+      blockedVendors: vendors.filter(v => v.status === 'blocked').length,
+      totalEarnings: vendors.reduce((sum, v) => sum + (v.totalEarnings || 0), 0),
+      pendingPayments: vendors.reduce((sum, v) => sum + (v.pendingPayment || 0), 0),
+    };
+
+    res.json({ success: true, vendors, stats });
+  } catch (err) {
+    console.error("Fetch vendors error:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch vendors" });
+  }
+});
+
+// Approve vendor
+app.put('/api/admin/vendors/:id/approve', verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query('UPDATE vendors SET status = ? WHERE id = ?', ['active', id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Vendor not found" });
+    }
+    res.json({ success: true, message: 'Vendor approved successfully' });
+  } catch (err) {
+    console.error("Approve vendor error:", err);
+    res.status(500).json({ success: false, message: 'Failed to approve vendor' });
+  }
+});
+
+// Block vendor
+app.put('/api/admin/vendors/:id/block', verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [result] = await db.query('UPDATE vendors SET status = ? WHERE id = ?', ['blocked', id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Vendor not found" });
+    }
+    res.json({ success: true, message: 'Vendor blocked successfully' });
+  } catch (err) {
+    console.error("Block vendor error:", err);
+    res.status(500).json({ success: false, message: 'Failed to block vendor' });
+  }
+});
+
+// Get single vendor details
+app.get('/api/admin/vendors/:id', verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [vendorRows] = await db.query('SELECT * FROM vendors WHERE id = ?', [id]);
+    if (vendorRows.length === 0) return res.status(404).json({ success: false, message: 'Vendor not found' });
+    res.json({ success: true, vendor: vendorRows[0] });
+  } catch (err) {
+    console.error("Fetch vendor details error:", err);
+    res.status(500).json({ success: false, message: 'Failed to fetch vendor details' });
+  }
+});
+

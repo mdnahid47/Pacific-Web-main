@@ -1,0 +1,2729 @@
+{
+    "divisions": [
+      {
+        "division": "Barishal",
+        "districts": [
+            {
+                "district": "Barishal",
+                "stations": [
+                  {
+                    "value": "Agailjhara",
+                    "label": "Agailjhara"
+                  },
+                  {
+                    "value": "Barishal Sadar",
+                    "label": "Barishal Sadar"
+                  },
+                  {
+                    "value": "Bakerganj",
+                    "label": "Bakerganj"
+                  },
+                  {
+                    "value": "Babuganj",
+                    "label": "Babuganj"
+                  },
+                  {
+                    "value": "Banaripara",
+                    "label": "Banaripara"
+                  },
+                  {
+                    "value": "Bimanbandar",
+                    "label": "Bimanbandar"
+                  },
+                  {
+                    "value": "Bandar",
+                    "label": "Bandar"
+                  },
+                  {
+                    "value": "Gournadi",
+                    "label": "Gournadi"
+                  },
+                  {
+                    "value": "Hijla",
+                    "label": "Hijla"
+                  },
+                  {
+                    "value": "Kotwali",
+                    "label": "Kotwali"
+                  },
+                  {
+                    "value": "Kaunia",
+                    "label": "Kaunia"
+                  },
+                  {
+                    "value": "Mehendiganj",
+                    "label": "Mehendiganj"
+                  },
+                  {
+                    "value": "Muladi",
+                    "label": "Muladi"
+                  },
+                  {
+                    "value": "Uzirpur",
+                    "label": "Uzirpur"
+                  }
+                ]
+              },
+              {
+                "district": "Barguna",
+                "stations": [
+                  {
+                    "value": "Amtali",
+                    "label": "Amtali"
+                  },
+                  {
+                    "value": "Bamna",
+                    "label": "Bamna"
+                  },
+                  {
+                    "value": "Barguna Sadar",
+                    "label": "Barguna Sadar"
+                  },
+                  {
+                    "value": "Betagi",
+                    "label": "Betagi"
+                  },
+                  {
+                    "value": "Patharghata",
+                    "label": "Patharghata"
+                  },
+                  {
+                    "value": "Taltali",
+                    "label": "Taltali"
+                  }
+                ]
+              },{
+                "district": "Bhola",
+                "stations": [
+                  {
+                    "value": "Bhola Sadar",
+                    "label": "Bhola Sadar"
+                  },
+                  {
+                    "value": "Borhanuddin",
+                    "label": "Borhanuddin"
+                  },
+                  {
+                    "value": "Daulat Khan",
+                    "label": "Daulat Khan"
+                  },
+                  {
+                    "value": "Dularhat",
+                    "label": "Dularhat"
+                  },
+                  {
+                    "value": "Charfashion",
+                    "label": "Charfashion"
+                  },
+                  {
+                    "value": "Lalmohan",
+                    "label": "Lalmohan"
+                  },
+                  {
+                    "value": "Monpura",
+                    "label": "Monpura"
+                  },
+                  {
+                    "value": "South Aicha",
+                    "label": "South Aicha"
+                  },
+                  {
+                    "value": "Shashibhushan",
+                    "label": "Shashibhushan"
+                  },
+                  {
+                    "value": "Tazumuddin",
+                    "label": "Tazumuddin"
+                  }
+                ]
+              }, 
+              {
+                "district": "Jhalokati",
+                "stations": [
+                  {
+                    "value": "Jhalokati Sadar",
+                    "label": "Jhalokati Sadar"
+                  },
+                  {
+                    "value": "Nalchity",
+                    "label": "Nalchity"
+                  },
+                  {
+                    "value": "Rajapur",
+                    "label": "Rajapur"
+                  },
+                  {
+                    "value": "Kathalia",
+                    "label": "Kathalia"
+                  }
+                ]
+              },
+              {
+                "district": "Patuakhali",
+                "stations": [
+                  {
+                    "value": "Patuakhali Sadar",
+                    "label": "Patuakhali Sadar"
+                  },
+                  {
+                    "value": "Bauphal",
+                    "label": "Bauphal"
+                  },
+                  {
+                    "value": "Galachipa",
+                    "label": "Galachipa"
+                  },
+                  {
+                    "value": "Dashmina",
+                    "label": "Dashmina"
+                  },
+                  {
+                    "value": "Mohipur",
+                    "label": "Mohipur"
+                  },
+                  {
+                    "value": "Dumki",
+                    "label": "Dumki"
+                  },
+                  {
+                    "value": "Kalapara",
+                    "label": "Kalapara"
+                  },
+                  {
+                    "value": "Mirjagong",
+                    "label": "Mirjagong"
+                  },
+                  {
+                    "value": "Rangabali",
+                    "label": "Rangabali"
+                  }
+                ]
+              }, 
+              {
+                "district": "Pirojpur",
+                "stations": [
+                  {
+                    "value": "Pirojpur Sadar",
+                    "label": "Pirojpur Sadar"
+                  },
+                  {
+                    "value": "Indurkani",
+                    "label": "Indurkani"
+                  },
+                  {
+                    "value": "Nazirpur",
+                    "label": "Nazirpur"
+                  },
+                  {
+                    "value": "Nesarabad",
+                    "label": "Nesarabad"
+                  },
+                  {
+                    "value": "Kawkhali",
+                    "label": "Kawkhali"
+                  },
+                  {
+                    "value": "Bhandaria",
+                    "label": "Bhandaria"
+                  },
+                  {
+                    "value": "Mathbaria",
+                    "label": "Mathbaria"
+                  }
+                ]
+              }
+        ]
+      },
+      {
+        "division": "Chittagong",
+        "districts": [
+            {
+                "district": "Brahmanbaria",
+                "stations": [
+                  {
+                    "value": "Ashuganj",
+                    "label": "Ashuganj"
+                  },
+                  {
+                    "value": "Akhaura",
+                    "label": "Akhaura"
+                  },
+                  {
+                    "value": "Brahmanbaria Sadar",
+                    "label": "Brahmanbaria Sadar"
+                  },
+                  {
+                    "value": "Bancharampur",
+                    "label": "Bancharampur"
+                  },
+                  {
+                    "value": "Bijoynagar",
+                    "label": "Bijoynagar"
+                  },
+                  {
+                    "value": "Nabinagar",
+                    "label": "Nabinagar"
+                  },
+                  {
+                    "value": "Nasirnagar",
+                    "label": "Nasirnagar"
+                  },
+                  {
+                    "value": "Sarail",
+                    "label": "Sarail"
+                  },
+                  {
+                    "value": "Kasba",
+                    "label": "Kasba"
+                  }
+                ]
+              },
+              {
+                "district": "Bandarban",
+                "stations": [
+                  {
+                    "value": "Bandarban Sadar",
+                    "label": "Bandarban Sadar"
+                  },
+                  {
+                    "value": "Lama",
+                    "label": "Lama"
+                  },
+                  {
+                    "value": "Alikadam",
+                    "label": "Alikadam"
+                  },
+                  {
+                    "value": "Nailkhongchhari",
+                    "label": "Nailkhongchhari"
+                  },
+                  {
+                    "value": "Ruma",
+                    "label": "Ruma"
+                  },
+                  {
+                    "value": "Rowangchhari",
+                    "label": "Rowangchhari"
+                  },
+                  {
+                    "value": "Thanchi",
+                    "label": "Thanchi"
+                  }
+                ]
+              },{
+                "district": "Chittagong",
+                "stations": [
+                  {
+                    "value": "Akbarshah",
+                    "label": "Akbarshah"
+                  },
+                  {
+                    "value": "Anwara",
+                    "label": "Anwara"
+                  },
+                  {
+                    "value": "Bakalia",
+                    "label": "Bakalia"
+                  },
+                  {
+                    "value": "Bayazid Bostami",
+                    "label": "Bayazid Bostami"
+                  },
+                  {
+                    "value": "Bhujpur",
+                    "label": "Bhujpur"
+                  },
+                  {
+                    "value": "Boalkhali",
+                    "label": "Boalkhali"
+                  },
+                  {
+                    "value": "Banshkhali",
+                    "label": "Banshkhali"
+                  },
+                  {
+                    "value": "Chittagong Bandar",
+                    "label": "Chittagong Bandar"
+                  },
+                  {
+                    "value": "Chandgaon",
+                    "label": "Chandgaon"
+                  },
+                  {
+                    "value": "Chawkbazar",
+                    "label": "Chawkbazar"
+                  },
+                  {
+                    "value": "Chandanaish",
+                    "label": "Chandanaish"
+                  },
+                  {
+                    "value": "Double Mooring",
+                    "label": "Double Mooring"
+                  },
+                  {
+                    "value": "EPZ",
+                    "label": "EPZ"
+                  },
+                  {
+                    "value": "Fatikchari",
+                    "label": "Fatikchari"
+                  },
+                  {
+                    "value": "Halishahar",
+                    "label": "Halishahar"
+                  },
+                  {
+                    "value": "Hathazari",
+                    "label": "Hathazari"
+                  },
+                  {
+                    "value": "Khulshi",
+                    "label": "Khulshi"
+                  },
+                  {
+                    "value": "Kotwali",
+                    "label": "Kotwali"
+                  },
+                  {
+                    "value": "Lohagara",
+                    "label": "Lohagara"
+                  },
+                  {
+                    "value": "Mirsarai",
+                    "label": "Mirsarai"
+                  },
+                  {
+                    "value": "Pahartali",
+                    "label": "Pahartali"
+                  },
+                  {
+                    "value": "Patiya",
+                    "label": "Patiya"
+                  },
+                  {
+                    "value": "Panchlaish",
+                    "label": "Panchlaish"
+                  },
+                  {
+                    "value": "Patenga",
+                    "label": "Patenga"
+                  },
+                  {
+                    "value": "Raozan",
+                    "label": "Raozan"
+                  },
+                  {
+                    "value": "Rangunia",
+                    "label": "Rangunia"
+                  },
+                  {
+                    "value": "Sandwip",
+                    "label": "Sandwip"
+                  },
+                  {
+                    "value": "Sadarghat",
+                    "label": "Sadarghat"
+                  },
+                  {
+                    "value": "Satkania",
+                    "label": "Satkania"
+                  },
+                  {
+                    "value": "Sitakunda",
+                    "label": "Sitakunda"
+                  },
+                  {
+                    "value": "Zorarganj",
+                    "label": "Zorarganj"
+                  }
+                ]
+              },
+              {
+                "district": "Cumilla",
+                "stations": [
+                  {
+                    "value": "Burichong",
+                    "label": "Burichong"
+                  },
+                  {
+                    "value": "Brahmanpara",
+                    "label": "Brahmanpara"
+                  },
+                  {
+                    "value": "Bangra-Bazar",
+                    "label": "Bangra-Bazar"
+                  },
+                  {
+                    "value": "Barura",
+                    "label": "Barura"
+                  },
+                  {
+                    "value": "Chandina",
+                    "label": "Chandina"
+                  },
+                  {
+                    "value": "Chouddagram",
+                    "label": "Chouddagram"
+                  },
+                  {
+                    "value": "Daudkandi",
+                    "label": "Daudkandi"
+                  },
+                  {
+                    "value": "Devidwar",
+                    "label": "Devidwar"
+                  },
+                  {
+                    "value": "Homna",
+                    "label": "Homna"
+                  },
+                  {
+                    "value": "Kotwali",
+                    "label": "Kotwali"
+                  },
+                  {
+                    "value": "Laksam",
+                    "label": "Laksam"
+                  },
+                  {
+                    "value": "Lalmai",
+                    "label": "Lalmai"
+                  },
+                  {
+                    "value": "Manoharganj",
+                    "label": "Manoharganj"
+                  },
+                  {
+                    "value": "Muradnagar",
+                    "label": "Muradnagar"
+                  },
+                  {
+                    "value": "Meghna",
+                    "label": "Meghna"
+                  },
+                  {
+                    "value": "Nangalkot",
+                    "label": "Nangalkot"
+                  },
+                  {
+                    "value": "Sadar South",
+                    "label": "Sadar South"
+                  },
+                  {
+                    "value": "Titus",
+                    "label": "Titus"
+                  }
+                ]
+              },
+              {
+                "district": "Chandpur",
+                "stations": [
+                  {
+                    "value": "Chandpur Sadar",
+                    "label": "Chandpur Sadar"
+                  },
+                  {
+                    "value": "Faridganj",
+                    "label": "Faridganj"
+                  },
+                  {
+                    "value": "Haimchar",
+                    "label": "Haimchar"
+                  },
+                  {
+                    "value": "Hajiganj",
+                    "label": "Hajiganj"
+                  },
+                  {
+                    "value": "Matlab North",
+                    "label": "Matlab North"
+                  },
+                  {
+                    "value": "Matlab South",
+                    "label": "Matlab South"
+                  },
+                  {
+                    "value": "Shahrasti",
+                    "label": "Shahrasti"
+                  },
+                  {
+                    "value": "Kachua",
+                    "label": "Kachua"
+                  }
+                ]
+              },
+              {
+                "district": "Cox's Bazar",
+                "stations": [
+                  {
+                    "value": "Cox's Bazar Sadar",
+                    "label": "Cox's Bazar Sadar"
+                  },
+                  {
+                    "value": "Chakaria",
+                    "label": "Chakaria"
+                  },
+                  {
+                    "value": "Qutubdia",
+                    "label": "Qutubdia"
+                  },
+                  {
+                    "value": "Ukhia",
+                    "label": "Ukhia"
+                  },
+                  {
+                    "value": "Maheshkhali",
+                    "label": "Maheshkhali"
+                  },
+                  {
+                    "value": "Pequa",
+                    "label": "Pequa"
+                  },
+                  {
+                    "value": "Ramu",
+                    "label": "Ramu"
+                  },
+                  {
+                    "value": "Teknaf",
+                    "label": "Teknaf"
+                  },
+                  {
+                    "value": "Eidgaon",
+                    "label": "Eidgaon"
+                  }
+                ]
+              },
+              {
+                "district": "Feni",
+                "stations": [
+                  {
+                    "value": "Chhagalnaiya",
+                    "label": "Chhagalnaiya"
+                  },
+                  {
+                    "value": "Daganbhuiyan",
+                    "label": "Daganbhuiyan"
+                  },
+                  {
+                    "value": "Feni Sadar",
+                    "label": "Feni Sadar"
+                  },
+                  {
+                    "value": "Fulgazi",
+                    "label": "Fulgazi"
+                  },
+                  {
+                    "value": "Parshuram",
+                    "label": "Parshuram"
+                  },
+                  {
+                    "value": "Sonagazi",
+                    "label": "Sonagazi"
+                  }
+                ]
+              },
+              {
+                "district": "Khagrachari",
+                "stations": [
+                  {
+                    "value": "Khagrachari Sadar",
+                    "label": "Khagrachari Sadar"
+                  },
+                  {
+                    "value": "Dighinala",
+                    "label": "Dighinala"
+                  },
+                  {
+                    "value": "Mohalchari",
+                    "label": "Mohalchari"
+                  },
+                  {
+                    "value": "Panchari",
+                    "label": "Panchari"
+                  },
+                  {
+                    "value": "Matiranga",
+                    "label": "Matiranga"
+                  },
+                  {
+                    "value": "Manikchari",
+                    "label": "Manikchari"
+                  },
+                  {
+                    "value": "Laxmichari",
+                    "label": "Laxmichari"
+                  },
+                  {
+                    "value": "Ramgarh",
+                    "label": "Ramgarh"
+                  },
+                  {
+                    "value": "Guimara",
+                    "label": "Guimara"
+                  }
+                ]
+              },
+              
+              {
+                "district": "Lakshmipur",
+                "stations": [
+                  {
+                    "value": "Lakshmipur Sadar",
+                    "label": "Lakshmipur Sadar"
+                  },
+                  {
+                    "value": "Ramganj",
+                    "label": "Ramganj"
+                  },
+                  {
+                    "value": "Raipur",
+                    "label": "Raipur"
+                  },
+                  {
+                    "value": "Ramgati",
+                    "label": "Ramgati"
+                  },
+                  {
+                    "value": "Kamalnagar",
+                    "label": "Kamalnagar"
+                  },
+                  {
+                    "value": "Chandragonj",
+                    "label": "Chandragonj"
+                  }
+                ]
+              },
+              {
+                "district": "Noakhali",
+                "stations": [
+                  {
+                    "value": "Shudharam",
+                    "label": "Shudharam"
+                  },
+                  {
+                    "value": "Companyganj",
+                    "label": "Companyganj"
+                  },
+                  {
+                    "value": "Hatia",
+                    "label": "Hatia"
+                  },
+                  {
+                    "value": "Charjabbar",
+                    "label": "Charjabbar"
+                  },
+                  {
+                    "value": "Kabirhut",
+                    "label": "Kabirhut"
+                  },
+                  {
+                    "value": "Senbag",
+                    "label": "Senbag"
+                  },
+                  {
+                    "value": "Begumganj",
+                    "label": "Begumganj"
+                  },
+                  {
+                    "value": "Chatkhil",
+                    "label": "Chatkhil"
+                  },
+                  {
+                    "value": "Sunaimuri",
+                    "label": "Sunaimuri"
+                  }
+                ]
+              },
+              {
+                "district": "Rangamati",
+                "stations": [
+                  {
+                    "value": "Baghaichhari",
+                    "label": "Baghaichhari"
+                  },
+                  {
+                    "value": "Barkal",
+                    "label": "Barkal"
+                  },
+                  {
+                    "value": "Bilaichhari",
+                    "label": "Bilaichhari"
+                  },
+                  {
+                    "value": "Chandroghona",
+                    "label": "Chandroghona"
+                  },
+                  {
+                    "value": "Juraichhari",
+                    "label": "Juraichhari"
+                  },
+                  {
+                    "value": "Kaptai",
+                    "label": "Kaptai"
+                  },
+                  {
+                    "value": "Kotowali",
+                    "label": "Kotowali"
+                  },
+                  {
+                    "value": "Kowkhali",
+                    "label": "Kowkhali"
+                  },
+                  {
+                    "value": "Langadu",
+                    "label": "Langadu"
+                  },
+                  {
+                    "value": "Naniarchar",
+                    "label": "Naniarchar"
+                  },
+                  {
+                    "value": "Rajasthali",
+                    "label": "Rajasthali"
+                  }
+                ]
+              }
+        ]
+      },
+      {
+        "division": "Dhaka",
+        "districts": [
+            {
+                "district": "Dhaka",
+                "stations": [
+                  {
+                    "value": "Adabor",
+                    "label": "Adabor"
+                  },
+                  {
+                    "value": "Ashulia",
+                    "label": "Ashulia"
+                  },
+                  {
+                    "value": "Airport",
+                    "label": "Airport"
+                  },
+                  {
+                    "value": "Badda",
+                    "label": "Badda"
+                  },
+                  {
+                    "value": "Banani",
+                    "label": "Banani"
+                  },
+                  {
+                    "value": "Bangshal",
+                    "label": "Bangshal"
+                  },
+                  {
+                    "value": "Bhashantek",
+                    "label": "Bhashantek"
+                  },
+                  {
+                    "value": "Cantonment",
+                    "label": "Cantonment"
+                  },
+                  {
+                    "value": "Chackbazar",
+                    "label": "Chackbazar"
+                  },
+                  {
+                    "value": "Dhamrai",
+                    "label": "Dhamrai"
+                  },
+                  {
+                    "value": "Dakshin Khan",
+                    "label": "Dakshin Khan"
+                  },
+                  {
+                    "value": "Darus-Salam",
+                    "label": "Darus-Salam"
+                  },
+                  {
+                    "value": "Demra",
+                    "label": "Demra"
+                  },
+                  {
+                    "value": "Dohar",
+                    "label": "Dohar"
+                  },
+                  {
+                    "value": "Dhanmondi",
+                    "label": "Dhanmondi"
+                  },
+                  {
+                    "value": "Gandaria",
+                    "label": "Gandaria"
+                  },
+                  {
+                    "value": "Gulshan",
+                    "label": "Gulshan"
+                  },
+                  {
+                    "value": "Hatirjheel",
+                    "label": "Hatirjheel"
+                  },
+                  {
+                    "value": "Hazaribagh",
+                    "label": "Hazaribagh"
+                  },
+                  {
+                    "value": "Jattrabari",
+                    "label": "Jattrabari"
+                  },
+                  {
+                    "value": "Kadamtoli",
+                    "label": "Kadamtoli"
+                  },
+                  {
+                    "value": "Kafrul",
+                    "label": "Kafrul"
+                  },
+                  {
+                    "value": "Kalabagan",
+                    "label": "Kalabagan"
+                  },
+                  {
+                    "value": "Kamrangirchar",
+                    "label": "Kamrangirchar"
+                  },
+                  {
+                    "value": "Keranigonj",
+                    "label": "Keranigonj"
+                  },
+                  {
+                    "value": "Khilgaon",
+                    "label": "Khilgaon"
+                  },
+                  {
+                    "value": "Khilkhet",
+                    "label": "Khilkhet"
+                  },
+                  {
+                    "value": "Kotwali",
+                    "label": "Kotwali"
+                  },
+                  {
+                    "value": "Lalbagh",
+                    "label": "Lalbagh"
+                  },
+                  {
+                    "value": "Mirpur",
+                    "label": "Mirpur"
+                  },
+                  {
+                    "value": "Mohammadpur",
+                    "label": "Mohammadpur"
+                  },
+                  {
+                    "value": "Motijheel",
+                    "label": "Motijheel"
+                  },
+                  {
+                    "value": "Mugda",
+                    "label": "Mugda"
+                  },
+                  {
+                    "value": "New Market",
+                    "label": "New Market"
+                  },
+                  {
+                    "value": "Nawabgonj",
+                    "label": "Nawabgonj"
+                  },
+                  {
+                    "value": "Pallabi",
+                    "label": "Pallabi"
+                  },
+                  {
+                    "value": "Paltan Model",
+                    "label": "Paltan Model"
+                  },
+                  {
+                    "value": "Ramna",
+                    "label": "Ramna"
+                  },
+                  {
+                    "value": "Rampura",
+                    "label": "Rampura"
+                  },
+                  {
+                    "value": "Rupnagar",
+                    "label": "Rupnagar"
+                  },
+                  {
+                    "value": "Sabujbag",
+                    "label": "Sabujbag"
+                  },
+                  {
+                    "value": "Shah Ali",
+                    "label": "Shah Ali"
+                  },
+                  {
+                    "value": "Shahbag",
+                    "label": "Shahbag"
+                  },
+                  {
+                    "value": "Shahjahanpur",
+                    "label": "Shahjahanpur"
+                  },
+                  {
+                    "value": "Sher e Bangla Nagar",
+                    "label": "Sher e Bangla Nagar"
+                  },
+                  {
+                    "value": "Shyampur",
+                    "label": "Shyampur"
+                  },
+                  {
+                    "value": "Sutrapur",
+                    "label": "Sutrapur"
+                  },
+                  {
+                    "value": "Savar",
+                    "label": "Savar"
+                  },
+                  {
+                    "value": "Tejgaon",
+                    "label": "Tejgaon"
+                  },
+                  {
+                    "value": "Turag",
+                    "label": "Turag"
+                  },
+                  {
+                    "value": "Uttar Khan",
+                    "label": "Uttar Khan"
+                  },
+                  {
+                    "value": "Uttara East",
+                    "label": "Uttara East"
+                  },
+                  {
+                    "value": "Uttara West",
+                    "label": "Uttara West"
+                  },
+                  {
+                    "value": "Vatara",
+                    "label": "Vatara"
+                  },
+                  {
+                    "value": "Wari",
+                    "label": "Wari"
+                  }
+                ]
+              },
+              {
+                "district": "Faridpur",
+                "stations": [
+                  {
+                    "value": "Alfadanga",
+                    "label": "Alfadanga"
+                  },
+                  {
+                    "value": "Boalmari",
+                    "label": "Boalmari"
+                  },
+                  {
+                    "value": "Charvadrason",
+                    "label": "Charvadrason"
+                  },
+                  {
+                    "value": "Kotwali",
+                    "label": "Kotwali"
+                  },
+                  {
+                    "value": "Modhukhali",
+                    "label": "Modhukhali"
+                  },
+                  {
+                    "value": "Nagarkanda",
+                    "label": "Nagarkanda"
+                  },
+                  {
+                    "value": "Saltha",
+                    "label": "Saltha"
+                  },
+                  {
+                    "value": "Sadarpur",
+                    "label": "Sadarpur"
+                  },
+                  {
+                    "value": "Vanga",
+                    "label": "Vanga"
+                  }
+                ]
+              },
+              {
+                "district": "Gazipur",
+                "stations": [
+                  {
+                    "value": "joydebpur",
+                    "label": "joydebpur"
+                  },
+                  {
+                    "value": "Sreepur",
+                    "label": "Sreepur"
+                  },
+                  {
+                    "value": "Kaliakair",
+                    "label": "Kaliakair"
+                  },
+                  {
+                    "value": "kapasia",
+                    "label": "kapasia"
+                  },
+                  {
+                    "value": "Kaliganj",
+                    "label": "Kaliganj"
+                  }
+                ]
+              },
+              {
+                "district": "Gopalganj",
+                "stations": [
+                  {
+                    "value": "Gopalganj Sadar",
+                    "label": "Gopalganj Sadar"
+                  },
+                  {
+                    "value": "Kasiani",
+                    "label": "Kasiani"
+                  },
+                  {
+                    "value": "Kotalipara",
+                    "label": "Kotalipara"
+                  },
+                  {
+                    "value": "Muksudpur",
+                    "label": "Muksudpur"
+                  },
+                  {
+                    "value": "Tungipara",
+                    "label": "Tungipara"
+                  }
+                ]
+              },
+              {
+                "district": "Kishoreganj",
+                "stations": [
+                  {
+                    "value": "Kishoreganj Sadar",
+                    "label": "Kishoreganj Sadar"
+                  },
+                  {
+                    "value": "Bhairav",
+                    "label": "Bhairav"
+                  },
+                  {
+                    "value": "Kuliachar",
+                    "label": "Kuliachar"
+                  },
+                  {
+                    "value": "Hossainpur",
+                    "label": "Hossainpur"
+                  },
+                  {
+                    "value": "Pakundia",
+                    "label": "Pakundia"
+                  },
+                  {
+                    "value": "Ashtagram",
+                    "label": "Ashtagram"
+                  },
+                  {
+                    "value": "Mithamain",
+                    "label": "Mithamain"
+                  },
+                  {
+                    "value": "Itna",
+                    "label": "Itna"
+                  },
+                  {
+                    "value": "Nikali",
+                    "label": "Nikali"
+                  },
+                  {
+                    "value": "Katiyadi",
+                    "label": "Katiyadi"
+                  },
+                  {
+                    "value": "Bajitpur",
+                    "label": "Bajitpur"
+                  },
+                  {
+                    "value": "Karimganj",
+                    "label": "Karimganj"
+                  },
+                  {
+                    "value": "Tarail",
+                    "label": "Tarail"
+                  }
+                ]
+              },
+              {
+                "district": "Madaripur",
+                "stations": [
+                  {
+                    "value": "Madaripur Sadar",
+                    "label": "Madaripur Sadar"
+                  },
+                  {
+                    "value": "Shibchar",
+                    "label": "Shibchar"
+                  },
+                  {
+                    "value": "Kalkini",
+                    "label": "Kalkini"
+                  },
+                  {
+                    "value": "Rajoir",
+                    "label": "Rajoir"
+                  },
+                  {
+                    "value": "Dasar",
+                    "label": "Dasar"
+                  }
+                ]
+              },
+              {
+                "district": "Manikganj",
+                "stations": [
+                  {
+                    "value": "Manikganj Sadar",
+                    "label": "Manikganj Sadar"
+                  },
+                  {
+                    "value": "Saturia",
+                    "label": "Saturia"
+                  },
+                  {
+                    "value": "Singhair",
+                    "label": "Singhair"
+                  },
+                  {
+                    "value": "Horirumpur",
+                    "label": "Horirumpur"
+                  },
+                  {
+                    "value": "Shibalaya",
+                    "label": "Shibalaya"
+                  },
+                  {
+                    "value": "Ghior",
+                    "label": "Ghior"
+                  },
+                  {
+                    "value": "Daoulotpur",
+                    "label": "Daoulotpur"
+                  }
+                ]
+              },
+              {
+                "district": "Munshiganj",
+                "stations": [
+                  {
+                    "value": "Munshiganj Sadar",
+                    "label": "Munshiganj Sadar"
+                  },
+                  {
+                    "value": "Tongibari",
+                    "label": "Tongibari"
+                  },
+                  {
+                    "value": "Louhojong",
+                    "label": "Louhojong"
+                  },
+                  {
+                    "value": "Gozaria",
+                    "label": "Gozaria"
+                  },
+                  {
+                    "value": "Sreenagar",
+                    "label": "Sreenagar"
+                  },
+                  {
+                    "value": "Sirajdikhan",
+                    "label": "Sirajdikhan"
+                  }
+                ]
+              },
+              {
+                "district": "Narayanganj",
+                "stations": [
+                  {
+                    "value": "Narayanganj sadar",
+                    "label": "Narayanganj sadar"
+                  },
+                  {
+                    "value": "Bandar",
+                    "label": "Bandar"
+                  },
+                  {
+                    "value": "Fatulla",
+                    "label": "Fatulla"
+                  },
+                  {
+                    "value": "Siddhirganj",
+                    "label": "Siddhirganj"
+                  },
+                  {
+                    "value": "Rupganj",
+                    "label": "Rupganj"
+                  },
+                  {
+                    "value": "Sonargaon",
+                    "label": "Sonargaon"
+                  },
+                  {
+                    "value": "Araihazar",
+                    "label": "Araihazar"
+                  }
+                ]
+              },
+              {
+                "district": "Narsingdi",
+                "stations": [
+                  {
+                    "value": "Narsingdi  sadar",
+                    "label": "Narsingdi  sadar"
+                  },
+                  {
+                    "value": "Palash",
+                    "label": "Palash"
+                  },
+                  {
+                    "value": "Madhabdi",
+                    "label": "Madhabdi"
+                  },
+                  {
+                    "value": "Shibpur",
+                    "label": "Shibpur"
+                  },
+                  {
+                    "value": "Monohardi",
+                    "label": "Monohardi"
+                  },
+                  {
+                    "value": "Raipura",
+                    "label": "Raipura"
+                  },
+                  {
+                    "value": "Belabo",
+                    "label": "Belabo"
+                  }
+                ]
+              },
+              {
+                "district": "Rajbari",
+                "stations": [
+                  {
+                    "value": "Rajbari Sadar",
+                    "label": "Rajbari Sadar"
+                  },
+                  {
+                    "value": "Goalondaghat",
+                    "label": "Goalondaghat"
+                  },
+                  {
+                    "value": "Pangsha",
+                    "label": "Pangsha"
+                  },
+                  {
+                    "value": "Baliakandi",
+                    "label": "Baliakandi"
+                  },
+                  {
+                    "value": "Kalukhali",
+                    "label": "Kalukhali"
+                  }
+                ]
+              },
+              {
+                "district": "Shariatpur",
+                "stations": [
+                  {
+                    "value": "Palong (Sadar)",
+                    "label": "Palong (Sadar)"
+                  },
+                  {
+                    "value": "Zajira",
+                    "label": "Zajira"
+                  },
+                  {
+                    "value": "Naria",
+                    "label": "Naria"
+                  },
+                  {
+                    "value": "sokhipur",
+                    "label": "sokhipur"
+                  },
+                  {
+                    "value": "Goshirhat",
+                    "label": "Goshirhat"
+                  },
+                  {
+                    "value": "Padma Bridge South",
+                    "label": "Padma Bridge South"
+                  },
+                  {
+                    "value": "Damudya",
+                    "label": "Damudya"
+                  },
+                  {
+                    "value": "Bhedorgonj",
+                    "label": "Bhedorgonj"
+                  }
+                ]
+              },
+              {
+                "district": "Tangail",
+                "stations": [
+                  {
+                    "value": "Tangail Sadar",
+                    "label": "Tangail Sadar"
+                  },
+                  {
+                    "value": "Delduar",
+                    "label": "Delduar"
+                  },
+                  {
+                    "value": "Nagarpur ",
+                    "label": "Nagarpur "
+                  },
+                  {
+                    "value": "sokhipur",
+                    "label": "sokhipur"
+                  },
+                  {
+                    "value": "Mirzapur ",
+                    "label": "Mirzapur "
+                  },
+                  {
+                    "value": "Basil ",
+                    "label": "Basil "
+                  },
+                  {
+                    "value": "Kalihati ",
+                    "label": "Kalihati "
+                  },
+                  {
+                    "value": "Ghatail ",
+                    "label": "Ghatail "
+                  },
+                  {
+                    "value": "Madhupur  ",
+                    "label": "Madhupur  "
+                  },
+                  {
+                    "value": "Dhanbari   ",
+                    "label": "Dhanbari   "
+                  },
+                  {
+                    "value": "Gopalpur   ",
+                    "label": "Gopalpur   "
+                  },
+                  {
+                    "value": "Bhuapur   ",
+                    "label": "Bhuapur   "
+                  },
+                  {
+                    "value": "Bangabandhu Bridge East  ",
+                    "label": "Bangabandhu Bridge East  "
+                  }
+                ]
+              }
+              
+        ]
+      },
+      {
+        "division": "Khulna",
+        "districts": [
+          {
+            "district": "Bagerhat",
+            "stations": [
+              {
+                "value": "Bagerhat Sadar",
+                "label": "Bagerhat Sadar"
+              },
+              {
+                "value": "Chitalmari",
+                "label": "Chitalmari"
+              },
+              {
+                "value": "Fakirhat",
+                "label": "Fakirhat"
+              },
+              {
+                "value": "Kachua",
+                "label": "Kachua"
+              },
+              {
+                "value": "Mollahat",
+                "label": "Mollahat"
+              },
+              {
+                "value": "Mongla",
+                "label": "Mongla"
+              },
+              {
+                "value": "Morrelganj",
+                "label": "Morrelganj"
+              },
+              {
+                "value": "Rampal",
+                "label": "Rampal"
+              },
+              {
+                "value": "Sarankhola",
+                "label": "Sarankhola"
+              }
+            ]
+          },
+          {
+            "district": "Chuadanga",
+            "stations": [
+              {
+                "value": "Alamdanga",
+                "label": "Alamdanga"
+              },
+              {
+                "value": "Chuadanga Sadar",
+                "label": "Chuadanga Sadar"
+              },
+              {
+                "value": "Jibannagar",
+                "label": "Jibannagar"
+              },
+              {
+                "value": "Damurhuda",
+                "label": "Damurhuda"
+              }
+            ]
+          },
+          {
+            "district": "Jessore",
+            "stations": [
+              {
+                "value": "Kotowali",
+                "label": "Kotowali"
+              },
+              {
+                "value": "Jhikargasa",
+                "label": "Jhikargasa"
+              },
+              {
+                "value": "Sharsha",
+                "label": "Sharsha"
+              },
+              {
+                "value": "Chowgasa",
+                "label": "Chowgasa"
+              },
+              {
+                "value": "Manirampur",
+                "label": "Manirampur"
+              },
+              {
+                "value": "Keshobpur",
+                "label": "Keshobpur"
+              },
+              {
+                "value": "Avoynagar",
+                "label": "Avoynagar"
+              },
+              {
+                "value": "Bagharpara",
+                "label": "Bagharpara"
+              },
+              {
+                "value": "Benapol port",
+                "label": "Benapol port"
+              }
+            ]
+          },
+          {
+            "district": "Jhenaidah",
+            "stations": [
+              {
+                "value": "Jhenaidah Sadar",
+                "label": "Jhenaidah Sadar"
+              },
+              {
+                "value": "Shailkupa",
+                "label": "Shailkupa"
+              },
+              {
+                "value": "Maheshpur",
+                "label": "Maheshpur"
+              },
+              {
+                "value": "Kaliganj",
+                "label": "Kaliganj"
+              },
+              {
+                "value": "Harinakundu",
+                "label": "Harinakundu"
+              },
+              {
+                "value": "Kotchandpur",
+                "label": "Kotchandpur"
+              }
+            ]
+          },
+          {
+            "district": "Khulna",
+            "stations": [
+              {
+                "value": "Botiaghata",
+                "label": "Botiaghata"
+              },
+              {
+                "value": "Dacope",
+                "label": "Dacope"
+              },
+              {
+                "value": "Digholia",
+                "label": "Digholia"
+              },
+              {
+                "value": "Dumuria",
+                "label": "Dumuria"
+              },
+              {
+                "value": "Fultala",
+                "label": "Fultala"
+              },
+              {
+                "value": "Koyra",
+                "label": "Koyra"
+              },
+              {
+                "value": "Paikgacha",
+                "label": "Paikgacha"
+              },
+              {
+                "value": "Rupsha",
+                "label": "Rupsha"
+              },
+              {
+                "value": "Terokhada",
+                "label": "Terokhada"
+              }
+            ]
+          },
+          {
+            "district": "Kushtia",
+            "stations": [
+              {
+                "value": "Kushtia Sadar",
+                "label": "Kushtia Sadar"
+              },
+              {
+                "value": "Kumarkhali",
+                "label": "Kumarkhali"
+              },
+              {
+                "value": "Khoksa",
+                "label": "Khoksa"
+              },
+              {
+                "value": "Mirpur",
+                "label": "Mirpur"
+              },
+              {
+                "value": "Bheramara",
+                "label": "Bheramara"
+              },
+              {
+                "value": "Daulatpur",
+                "label": "Daulatpur"
+              },
+              {
+                "value": "Islamic University",
+                "label": "Islamic University"
+              }
+            ]
+          },
+          {
+            "district": "Magura",
+            "stations": [
+              {
+                "value": "Magura Sador",
+                "label": "Magura Sador"
+              },
+              {
+                "value": "Mohammadpur",
+                "label": "Mohammadpur"
+              },
+              {
+                "value": "Shalikha",
+                "label": "Shalikha"
+              },
+              {
+                "value": "Shreepur",
+                "label": "Shreepur"
+              }
+            ]
+          },
+          {
+            "district": "Meherpur",
+            "stations": [
+              {
+                "value": "Meherpur Sadar",
+                "label": "Meherpur Sadar"
+              },
+              {
+                "value": "Gangni",
+                "label": "Gangni"
+              },
+              {
+                "value": "Mujibnagar",
+                "label": "Mujibnagar"
+              }
+            ]
+          },
+          {
+            "district": "Narail",
+            "stations": [
+              {
+                "value": "Narail sadar",
+                "label": "Narail sadar"
+              },
+              {
+                "value": "Lohagora",
+                "label": "Lohagora"
+              },
+              {
+                "value": "Kalia",
+                "label": "Kalia"
+              },
+              {
+                "value": "Naragati",
+                "label": "Naragati"
+              }
+            ]
+          },
+          {
+            "district": "Satkhira",
+            "stations": [
+              {
+                "value": "Satkhira Sadar",
+                "label": "Satkhira Sadar"
+              },
+              {
+                "value": "Kolaroa",
+                "label": "Kolaroa"
+              },
+              {
+                "value": "Tala",
+                "label": "Tala"
+              },
+              {
+                "value": "Patkelghata",
+                "label": "Patkelghata"
+              },
+              {
+                "value": "Kaliganj",
+                "label": "Kaliganj"
+              },
+              {
+                "value": "Debhata",
+                "label": "Debhata"
+              },
+              {
+                "value": "Ashashuni",
+                "label": "Ashashuni"
+              },
+              {
+                "value": "Shyamnagar",
+                "label": "Shyamnagar"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "division": "Mymensingh",
+        "districts": [
+          {
+            "district": "Mymensingh",
+            "stations": [
+              {
+                "value": "Kotwali",
+                "label": "Kotwali"
+              },
+              {
+                "value": "Muktagacha",
+                "label": "Muktagacha"
+              },
+              {
+                "value": "Fulbaria",
+                "label": "Fulbaria"
+              },
+              {
+                "value": "Pagla",
+                "label": "Pagla"
+              },
+              {
+                "value": "Trishal",
+                "label": "Trishal"
+              },
+              {
+                "value": "Gouripur",
+                "label": "Gouripur"
+              },
+              {
+                "value": "Ishorgonj",
+                "label": "Ishorgonj"
+              },
+              {
+                "value": "Nandail",
+                "label": "Nandail"
+              },
+              {
+                "value": "Fulpur",
+                "label": "Fulpur"
+              },
+              {
+                "value": "Haluaghat",
+                "label": "Haluaghat"
+              },
+              {
+                "value": "Dhubaora",
+                "label": "Dhubaora"
+              },
+              {
+                "value": "Goforgaon",
+                "label": "Goforgaon"
+              },
+              {
+                "value": "Valuka",
+                "label": "Valuka"
+              },
+              {
+                "value": "Tarakanda",
+                "label": "Tarakanda"
+              },
+              {
+                "value": "Muradnagar",
+                "label": "Muradnagar"
+              },
+              {
+                "value": "Meghna",
+                "label": "Meghna"
+              },
+              {
+                "value": "Nangalkot",
+                "label": "Nangalkot"
+              }
+            ]
+          },
+          {
+            "district": "Jamalpur",
+            "stations": [
+              {
+                "value": "Jamalpur Sadar",
+                "label": "Jamalpur Sadar"
+              },
+              {
+                "value": "Sorishabari",
+                "label": "Sorishabari"
+              },
+              {
+                "value": "Melandah",
+                "label": "Melandah"
+              },
+              {
+                "value": "Madarganj",
+                "label": "Madarganj"
+              },
+              {
+                "value": "Islampur",
+                "label": "Islampur"
+              },
+              {
+                "value": "Dewanganj",
+                "label": "Dewanganj"
+              },
+              {
+                "value": "Boksiganj",
+                "label": "Boksiganj"
+              }
+            ]
+          },
+          {
+            "district": "Netrokona",
+            "stations": [
+              {
+                "value": "Netrokona  sadar",
+                "label": "Netrokona  sadar"
+              },
+              {
+                "value": "Kendua",
+                "label": "Kendua"
+              },
+              {
+                "value": "Barhatta",
+                "label": "Barhatta"
+              },
+              {
+                "value": "Atpara",
+                "label": "Atpara"
+              },
+              {
+                "value": "Mohanganj",
+                "label": "Mohanganj"
+              },
+              {
+                "value": "Kalmakanda",
+                "label": "Kalmakanda"
+              },
+              {
+                "value": "Durgapur",
+                "label": "Durgapur"
+              },
+              {
+                "value": "Purbadhala",
+                "label": "Purbadhala"
+              },
+              {
+                "value": "Madan",
+                "label": "Madan"
+              },
+              {
+                "value": "Khaliajuri",
+                "label": "Khaliajuri"
+              }
+            ]
+          },
+          {
+            "district": "Sherpur",
+            "stations": [
+              {
+                "value": "Sherpur Sadar",
+                "label": "Sherpur Sadar"
+              },
+              {
+                "value": "Jhenaigati",
+                "label": "Jhenaigati"
+              },
+              {
+                "value": "Nalitabari",
+                "label": "Nalitabari"
+              },
+              {
+                "value": "Nakla",
+                "label": "Nakla"
+              },
+              {
+                "value": "Sreebordi",
+                "label": "Sreebordi"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "division": "Rajshahi",
+        "districts": [
+          {
+            "district": "Bogura",
+            "stations": [
+              {
+                "value": "Bogura Sadar",
+                "label": "Bogura Sadar"
+              },
+              {
+                "value": "Dupchanchia",
+                "label": "Dupchanchia"
+              },
+              {
+                "value": "Adamdighi",
+                "label": "Adamdighi"
+              },
+              {
+                "value": "Nandigram",
+                "label": "Nandigram"
+              },
+              {
+                "value": "Sonatola",
+                "label": "Sonatola"
+              },
+              {
+                "value": "Dhunat",
+                "label": "Dhunat"
+              },
+              {
+                "value": "Gabtali",
+                "label": "Gabtali"
+              },
+              {
+                "value": "Shajahanpur",
+                "label": "Shajahanpur"
+              },
+              {
+                "value": "Sariakandi",
+                "label": "Sariakandi"
+              },
+              {
+                "value": "Kahaloo",
+                "label": "Kahaloo"
+              },
+              {
+                "value": "Sherpur",
+                "label": "Sherpur"
+              },
+              {
+                "value": "Shibganj",
+                "label": "Shibganj"
+              }
+            ]
+          },
+          {
+            "district": "Chapainawabganj",
+            "stations": [
+              {
+                "value": "Chapainawabganj Sadar",
+                "label": "Chapainawabganj Sadar"
+              },
+              {
+                "value": "Sibganj",
+                "label": "Sibganj"
+              },
+              {
+                "value": "Gomastapur",
+                "label": "Gomastapur"
+              },
+              {
+                "value": "Nachol",
+                "label": "Nachol"
+              },
+              {
+                "value": "Volahat",
+                "label": "Volahat"
+              }
+            ]
+          },
+          {
+            "district": "Joypurhat",
+            "stations": [
+              {
+                "value": "Joypurhat Sadar",
+                "label": "Joypurhat Sadar"
+              },
+              {
+                "value": "Kalai",
+                "label": "Kalai"
+              },
+              {
+                "value": "Khetlal",
+                "label": "Khetlal"
+              },
+              {
+                "value": "Akkelpur",
+                "label": "Akkelpur"
+              },
+              {
+                "value": "Panchbibi",
+                "label": "Panchbibi"
+              }
+            ]
+          },
+          {
+            "district": "Natore",
+            "stations": [
+              {
+                "value": "Natore  sadar",
+                "label": "Natore  sadar"
+              },
+              {
+                "value": "Singra",
+                "label": "Singra"
+              },
+              {
+                "value": "Baghatipara",
+                "label": "Baghatipara"
+              },
+              {
+                "value": "Noldangha",
+                "label": "Noldangha"
+              },
+              {
+                "value": "Gurudaspur",
+                "label": "Gurudaspur"
+              },
+              {
+                "value": "Lalpur",
+                "label": "Lalpur"
+              }
+            ]
+          },
+          {
+            "district": "Naogaon",
+            "stations": [
+              {
+                "value": "Naogaon sadar",
+                "label": "Naogaon sadar"
+              },
+              {
+                "value": "Raninagar",
+                "label": "Raninagar"
+              },
+              {
+                "value": "Atraei",
+                "label": "Atraei"
+              },
+              {
+                "value": "Bodolgasi",
+                "label": "Bodolgasi"
+              },
+              {
+                "value": "Mohadevpur",
+                "label": "Mohadevpur"
+              },
+              {
+                "value": "Niamotpur",
+                "label": "Niamotpur"
+              },
+              {
+                "value": "Manda",
+                "label": "Manda"
+              },
+              {
+                "value": "Potnitola",
+                "label": "Potnitola"
+              },
+              {
+                "value": "Dhamuirhat",
+                "label": "Dhamuirhat"
+              },
+              {
+                "value": "Sapahar",
+                "label": "Sapahar"
+              },
+              {
+                "value": "Porsha",
+                "label": "Porsha"
+              }
+            ]
+          },
+          {
+            "district": "Pabna",
+            "stations": [
+              {
+                "value": "Pabna Sadar",
+                "label": "Pabna Sadar"
+              },
+              {
+                "value": "Ataikula",
+                "label": "Ataikula"
+              },
+              {
+                "value": "Ishwardi",
+                "label": "Ishwardi"
+              },
+              {
+                "value": "Chatmohar",
+                "label": "Chatmohar"
+              },
+              {
+                "value": "Bhangura",
+                "label": "Bhangura"
+              },
+              {
+                "value": "Faridpur",
+                "label": "Faridpur"
+              },
+              {
+                "value": "Sujanagar",
+                "label": "Sujanagar"
+              },
+              {
+                "value": "Atghoria",
+                "label": "Atghoria"
+              },
+              {
+                "value": "Aminpur",
+                "label": "Aminpur"
+              },
+              {
+                "value": "Bera",
+                "label": "Bera"
+              },
+              {
+                "value": "Shanthia",
+                "label": "Shanthia"
+              }
+            ]
+          },
+          {
+            "district": "Rajshahi",
+            "stations": [
+              {
+                "value": "Godagari",
+                "label": "Godagari"
+              },
+              {
+                "value": "Tanor",
+                "label": "Tanor"
+              },
+              {
+                "value": "Mohanpur",
+                "label": "Mohanpur"
+              },
+              {
+                "value": "Bagmara",
+                "label": "Bagmara"
+              },
+              {
+                "value": "Puthia",
+                "label": "Puthia"
+              },
+              {
+                "value": "Durgapur",
+                "label": "Durgapur"
+              },
+              {
+                "value": "Bagha",
+                "label": "Bagha"
+              },
+              {
+                "value": "Charghat",
+                "label": "Charghat"
+              }
+            ]
+          },
+          {
+            "district": "Sirajganj",
+            "stations": [
+              {
+                "value": "Sirajganj Sadar",
+                "label": "Sirajganj Sadar"
+              },
+              {
+                "value": "Belkuchi",
+                "label": "Belkuchi"
+              },
+              {
+                "value": "Chauhali",
+                "label": "Chauhali"
+              },
+              {
+                "value": "Kamarkand",
+                "label": "Kamarkand"
+              },
+              {
+                "value": "Kazipur",
+                "label": "Kazipur"
+              },
+              {
+                "value": "Raiganj",
+                "label": "Raiganj"
+              },
+              {
+                "value": "Shahjadpur",
+                "label": "Shahjadpur"
+              },
+              {
+                "value": "Tarash",
+                "label": "Tarash"
+              },
+              {
+                "value": "Ullapara",
+                "label": "Ullapara"
+              },
+              {
+                "value": "Enayetpur",
+                "label": "Enayetpur"
+              },
+              {
+                "value": "Salanga",
+                "label": "Salanga"
+              },
+              {
+                "value": "Bangabandhu Setu West",
+                "label": "Bangabandhu Setu West"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "division": "Rangpur",
+        "districts": [
+          {
+            "district": "Rangpur",
+            "stations": [
+              {
+                "value": "Kotwali",
+                "label": "Kotwali"
+              },
+              {
+                "value": "Pirganj",
+                "label": "Pirganj"
+              },
+              {
+                "value": "Badarganj",
+                "label": "Badarganj"
+              },
+              {
+                "value": "Mithapukur",
+                "label": "Mithapukur"
+              },
+              {
+                "value": "Pirgacha",
+                "label": "Pirgacha"
+              },
+              {
+                "value": "Taraganj",
+                "label": "Taraganj"
+              },
+              {
+                "value": "Gangachara",
+                "label": "Gangachara"
+              },
+              {
+                "value": "Kaunia",
+                "label": "Kaunia"
+              }
+            ]
+          },
+          {
+            "district": "Dinajpur",
+            "stations": [
+              {
+                "value": "Birol",
+                "label": "Birol"
+              },
+              {
+                "value": "Bochaganj",
+                "label": "Bochaganj"
+              },
+              {
+                "value": "Birganj",
+                "label": "Birganj"
+              },
+              {
+                "value": "Birampur",
+                "label": "Birampur"
+              },
+              {
+                "value": "Chirirbandar",
+                "label": "Chirirbandar"
+              },
+              {
+                "value": "Fulbari",
+                "label": "Fulbari"
+              },
+              {
+                "value": "Ghoraghat",
+                "label": "Ghoraghat"
+              },
+              {
+                "value": "Hakimpur",
+                "label": "Hakimpur"
+              },
+              {
+                "value": "Khansama",
+                "label": "Khansama"
+              },
+              {
+                "value": "Kaharol",
+                "label": "Kaharol"
+              },
+              {
+                "value": "Kotwali",
+                "label": "Kotwali"
+              },
+              {
+                "value": "Nobabganj",
+                "label": "Nobabganj"
+              },
+              {
+                "value": "Parbatipur",
+                "label": "Parbatipur"
+              }
+            ]
+          },
+          {
+            "district": "Kurigram",
+            "stations": [
+              {
+                "value": "Kurigram Sadar",
+                "label": "Kurigram Sadar"
+              },
+              {
+                "value": "Ulipur",
+                "label": "Ulipur"
+              },
+              {
+                "value": "Nageshwari",
+                "label": "Nageshwari"
+              },
+              {
+                "value": "Bhurungamari",
+                "label": "Bhurungamari"
+              },
+              {
+                "value": "Fulbari",
+                "label": "Fulbari"
+              },
+              {
+                "value": "Rajarhat",
+                "label": "Rajarhat"
+              },
+              {
+                "value": "Chilmari",
+                "label": "Chilmari"
+              },
+              {
+                "value": "Rawmari",
+                "label": "Rawmari"
+              },
+              {
+                "value": "Char Razibpur",
+                "label": "Char Razibpur"
+              },
+              {
+                "value": "Kachakata",
+                "label": "Kachakata"
+              },
+              {
+                "value": "Dhushmara",
+                "label": "Dhushmara"
+              }
+            ]
+          },
+          {
+            "district": "Gaibandha",
+            "stations": [
+              {
+                "value": "Gaibandha Sadar",
+                "label": "Gaibandha Sadar"
+              },
+              {
+                "value": "Sundarganj",
+                "label": "Sundarganj"
+              },
+              {
+                "value": "Gobindagonj",
+                "label": "Gobindagonj"
+              },
+              {
+                "value": "Poslashbari",
+                "label": "Poslashbari"
+              },
+              {
+                "value": "Sadullahpur",
+                "label": "Sadullahpur"
+              },
+              {
+                "value": "Shaghata",
+                "label": "Shaghata"
+              },
+              {
+                "value": "Fulchori",
+                "label": "Fulchori"
+              }
+            ]
+          },
+          {
+            "district": "Lalmonirhat",
+            "stations": [
+              {
+                "value": "Lalmonirhat Sadar",
+                "label": "Lalmonirhat Sadar"
+              },
+              {
+                "value": "Aditmari",
+                "label": "Aditmari"
+              },
+              {
+                "value": "Hatibandha",
+                "label": "Hatibandha"
+              },
+              {
+                "value": "Kaligonj",
+                "label": "Kaligonj"
+              },
+              {
+                "value": "Patgram",
+                "label": "Patgram"
+              }
+            ]
+          },
+          {
+            "district": "Nilphamari",
+            "stations": [
+              {
+                "value": "Nilphamari  sadar",
+                "label": "Nilphamari  sadar"
+              },
+              {
+                "value": "Syedpur",
+                "label": "Syedpur"
+              },
+              {
+                "value": "Jaldhaka",
+                "label": "Jaldhaka"
+              },
+              {
+                "value": "Kishoreganj",
+                "label": "Kishoreganj"
+              },
+              {
+                "value": "Domar",
+                "label": "Domar"
+              },
+              {
+                "value": "Dimla",
+                "label": "Dimla"
+              }
+            ]
+          },
+          {
+            "district": "Panchagarh",
+            "stations": [
+              {
+                "value": "Panchagarh Sadar",
+                "label": "Panchagarh Sadar"
+              },
+              {
+                "value": "Atowari",
+                "label": "Atowari"
+              },
+              {
+                "value": "Boda",
+                "label": "Boda"
+              },
+              {
+                "value": "Debiganj",
+                "label": "Debiganj"
+              },
+              {
+                "value": "Tetulia",
+                "label": "Tetulia"
+              }
+            ]
+          },
+          {
+            "district": "Thakurgaon",
+            "stations": [
+              {
+                "value": "Thakurgaon  Sadar",
+                "label": "Thakurgaon  Sadar"
+              },
+              {
+                "value": "Pirganj",
+                "label": "Pirganj"
+              },
+              {
+                "value": "Baliadangi",
+                "label": "Baliadangi"
+              },
+              {
+                "value": "Ranishankoil",
+                "label": "Ranishankoil"
+              },
+              {
+                "value": "Haripur",
+                "label": "Haripur"
+              },
+              {
+                "value": "Ruhea",
+                "label": "Ruhea"
+              },
+              {
+                "value": "Bhulli",
+                "label": "Bhulli"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "division": "Sylhet",
+        "districts": [
+          {
+            "district": "Sylhet",
+            "stations": [
+              {
+                "value": "Zakigonj",
+                "label": "Zakigonj"
+              },
+              {
+                "value": "Kanaighat",
+                "label": "Kanaighat"
+              },
+              {
+                "value": "Bianabazar",
+                "label": "Bianabazar"
+              },
+              {
+                "value": "Jointiapur",
+                "label": "Jointiapur"
+              },
+              {
+                "value": "Goinghat",
+                "label": "Goinghat"
+              },
+              {
+                "value": "Companigonj",
+                "label": "Companigonj"
+              },
+              {
+                "value": "Balagong",
+                "label": "Balagong"
+              },
+              {
+                "value": "Osmaninagor",
+                "label": "Osmaninagor"
+              },
+              {
+                "value": "Bishanath",
+                "label": "Bishanath"
+              },
+              {
+                "value": "Golapgonj",
+                "label": "Golapgonj"
+              },
+              {
+                "value": "Fenchugong",
+                "label": "Fenchugong"
+              }
+            ]
+          },
+          {
+            "district": "Sunamganj",
+            "stations": [
+              {
+                "value": "Sunamgonj Sadar",
+                "label": "Sunamgonj Sadar"
+              },
+              {
+                "value": "Chatak",
+                "label": "Chatak"
+              },
+              {
+                "value": "Jagannathpur",
+                "label": "Jagannathpur"
+              },
+              {
+                "value": "Tahirpur",
+                "label": "Tahirpur"
+              },
+              {
+                "value": "Bishombhorpur",
+                "label": "Bishombhorpur"
+              },
+              {
+                "value": "Doarabazar",
+                "label": "Doarabazar"
+              },
+              {
+                "value": "Derai",
+                "label": "Derai"
+              },
+              {
+                "value": "Shalla",
+                "label": "Shalla"
+              },
+              {
+                "value": "Jamalgonj",
+                "label": "Jamalgonj"
+              },
+              {
+                "value": "Moddhonagar",
+                "label": "Moddhonagar"
+              },
+              {
+                "value": "Dharmapasha",
+                "label": "Dharmapasha"
+              },
+              {
+                "value": "South sunamganj",
+                "label": "South sunamganj"
+              }
+            ]
+          },
+          {
+            "district": "Moulvibazar",
+            "stations": [
+              {
+                "value": "Moulvibazar Sadar",
+                "label": "Moulvibazar Sadar"
+              },
+              {
+                "value": "Sreemangal",
+                "label": "Sreemangal"
+              },
+              {
+                "value": "Rajnagar",
+                "label": "Rajnagar"
+              },
+              {
+                "value": "Kulaura",
+                "label": "Kulaura"
+              },
+              {
+                "value": "Borolekha",
+                "label": "Borolekha"
+              },
+              {
+                "value": "Juri",
+                "label": "Juri"
+              },
+              {
+                "value": "Kamalgong",
+                "label": "Kamalgong"
+              }
+            ]
+          },
+          {
+            "district": "Habiganj",
+            "stations": [
+              {
+                "value": "Ajmeriganj",
+                "label": "Ajmeriganj"
+              },
+              {
+                "value": "Bahubol",
+                "label": "Bahubol"
+              },
+              {
+                "value": "Baniachong",
+                "label": "Baniachong"
+              },
+              {
+                "value": "Chunarughat",
+                "label": "Chunarughat"
+              },
+              {
+                "value": "Habiganj  Sadar",
+                "label": "Habiganj  Sadar"
+              },
+              {
+                "value": "Lakhai",
+                "label": "Lakhai"
+              },
+              {
+                "value": "Madhabpur",
+                "label": "Madhabpur"
+              },
+              {
+                "value": "Nabiganj",
+                "label": "Nabiganj"
+              },
+              {
+                "value": "Shayestaganj",
+                "label": "Shayestaganj"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  
