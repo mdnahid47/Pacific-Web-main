@@ -88,7 +88,34 @@ const uploadService = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: imageFileFilter
 });
-
+const vendorStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    let dir;
+    if (file.fieldname === 'profile_image') {
+      dir = path.join(__dirname, 'uploads/profiles');
+    } else {
+      dir = path.join(__dirname, 'uploads/nids');
+    }
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const prefix = file.fieldname === 'profile_image' ? 'profile' : file.fieldname;
+    cb(null, `${prefix}-${Date.now()}${ext}`);
+  }
+});
+const uploadVendorDocs = multer({
+  storage: vendorStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 // JWT Authentication Middleware
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -1073,61 +1100,272 @@ app.post('/api/services', uploadService.single('image'), async (req, res) => {
 });
 
 // update an existing service
-// PUT /api/services/:id
-app.put('/api/services/:id', uploadService.single('image'), (req, res) => {
-  const { id } = req.params;
+app.put('/api/services/:_id', uploadService.single('image'), async (req, res) => {
+  const { _id } = req.params;
   const { name, price, category } = req.body;
   let image = req.file ? `/uploads/services/${req.file.filename}` : null;
 
-  const updates = [];
-  const values = [];
+  try {
+    const updates = [];
+    const values = [];
 
-  if (name) {
-    updates.push('name=?');
-    values.push(name);
-  }
-  if (price) {
-    updates.push('price=?');
-    values.push(price);
-  }
-  if (category) {
-    updates.push('category=?');
-    values.push(category);
-  }
-  if (image) {
-    updates.push('image=?');
-    values.push(image);
-  }
+    if (name) {
+      updates.push('name=?');
+      values.push(name);
+    }
+    if (price) {
+      updates.push('price=?');
+      values.push(price);
+    }
+    if (category) {
+      updates.push('category=?');
+      values.push(category);
+    }
+    if (image) {
+      updates.push('image=?');
+      values.push(image);
+    }
 
-  if (updates.length === 0) {
-    return res.status(400).json({ success: false, message: 'No fields to update' });
-  }
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, message: 'No fields to update' });
+    }
 
-  const sql = `UPDATE services SET ${updates.join(', ')} WHERE _id=?`;
-  values.push(id);
+    const sql = `UPDATE services SET ${updates.join(', ')} WHERE _id=?`;
+    values.push(_id);
 
-  db.query(sql, values, (err, result) => {
-    if (err) {
-      console.error('Update error:', err);
-      return res.status(500).json({ success: false, error: err.message });
+    const [result] = await db.query(sql, values);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Service not found' });
     }
 
     res.json({ success: true, message: 'Service updated successfully' });
-  });
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 
-
 // Fix: Use _id instead of id
-app.delete("/api/services/:id", (req, res) => {
-  const { id } = req.params;
-  db.query("DELETE FROM services WHERE _id = ?", [id], (err) => {
+app.delete("/api/services/:_id", (req, res) => {
+  const { _id } = req.params;
+  db.query("DELETE FROM services WHERE _id = ?", [_id], (err) => {
     if (err) {
       console.error("Delete error:", err);
       return res.status(500).json({ success: false, error: err.message });
     }
     res.json({ success: true, message: "Service deleted successfully" });
   });
+});
+
+// ================================Vendor =================================================
+app.post("/api/vendor/register", uploadVendorDocs.fields([
+  { name: 'nid_front', maxCount: 1 },
+  { name: 'nid_back', maxCount: 1 },
+  { name: 'profile_image', maxCount: 1 }
+]), async (req, res) => {
+  const {
+    name,
+    email,
+    phone,
+    dob,
+    password,
+    nid_number,
+    address,
+    technician_quantity
+  } = req.body;
+
+  // Input validation
+  if (!name || !email || !phone || !dob || !password || !nid_number || !address) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  try {
+    // Check for duplicate email or phone
+    const [duplicateCheck] = await db.query(
+      "SELECT * FROM vendors WHERE email = ? OR phone_number = ?",
+      [email, phone]
+    );
+
+    if (duplicateCheck.length > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email or phone number already registered" 
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Handle file uploads
+    const nidFront = req.files['nid_front'] ? `/uploads/nids/${req.files['nid_front'][0].filename}` : null;
+    const nidBack = req.files['nid_back'] ? `/uploads/nids/${req.files['nid_back'][0].filename}` : null;
+    const profileImage = req.files['profile_image'] ? `/uploads/profiles/${req.files['profile_image'][0].filename}` : null;
+
+    // Create new vendor
+    await db.query(
+      `INSERT INTO vendors 
+        (name, email, phone_number, password, dob, nid_number, 
+         address, technician_quantity, vendor_photo, nid_front, nid_back,
+         completed_orders, total_orders, canceled_orders, pending_orders,
+         due_amount, amount_paid, join_date, status, created_at, updated_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 0, 0, CURDATE(), 'pending', NOW(), NOW())`,
+      [
+        name, email, phone, hashedPassword, dob, nid_number,
+        address, technician_quantity || 0, profileImage, nidFront, nidBack
+      ]
+    );
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Registration successful! Your account is pending approval."
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Registration failed",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+
+// login endpoint for vendors
+
+app.post("/api/vendor/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const [rows] = await db.query(
+      "SELECT * FROM vendors WHERE email = ?",
+      [email]
+    );
+    const vendor = rows[0];
+
+    if (!vendor) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, vendor.password);
+    if (!isMatch) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid credentials" 
+      });
+    }
+
+    // Check if vendor is approved
+    if (vendor.status !== 'active') {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Your account is pending approval" 
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        vendorId: vendor.id, 
+        role: "vendor",
+        email: vendor.email
+      }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: "8h" }
+    );
+
+    res.json({
+      success: true,
+      token,
+      vendor: {
+        id: vendor.id,
+        name: vendor.name,
+        email: vendor.email,
+        phone: vendor.phone_number,
+        profileImage: vendor.vendor_photo,
+        status: vendor.status
+      }
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Login failed" 
+    });
+  }
+});
+
+// authentication middleware for vendors
+const authenticateVendor = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ 
+      success: false, 
+      message: "Authorization token missing" 
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    if (decoded.role !== 'vendor') {
+      return res.status(403).json({ 
+        success: false, 
+        message: "Access restricted to vendors only" 
+      });
+    }
+
+    req.vendor = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ 
+      success: false, 
+      message: "Invalid or expired token" 
+    });
+  }
+};
+
+// Vendor profile endpoint
+app.get("/api/vendor/profile", authenticateVendor, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT id, name, email, phone_number, address, vendor_photo, status FROM vendors WHERE id = ?",
+      [req.vendor.vendorId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Vendor not found" 
+      });
+    }
+
+    const vendor = rows[0];
+    res.json({
+      success: true,
+      vendor: {
+        id: vendor.id,
+        name: vendor.name,
+        email: vendor.email,
+        phone: vendor.phone_number,
+        address: vendor.address,
+        profileImage: vendor.vendor_photo,
+        status: vendor.status
+      }
+    });
+  } catch (error) {
+    console.error("Profile error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to fetch profile" 
+    });
+  }
 });
 
 // Start server

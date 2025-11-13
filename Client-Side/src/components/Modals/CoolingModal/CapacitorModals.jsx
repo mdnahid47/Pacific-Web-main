@@ -2,7 +2,7 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBangladeshiTakaSign } from '@fortawesome/free-solid-svg-icons';
 import { FaCheck } from "react-icons/fa6";
-import capacitor from '../../../assets/Capacitor-2.jpg';
+import capacitor from '../../../assets/ac.png';
 
 const CapacitorModals = () => {
     return (

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18855812671",
+    "project_id": "vendor-app-cbba7",
+    "storage_bucket": "vendor-app-cbba7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18855812671:android:22100091a72e2ebbe5e28a",
+        "android_client_info": {
+          "package_name": "com.nahid47.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5TBoJTmuq4dV4hJdbUgG1ag3L8qxkvdw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

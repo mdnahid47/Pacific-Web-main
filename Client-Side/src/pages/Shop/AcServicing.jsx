@@ -1,222 +1,222 @@
-import React from 'react';
-import Banner from '../../components/Banner';
-import cardImage from '../../assets/ac-service.jpg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBangladeshiTakaSign } from '@fortawesome/free-solid-svg-icons';
-import BasicServiceModals from '../../components/Modals/BasicServiceModals';
-import AcJetWashModal from '../../components/Modals/AcJetWashModal';
-import FoomWashModals from '../../components/Modals/FoomWashModals';
-import WaterDroopModals from '../../components/Modals/WaterDroopModals';
-import CheckupModals from '../../components/Modals/CheckupModals';
-import '../../App.css'
-import UniversalModal from '../../components/Modals/UniversalModal';
+// import React from 'react';
+// import Banner from '../../components/Banner';
+// import cardImage from '../../assets/ac.png';
+// // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// // import { faBangladeshiTakaSign } from '@fortawesome/free-solid-svg-icons';
+// // import BasicServiceModals from '../../components/Modals/BasicServiceModals';
+// // import AcJetWashModal from '../../components/Modals/AcJetWashModal';
+// // import FoomWashModals from '../../components/Modals/FoomWashModals';
+// // import WaterDroopModals from '../../components/Modals/WaterDroopModals';
+// // import CheckupModals from '../../components/Modals/CheckupModals';
+// import '../../App.css'
+// import UniversalModal from '../../components/Modals/UniversalModal';
 
 
-const AcServicing = () => {
-    return (
-        <div>
-            {/* Banner  */}
-            <Banner />
+// const AcServicing = () => {
+//     return (
+//         <div>
+//             {/* Banner  */}
+//             <Banner />
 
-            {/* Items  */}
+//             {/* Items  */}
 
-            {/* Open the modal using document.getElementById('ID').showModal() method */}
+//             {/* Open the modal using document.getElementById('ID').showModal() method */}
 
-           <dialog id="my_modal_9" className="modal">
-                <div className="modal-box max-w-6xl max-h-[90vh] p-0 overflow-hidden">
-                    <div className="flex flex-col lg:flex-row h-full">
-                        {/* Left Side - Modal Header and Close Button */}
-                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
-                            <h1 className='text-2xl font-bold'>AC Checkup Services</h1>
-                            <form method="dialog">
-                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
-                            </form>
-                        </div>
+//            <dialog id="my_modal_9" className="modal">
+//                 <div className="modal-box max-w-6xl max-h-[90vh] p-0 overflow-hidden">
+//                     <div className="flex flex-col lg:flex-row h-full">
+//                         {/* Left Side - Modal Header and Close Button */}
+//                         <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+//                             <h1 className='text-2xl font-bold'>AC Checkup Services</h1>
+//                             <form method="dialog">
+//                                 <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+//                             </form>
+//                         </div>
                         
-                        {/* Right Side - Modal Content */}
-                        <div className=" h-full overflow-y-auto w-full">
-                            <UniversalModal category="Ac-Checkup-2" />
-                        </div>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
+//                         {/* Right Side - Modal Content */}
+//                         <div className=" h-full overflow-y-auto w-full">
+//                             <UniversalModal category="Ac-Checkup-2" />
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <form method="dialog" className="modal-backdrop">
+//                     <button>close</button>
+//                 </form>
+//             </dialog>
 
 
-           <dialog id="my_modal_5" className="modal">
-                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
-                    <div className="flex flex-col lg:flex-row h-full">
-                        {/* Left Side - Modal Header and Close Button */}
-                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
-                            <h1 className='text-2xl font-bold'>AC Basic Services</h1>
-                            <form method="dialog">
-                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
-                            </form>
-                        </div>
+//            <dialog id="my_modal_5" className="modal">
+//                 <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+//                     <div className="flex flex-col lg:flex-row h-full">
+//                         {/* Left Side - Modal Header and Close Button */}
+//                         <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+//                             <h1 className='text-2xl font-bold'>AC Basic Services</h1>
+//                             <form method="dialog">
+//                                 <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+//                             </form>
+//                         </div>
                         
-                        {/* Right Side - Modal Content */}
-                        <div className=" h-full overflow-y-auto w-full">
-                            <UniversalModal category="Ac-Basic-Service" />
-                        </div>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
-            {/* Jetwash Modal */}
+//                         {/* Right Side - Modal Content */}
+//                         <div className=" h-full overflow-y-auto w-full">
+//                             <UniversalModal category="Ac-Basic-Service" />
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <form method="dialog" className="modal-backdrop">
+//                     <button>close</button>
+//                 </form>
+//             </dialog>
+//             {/* Jetwash Modal */}
 
-             <dialog id="my_modal_6" className="modal">
-                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
-                    <div className="flex flex-col lg:flex-row h-full">
-                        {/* Left Side - Modal Header and Close Button */}
-                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
-                            <h1 className='text-2xl font-bold'>AC Basic Services</h1>
-                            <form method="dialog">
-                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
-                            </form>
-                        </div>
+//              <dialog id="my_modal_6" className="modal">
+//                 <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+//                     <div className="flex flex-col lg:flex-row h-full">
+//                         {/* Left Side - Modal Header and Close Button */}
+//                         <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+//                             <h1 className='text-2xl font-bold'>AC Basic Services</h1>
+//                             <form method="dialog">
+//                                 <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+//                             </form>
+//                         </div>
                         
-                        {/* Right Side - Modal Content */}
-                        <div className=" h-full overflow-y-auto w-full">
-                            <UniversalModal category="Ac-Jet-Wash" />
-                        </div>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
+//                         {/* Right Side - Modal Content */}
+//                         <div className=" h-full overflow-y-auto w-full">
+//                             <UniversalModal category="Ac-Jet-Wash" />
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <form method="dialog" className="modal-backdrop">
+//                     <button>close</button>
+//                 </form>
+//             </dialog>
 
-            {/* Foom wash */}
-            <dialog id="my_modal_7" className="modal">
-                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
-                    <div className="flex flex-col lg:flex-row h-full">
-                        {/* Left Side - Modal Header and Close Button */}
-                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
-                            <h1 className='text-2xl font-bold'>AC Basic Services</h1>
-                            <form method="dialog">
-                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
-                            </form>
-                        </div>
+//             {/* Foom wash */}
+//             <dialog id="my_modal_7" className="modal">
+//                 <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+//                     <div className="flex flex-col lg:flex-row h-full">
+//                         {/* Left Side - Modal Header and Close Button */}
+//                         <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+//                             <h1 className='text-2xl font-bold'>AC Basic Services</h1>
+//                             <form method="dialog">
+//                                 <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+//                             </form>
+//                         </div>
                         
-                        {/* Right Side - Modal Content */}
-                        <div className=" h-full overflow-y-auto w-full">
-                            <UniversalModal category="AC-Foom-Wash" />
-                        </div>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
+//                         {/* Right Side - Modal Content */}
+//                         <div className=" h-full overflow-y-auto w-full">
+//                             <UniversalModal category="AC-Foom-Wash" />
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <form method="dialog" className="modal-backdrop">
+//                     <button>close</button>
+//                 </form>
+//             </dialog>
 
-        {/* waterDroop */}
+//         {/* waterDroop */}
 
-        <dialog id="my_modal_8" className="modal">
-                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
-                    <div className="flex flex-col lg:flex-row h-full">
-                        {/* Left Side - Modal Header and Close Button */}
-                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
-                            <h1 className='text-2xl font-bold'>AC Basic Services</h1>
-                            <form method="dialog">
-                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
-                            </form>
-                        </div>
+//         <dialog id="my_modal_8" className="modal">
+//                 <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+//                     <div className="flex flex-col lg:flex-row h-full">
+//                         {/* Left Side - Modal Header and Close Button */}
+//                         <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+//                             <h1 className='text-2xl font-bold'>AC Basic Services</h1>
+//                             <form method="dialog">
+//                                 <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+//                             </form>
+//                         </div>
                         
-                        {/* Right Side - Modal Content */}
-                        <div className=" h-full overflow-y-auto w-full">
-                            <UniversalModal category="Ac-Waterdrop-Solution" />
-                        </div>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
+//                         {/* Right Side - Modal Content */}
+//                         <div className=" h-full overflow-y-auto w-full">
+//                             <UniversalModal category="Ac-Waterdrop-Solution" />
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <form method="dialog" className="modal-backdrop">
+//                     <button>close</button>
+//                 </form>
+//             </dialog>
 
 
-            <div className='container px-10 md:px-0 md:gap-2 mx-auto xl:px-24'>
-                <div className='text-3xl mt-20 mb-10 flex items-center justify-center'>
-                    <h1 >Ac Servicing</h1>
-                </div>
+//             <div className='container px-10 md:px-0 md:gap-2 mx-auto xl:px-24'>
+//                 <div className='text-3xl mt-20 mb-10 flex items-center justify-center'>
+//                     <h1 >Ac Servicing</h1>
+//                 </div>
 
 
-                <div className='grid grid-cols-1 md:grid-cols-9 md:px-10 lg:grid-cols-12 gap-10'>
-                    <div className='col-span-4'>
-                    <div className='w-72  rounded-xl border shadow-lg'>
-                        <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
-                        <div className='card-body'>
-                            <h2 className='card-title'>Ac Check Up</h2>
-                            <p className='text-xl'>1-5 Ton</p>
-                            <div className='card-actions mt-6 justify-end '>
-                              <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white'onClick={()=>document.getElementById('my_modal_9').showModal()} >See Details</button>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
+//                 <div className='grid grid-cols-1 md:grid-cols-9 md:px-10 lg:grid-cols-12 gap-10'>
+//                     <div className='col-span-4'>
+//                     <div className='w-72  rounded-xl border shadow-lg'>
+//                         <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
+//                         <div className='card-body'>
+//                             <h2 className='card-title'>Ac Check Up</h2>
+//                             <p className='text-xl'>1-5 Ton</p>
+//                             <div className='card-actions mt-6 justify-end '>
+//                               <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white'onClick={()=>document.getElementById('my_modal_9').showModal()} >See Details</button>
+//                             </div>
+//                         </div>
+//                     </div>
+//                     </div>
 
-                    <div className='w-72 col-span-4 rounded-xl border shadow-lg'>
-                        <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
-                        <div className='card-body'>
-                            <h2 className='card-title'>Ac Service</h2>
-                            <p className='text-xl'>1-5 Ton</p>
-                            <div className='card-actions mt-6 justify-end '>
-                              <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_5').showModal()}>See Details</button>
-                            </div>
-                        </div>
-                    </div>
+//                     <div className='w-72 col-span-4 rounded-xl border shadow-lg'>
+//                         <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
+//                         <div className='card-body'>
+//                             <h2 className='card-title'>Ac Service</h2>
+//                             <p className='text-xl'>1-5 Ton</p>
+//                             <div className='card-actions mt-6 justify-end '>
+//                               <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_5').showModal()}>See Details</button>
+//                             </div>
+//                         </div>
+//                     </div>
 
 
-                    <div className='w-72 col-span-4  rounded-xl border shadow-lg'>
-                        <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
-                        <div className='card-body'>
-                            <h2 className='card-title'>Ac jet Wash</h2>
-                            <p className='text-xl'>1-5 Ton</p>
-                            <div className='card-actions mt-6 justify-end '>
-                              <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_6').showModal()}>See Details</button>
-                            </div>
-                        </div>
-                    </div>
+//                     <div className='w-72 col-span-4  rounded-xl border shadow-lg'>
+//                         <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
+//                         <div className='card-body'>
+//                             <h2 className='card-title'>Ac jet Wash</h2>
+//                             <p className='text-xl'>1-5 Ton</p>
+//                             <div className='card-actions mt-6 justify-end '>
+//                               <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_6').showModal()}>See Details</button>
+//                             </div>
+//                         </div>
+//                     </div>
 
-                    <div className='w-72 col-span-4 rounded-xl border shadow-lg'>
-                        <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
-                        <div className='card-body'>
-                            <h2 className='card-title'>Ac Foom Wash</h2>
-                            <p className='text-xl'>1-5 Ton</p>
-                            <div className='card-actions mt-6 justify-end '>
-                              <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_7').showModal()}>See Details</button>
-                            </div>
-                        </div>
-                    </div>
+//                     <div className='w-72 col-span-4 rounded-xl border shadow-lg'>
+//                         <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
+//                         <div className='card-body'>
+//                             <h2 className='card-title'>Ac Foom Wash</h2>
+//                             <p className='text-xl'>1-5 Ton</p>
+//                             <div className='card-actions mt-6 justify-end '>
+//                               <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_7').showModal()}>See Details</button>
+//                             </div>
+//                         </div>
+//                     </div>
 
-                    <div className='w-72 col-span-4 rounded-xl border shadow-lg'>
-                        <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
-                        <div className='card-body'>
-                            <h2 className='card-title'>Waterdroop Solution</h2>
-                            <p className='text-xl'>1-5 Ton</p>
-                            <div className='card-actions mt-6 justify-end '>
-                              <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_8').showModal()}>See Details</button>
-                            </div>
-                        </div>
-                    </div>
+//                     <div className='w-72 col-span-4 rounded-xl border shadow-lg'>
+//                         <img className='w-96 rounded-t-xl' src={cardImage} alt="" />
+//                         <div className='card-body'>
+//                             <h2 className='card-title'>Waterdroop Solution</h2>
+//                             <p className='text-xl'>1-5 Ton</p>
+//                             <div className='card-actions mt-6 justify-end '>
+//                               <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white' onClick={()=>document.getElementById('my_modal_8').showModal()}>See Details</button>
+//                             </div>
+//                         </div>
+//                     </div>
                    
-                </div>
+//                 </div>
 
 
 
 
-            </div>
+//             </div>
 
             
 
-        </div>
-    )
-}
+//         </div>
+//     )
+// }
 
-export default AcServicing
+// export default AcServicing
 
 // import React from 'react';
 // import Banner from '../../components/Banner';
@@ -717,3 +717,490 @@ export default AcServicing
 // }
 
 // export default AcServicing;
+
+import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { FaTools, FaClock, FaShieldAlt, FaStar, FaCheck, FaArrowRight, FaPhone, FaWhatsapp, FaMapMarkerAlt } from 'react-icons/fa';
+import { GiTechnoHeart } from 'react-icons/gi';
+import Banner from '../../components/Banner';
+import cardImage from '../../assets/ac.png';
+import jetImage from '../../assets/jetWash.jpg';
+import waterDrop from '../../assets/waterdrop.png';
+import UniversalModal from '../../components/Modals/UniversalModal';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+const AcServicing = () => {
+    const services = [
+        {
+            id: 1,
+            image: cardImage,
+            title: "AC Check Up",
+            price: "৳ 400",
+            ton: "1-5 Ton",
+            modalId: "my_modal_9"
+        },
+        {
+            id: 2,
+            image: cardImage,
+            title: "AC Basic Service",
+            price: "৳ 500",
+            ton: "1-5 Ton",
+            modalId: "my_modal_5"
+        },
+        {
+            id: 3,
+            image: jetImage,
+            title: "AC Jet Wash",
+            price: "৳ 1200",
+            ton: "1-5 Ton",
+            modalId: "my_modal_6"
+        },
+        {
+            id: 4,
+            image: jetImage,
+            title: "AC Foam Wash",
+            price: "৳ 1400",
+            ton: "1-5 Ton",
+            modalId: "my_modal_7"
+        },
+        {
+            id: 5,
+            image: waterDrop,
+            title: "Waterdrop Solution",
+            price: "৳ 1200",
+            ton: "1-5 Ton",
+            modalId: "my_modal_8"
+        }
+    ];
+
+    const warrantyPolicy = [
+        {
+            icon: <FaShieldAlt className="text-3xl" />,
+            title: "7 Days Service Warranty",
+            description: "All our AC services come with 7 days service warranty"
+        },
+        {
+            icon: <FaTools className="text-3xl" />,
+            title: "Quality Parts",
+            description: "We use genuine and high-quality cleaning materials"
+        },
+        {
+            icon: <FaClock className="text-3xl" />,
+            title: "Quick Service",
+            description: "Most services completed within 1-2 hours"
+        },
+        {
+            icon: <GiTechnoHeart className="text-3xl" />,
+            title: "Expert Technicians",
+            description: "Certified professionals with years of experience"
+        }
+    ];
+
+    const problems = [
+        "AC not cooling properly",
+        "Water leakage issues",
+        "Unusual noises from AC",
+        "Bad odor from AC",
+        "Weak airflow",
+        "AC not starting",
+        "Remote control issues",
+        "High electricity consumption"
+    ];
+
+    const brands = ["Gree", "General", "Midea", "Samsung", "LG", "Daikin", "Hitachi", "Carrier"];
+
+    return (
+        <div className="min-h-screen bg-white">
+            {/* Banner */}
+            <Banner />
+
+            {/* Hero Section */}
+            <section className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white py-20">
+                <div className="absolute inset-0 bg-black/10"></div>
+                <div className="relative container mx-auto px-4 text-center">
+                    <div className="inline-flex items-center justify-center mb-4 bg-white/20 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm">
+                        <FaStar className="mr-2" />
+                        Professional AC Servicing
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
+                        Expert AC <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100">
+                            Servicing & Maintenance
+                        </span>
+                    </h1>
+                    <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100">
+                        Get your AC professionally serviced by certified technicians with 7 days service warranty
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button className="bg-white text-olympic px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <FaPhone className="text-sm" />
+                            Call Now: 09638-787878
+                        </button>
+                        <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-olympic transition-all duration-300 flex items-center justify-center gap-2">
+                            <FaWhatsapp className="text-sm" />
+                            WhatsApp Service
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* Stats Section */}
+            <section className="py-12 bg-white border-b border-gray-100">
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                        <div>
+                            <div className="text-3xl font-bold text-olympic mb-2">20,000+</div>
+                            <div className="text-gray-600">ACs Serviced</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl font-bold text-olympic mb-2">99%</div>
+                            <div className="text-gray-600">Customer Satisfaction</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl font-bold text-olympic mb-2">80+</div>
+                            <div className="text-gray-600">Expert Technicians</div>
+                        </div>
+                        <div>
+                            <div className="text-3xl font-bold text-olympic mb-2">24/7</div>
+                            <div className="text-gray-600">Service Support</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Services Carousel Section */}
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-gray-900 mb-4">
+                            Our AC <span className="text-olympic">Services</span>
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                            Professional AC servicing and maintenance for optimal performance
+                        </p>
+                    </div>
+
+                    <div className="mb-16">
+                        <Swiper
+                            modules={[Navigation, Pagination, Autoplay]}
+                            slidesPerView={1}
+                            spaceBetween={20}
+                            navigation={true}
+                            pagination={{
+                                clickable: true,
+                                dynamicBullets: true
+                            }}
+                            autoplay={{
+                                delay: 4000,
+                                disableOnInteraction: false,
+                            }}
+                            breakpoints={{
+                                640: {
+                                    slidesPerView: 2,
+                                    spaceBetween: 20
+                                },
+                                768: {
+                                    slidesPerView: 3,
+                                    spaceBetween: 25
+                                },
+                                1024: {
+                                    slidesPerView: 4,
+                                    spaceBetween: 30
+                                }
+                            }}
+                            className="services-carousel"
+                        >
+                            {services.map((service) => (
+                                <SwiperSlide key={service.id}>
+                                    <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group h-full">
+                                        <div className="h-48 overflow-hidden">
+                                            <img 
+                                                src={service.image} 
+                                                alt={service.title} 
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                            />
+                                        </div>
+                                        <div className="p-6 flex flex-col flex-grow">
+                                            <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.title}</h3>
+                                            <p className="text-gray-600 mb-1">{service.ton}</p>
+                                            <div className="flex items-center justify-between mt-auto pt-4">
+                                                <span className="text-2xl font-bold text-green-600">{service.price}</span>
+                                                <button 
+                                                    className="bg-olympic text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200 text-sm hover:bg-blue-700"
+                                                    onClick={() => document.getElementById(service.modalId).showModal()}
+                                                >
+                                                    See Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+
+                        {/* Custom Swiper Navigation Styles */}
+                        <style jsx>{`
+                            .services-carousel {
+                                padding: 20px 10px;
+                            }
+                            .swiper-button-next,
+                            .swiper-button-prev {
+                                background: white;
+                                width: 50px;
+                                height: 50px;
+                                border-radius: 50%;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                                color: #0085C7;
+                            }
+                            .swiper-button-next:after,
+                            .swiper-button-prev:after {
+                                font-size: 20px;
+                                font-weight: bold;
+                            }
+                            .swiper-pagination-bullet {
+                                background: #0085C7;
+                                opacity: 0.5;
+                            }
+                            .swiper-pagination-bullet-active {
+                                background: #0085C7;
+                                opacity: 1;
+                            }
+                        `}</style>
+                    </div>
+                </div>
+            </section>
+
+            {/* Service Policy Section */}
+            <section className="py-20 bg-gray-50">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-gray-900 mb-4">
+                            Our <span className="text-olympic">Service Policy</span>
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                            We provide comprehensive AC servicing with quality assurance
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {warrantyPolicy.map((item, index) => (
+                            <div key={index} className="group text-center bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-olympic flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                    {item.icon}
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                                <p className="text-gray-600">{item.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Problems & Brands Section */}
+            <section className="py-20 bg-white">
+                <div className="container mx-auto px-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Common Problems */}
+                        <div>
+                            <h2 className="text-3xl font-black text-gray-900 mb-8">
+                                Common AC <span className="text-olympic">Problems</span>
+                            </h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                {problems.map((problem, index) => (
+                                    <div key={index} className="flex items-center bg-gray-50 rounded-xl p-4 hover:shadow-md transition-shadow duration-300 border border-gray-100">
+                                        <FaTools className="text-olympic mr-3 flex-shrink-0" />
+                                        <span className="text-gray-700">{problem}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Supported Brands */}
+                        <div>
+                            <h2 className="text-3xl font-black text-gray-900 mb-8">
+                                Brands We <span className="text-olympic">Service</span>
+                            </h2>
+                            <div className="grid grid-cols-4 gap-4">
+                                {brands.map((brand, index) => (
+                                    <div key={index} className="bg-white border border-gray-200 rounded-xl p-4 text-center hover:shadow-lg transition-all duration-300 hover:border-blue-300">
+                                        <div className="text-lg font-semibold text-gray-800">{brand}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20 bg-olympic text-white">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-4xl font-black mb-6">
+                        Ready to Service Your AC?
+                    </h2>
+                    <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                        Keep your AC running efficiently with our professional servicing. Book now and enjoy cool comfort!
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button className="bg-white text-olympic px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <FaPhone className="text-sm" />
+                            Call for Service
+                        </button>
+                        <button className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-olympic transition-all duration-300 flex items-center justify-center gap-2">
+                            <FaWhatsapp className="text-sm" />
+                            Message on WhatsApp
+                        </button>
+                    </div>
+                    <div className="mt-8 flex items-center justify-center gap-2 text-blue-100">
+                        <FaMapMarkerAlt className="text-sm" />
+                        <span>Service available in Dhaka, Chittagong, Sylhet & all major cities</span>
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-20 bg-gray-50">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-black text-gray-900 mb-4">
+                            Frequently Asked <span className="text-olympic">Questions</span>
+                        </h2>
+                    </div>
+                    
+                    <div className="max-w-4xl mx-auto space-y-6">
+                        {[
+                            {
+                                question: "How often should I service my AC?",
+                                answer: "For optimal performance, it's recommended to service your AC every 3-6 months, especially before summer season."
+                            },
+                            {
+                                question: "Do I have to pay any charge if I don't take any service?",
+                                answer: "If you don't avail any services for your AC after our Service Provider sends a technician to your doorstep, then you only have to pay the visiting charge which is BDT 200."
+                            },
+                            {
+                                question: "Do I have to pay advance money before availing your service?",
+                                answer: "No advance payment is required. You pay after the service is completed to your satisfaction."
+                            },
+                            {
+                                question: "What's the difference between basic service and jet wash?",
+                                answer: "Basic service includes cleaning of filters and basic components, while jet wash involves deep cleaning with high-pressure water of both indoor and outdoor units."
+                            },
+                            {
+                                question: "Do you provide service warranty?",
+                                answer: "Yes, we provide 7 days service warranty on all our AC servicing work."
+                            }
+                        ].map((faq, index) => (
+                            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                                <h3 className="text-xl font-bold text-gray-900 mb-3">{faq.question}</h3>
+                                <p className="text-gray-600">{faq.answer}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Modals */}
+            <dialog id="my_modal_9" className="modal">
+                <div className="modal-box max-w-6xl max-h-[90vh] p-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row h-full">
+                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+                            <h1 className='text-2xl font-bold'>AC Checkup Services</h1>
+                            <form method="dialog">
+                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+                            </form>
+                        </div>
+                        <div className="h-full overflow-y-auto w-full mt-16">
+                            <UniversalModal category="Ac-Checkup-2" />
+                        </div>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+
+            <dialog id="my_modal_5" className="modal">
+                <div className="modal-box max-w-6xl max-h-[90vh] p-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row h-full">
+                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+                            <h1 className='text-2xl font-bold'>AC Basic Services</h1>
+                            <form method="dialog">
+                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+                            </form>
+                        </div>
+                        <div className="h-full overflow-y-auto w-full mt-16">
+                            <UniversalModal category="Ac-Basic-Service" />
+                        </div>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+
+            <dialog id="my_modal_6" className="modal">
+                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row h-full">
+                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+                            <h1 className='text-2xl font-bold'>AC Jet Wash</h1>
+                            <form method="dialog">
+                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+                            </form>
+                        </div>
+                        <div className="h-full overflow-y-auto w-full">
+                            <UniversalModal category="Ac-Jet-Wash" />
+                        </div>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+
+            <dialog id="my_modal_7" className="modal">
+                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row h-full">
+                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+                            <h1 className='text-2xl font-bold'>AC Foam Wash</h1>
+                            <form method="dialog">
+                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+                            </form>
+                        </div>
+                        <div className="h-full overflow-y-auto w-full">
+                            <UniversalModal category="AC-Foom-Wash" />
+                        </div>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+
+            <dialog id="my_modal_8" className="modal">
+                <div className="modal-box max-w-5xl max-h-[90vh] p-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row h-full">
+                        <div className="absolute top-0 left-0 right-0 bg-base-200 p-4 flex justify-between items-center z-10">
+                            <h1 className='text-2xl font-bold'>Waterdrop Solution</h1>
+                            <form method="dialog">
+                                <button className="btn btn-sm btn-circle btn-ghost">✕</button>
+                            </form>
+                        </div>
+                        <div className="h-full overflow-y-auto w-full">
+                            <UniversalModal category="Ac-Waterdrop-Solution" />
+                        </div>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+        </div>
+    );
+};
+
+export default AcServicing;

@@ -1,5 +1,5 @@
 import React from 'react'
-import cardImage from '../../assets/ac-service.jpg'
+import cardImage from '../../assets/ac.png'
 import fridgeImage from '../../assets/fridge.webp'
 import homeApp from '../../assets/homeap.jpg'
 
@@ -27,7 +27,7 @@ const Content = () => {
                 <h2 className='card-title'>Refrigerator Service</h2>
                 <p className='text-xl'>Lorem, ipsum dolor.</p>
                 <div className='card-actions mt-6 justify-end '>
-                    <button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white '>Order Now</button>
+                    <a href="/refrigerator-category"><button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white '>Order Now</button></a>
                 </div>
             </div>
         </div>

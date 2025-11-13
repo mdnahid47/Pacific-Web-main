@@ -54,28 +54,17 @@ const Navbar = () => {
       </li>
 
       <li>
-        <details>
+      
           <summary className='text-md hover:text-olympic transition-colors'>
-            Refrigerator Repair
+           <Link to=''>  Refrigerator Repair</Link>
           </summary>
-          <ul className='p-2 bg-white'>
-            <li>
-              <Link to='/refrigerator-checkup' className='hover:text-olympic transition-colors block py-1'>
-                Refrigerator Check Up
-              </Link>
-            </li>
-            <li>
-              <Link to='/refrigerator-cleaning' className='hover:text-olympic transition-colors block py-1'>
-                Refrigerator Cleaning
-              </Link>
-            </li>
-            <li>
-              <Link to="/refrigerator-repair" className='hover:text-olympic transition-colors block py-1'>
-                Refrigerator Repair & Servicing
-              </Link>
-            </li>
-          </ul>
-        </details>
+          
+     
+      </li>
+      <li>
+          <summary className='text-md hover:text-olympic transition-colors'>
+           <Link to=''>  VRF/VRV/HVAC Solution</Link>
+          </summary>
       </li>
 
       <li>
@@ -101,7 +90,12 @@ const Navbar = () => {
             </li>
             <li>
               <Link to="/computer-service" className='hover:text-olympic transition-colors block py-1'>
-                Laptop & Computer Service
+                Geyser Services
+              </Link>
+            </li>
+            <li>
+              <Link to="/computer-service" className='hover:text-olympic transition-colors block py-1'>
+                Water Purifier Services
               </Link>
             </li>
           </ul>
@@ -180,3 +174,17 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+// Exclusive Combo Offer
+// Oven Services
+// TV Services
+// Washing Machine Services
+// Kitchen Hood Services
+// IPS Services
+// Treadmill Services
+// Water Purifier Services
+// Geyser Services
+// Gas Stove/Burner Services
+// Generator Services

@@ -17,6 +17,7 @@ import OrdersList from "../admin/OrdersList";
 import UsersList from "../admin/UsersList";
 import VendorsPage from "../admin/VendorsPage";
 import AdminAddService from "../admin/AdminAddService";
+import RefrigeratorCategory from "../pages/Shop/RefrigeratorCategory";
 
 
 
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: '/ac-installation',
         element:<AcInstallation />
+      },
+      {
+        path: '/refrigerator-category',
+        element: <RefrigeratorCategory />
       },
       {
         path:'/profile',
