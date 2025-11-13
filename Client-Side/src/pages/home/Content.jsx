@@ -27,7 +27,7 @@ const Content = () => {
                 <h2 className='card-title'>Refrigerator Service</h2>
                 <p className='text-xl'>Lorem, ipsum dolor.</p>
                 <div className='card-actions mt-6 justify-end '>
-                    <a href="/refrigerator-category"><button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white '>Order Now</button></a>
+                    <a href="/refrigerator-service"><button className='btn bg-gradient-to-r from-sky to-olympic border-none text-white '>Order Now</button></a>
                 </div>
             </div>
         </div>

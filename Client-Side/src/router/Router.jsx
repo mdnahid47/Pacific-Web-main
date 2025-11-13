@@ -18,6 +18,7 @@ import UsersList from "../admin/UsersList";
 import VendorsPage from "../admin/VendorsPage";
 import AdminAddService from "../admin/AdminAddService";
 import RefrigeratorCategory from "../pages/Shop/RefrigeratorCategory";
+import WashingMachine from "../components/WashingMachine";
 
 
 
@@ -47,8 +48,12 @@ const router = createBrowserRouter([
         element:<AcInstallation />
       },
       {
-        path: '/refrigerator-category',
+        path: '/refrigerator-service',
         element: <RefrigeratorCategory />
+      },
+       {
+        path: '/washing-machine-service',
+        element: <WashingMachine/>
       },
       {
         path:'/profile',

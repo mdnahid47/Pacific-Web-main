@@ -484,7 +484,7 @@ const RefrigeratorCategory = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white py-20">
+      <section className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-black py-20">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative container mx-auto px-4 text-center">
           <div className="inline-flex items-center justify-center mb-4 bg-white/20 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm">
@@ -493,7 +493,7 @@ const RefrigeratorCategory = () => {
           </div>
           <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
             Expert Refrigerator <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100">
+            <span className="text-olympic bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100">
               Repair & Service
             </span>
           </h1>
@@ -507,7 +507,7 @@ const RefrigeratorCategory = () => {
             </button>
             <button className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-olympic transition-all duration-300 flex items-center justify-center gap-2">
               <FaWhatsapp className="text-sm" />
-              WhatsApp Service
+             Request A service
             </button>
           </div>
         </div>

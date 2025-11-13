@@ -817,10 +817,10 @@ const AcServicing = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* Banner */}
-            <Banner />
+           
 
             {/* Hero Section */}
-            <section className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white py-20">
+            <section className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-black py-20">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative container mx-auto px-4 text-center">
                     <div className="inline-flex items-center justify-center mb-4 bg-white/20 px-4 py-2 rounded-full text-sm font-semibold backdrop-blur-sm">
@@ -829,14 +829,14 @@ const AcServicing = () => {
                     </div>
                     <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight">
                         Expert AC <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100">
+                        <span className="text-olympic  bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100">
                             Servicing & Maintenance
                         </span>
                     </h1>
                     <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-blue-100">
                         Get your AC professionally serviced by certified technicians with 7 days service warranty
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    {/* <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button className="bg-white text-olympic px-8 py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2">
                             <FaPhone className="text-sm" />
                             Call Now: 09638-787878
@@ -845,7 +845,7 @@ const AcServicing = () => {
                             <FaWhatsapp className="text-sm" />
                             WhatsApp Service
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 

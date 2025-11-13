@@ -332,7 +332,7 @@ const AcCooling = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* Banner */}
-            <Banner />
+          
 
             {/* Hero Section */}
             <section className="relative bg-white py-20 border-b border-gray-200">

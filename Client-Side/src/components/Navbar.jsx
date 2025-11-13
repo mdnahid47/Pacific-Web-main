@@ -56,7 +56,7 @@ const Navbar = () => {
       <li>
       
           <summary className='text-md hover:text-olympic transition-colors'>
-           <Link to=''>  Refrigerator Repair</Link>
+           <Link to='/refrigerator-service'>  Refrigerator Repair</Link>
           </summary>
           
      
