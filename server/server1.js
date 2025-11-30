@@ -13,7 +13,7 @@ const rateLimit = require('express-rate-limit');
 
 // CORS configuration to allow frontend access
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }))
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Nahid0088@gmail.com", // Change to your MySQL password
+  password: "Nahid0088@gmail.com", 
   database: "auth_system",
 }).promise();
 
@@ -141,12 +141,20 @@ const authenticateJWT = (req, res, next) => {
 app.put(
   "/api/user-profile",
   authenticateJWT,
-  uploadProfile.single("photo"), // Multer middleware from your config
+  uploadProfile.single("photo"),
   async (req, res) => {
     const userId = req.user.userId;
 
     try {
       const { name, phone_number } = req.body;
+
+      // Validate required fields
+      if (!name || name.trim() === '') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Name is required" 
+        });
+      }
 
       let home_address = {};
       let office_address = {};
@@ -165,9 +173,10 @@ app.put(
         console.error("Address parsing error:", parseError);
       }
 
+      // Build update fields dynamically to avoid setting undefined values
       const updateFields = {
-        name,
-        phone_number,
+        name: name.trim(), // Ensure name is trimmed and always has a value
+        phone_number: phone_number || null, // Allow phone_number to be null if not provided
         home_address: JSON.stringify(home_address),
         office_address: JSON.stringify(office_address),
       };
@@ -176,6 +185,13 @@ app.put(
         const photoPath = `/uploads/profiles/${req.file.filename}`;
         updateFields.photo = photoPath;
       }
+
+      // Remove any undefined values from updateFields
+      Object.keys(updateFields).forEach(key => {
+        if (updateFields[key] === undefined) {
+          delete updateFields[key];
+        }
+      });
 
       await db.query("UPDATE users SET ? WHERE custom_id = ?", [
         updateFields,
@@ -223,7 +239,6 @@ app.put(
     }
   }
 );
-
 
 // Database connection check
 db.connect((err) => {
@@ -400,12 +415,24 @@ app.post("/api/place-order", authenticateJWT, async (req, res) => {
     selectedSlot,
     notes,
     addressType,
-    address,
+    address, 
+    home_address,
+    office_address,
+    temp_address,
     recipientName,       
     recipientPhone       
   } = req.body;
 
-  if (!category || !cart || cart.length === 0 || !addressType || !address) {
+  // main address field or fallback to type-specific fields
+  let finalAddress = address;
+  
+  if (!finalAddress) {
+    if (addressType === 'home' && home_address) finalAddress = home_address;
+    else if (addressType === 'office' && office_address) finalAddress = office_address;
+    else if (addressType === 'another' && temp_address) finalAddress = temp_address;
+  }
+
+  if (!category || !cart || cart.length === 0 || !addressType || !finalAddress) {
     return res.status(400).json({ success: false, message: "Required fields missing" });
   }
 
@@ -417,9 +444,10 @@ app.post("/api/place-order", authenticateJWT, async (req, res) => {
     let officeAddress = null;
     let tempAddress = null;
 
-    if (addressType === 'home') homeAddress = address;
-    if (addressType === 'office') officeAddress = address;
-    if (addressType === 'another') tempAddress = address;
+    // Parse the address based on type
+    if (addressType === 'home') homeAddress = typeof finalAddress === 'string' ? JSON.parse(finalAddress) : finalAddress;
+    if (addressType === 'office') officeAddress = typeof finalAddress === 'string' ? JSON.parse(finalAddress) : finalAddress;
+    if (addressType === 'another') tempAddress = typeof finalAddress === 'string' ? JSON.parse(finalAddress) : finalAddress;
 
     await db.query(
       `INSERT INTO orders 
@@ -450,8 +478,6 @@ app.post("/api/place-order", authenticateJWT, async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to place order" });
   }
 });
-
-
 
 
 // Cancel Order
@@ -494,7 +520,7 @@ app.get("/api/orders", authenticateJWT, async (req, res) => {
   }
 });
 
-// Enhanced JWT Middleware with multi-role support
+//  JWT Middleware with multi-role support
 const verifyToken = (roles = []) => (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
 
@@ -561,7 +587,41 @@ res.json({
 
 });
 
-// Enhanced Super Admin Registration with security checks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ===============================================================================================================================================================================================================================================================================================================================================================
+
+
+
+                                                            // Admin Panel 
+
+
+
+
+
+
+
+
+
+
+
+//  Super Admin Registration with security checks
 app.post("/api/superadmin/register", async (req, res) => {
   const { email, password } = req.body;
 
@@ -622,7 +682,7 @@ app.post("/api/superadmin/register", async (req, res) => {
   }
 });
 
-// Enhanced Super Admin Login with rate limiting
+//  Super Admin Login with rate limiting
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit each IP to 5 login attempts
@@ -858,10 +918,10 @@ app.get('/api/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req
 });
 
 // USER MANAGEMENT API for Admins
-// This endpoint allows admins to manage users, including fetching all users, updating user details, and
+
 // Get all users
-// Update your /api/admin/all-users endpoint
-// API endpoint to get all users with proper address handling
+
+
 app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
   try {
     const [users] = await db.query(`
@@ -1159,6 +1219,23 @@ app.delete("/api/services/:_id", (req, res) => {
   });
 });
 
+
+
+
+
+
+
+
+
+
+
+// ==============================================================================================================================================================
+
+// ==============================================================================================================================================================
+
+
+
+
 // ================================Vendor =================================================
 app.post("/api/vendor/register", uploadVendorDocs.fields([
   { name: 'nid_front', maxCount: 1 },
@@ -1367,6 +1444,323 @@ app.get("/api/vendor/profile", authenticateVendor, async (req, res) => {
     });
   }
 });
+
+
+
+
+
+
+
+// Forgot Password Routes 
+const crypto = require('crypto');
+
+// Password Reset Request
+
+app.post("/api/forgot-password", async (req, res) => {
+  console.log("Forgot password request received:", req.body);
+  
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Email is required" 
+    });
+  }
+
+  try {
+    // Check if user exists in users table
+    const [users] = await db.query(
+      "SELECT custom_id, name, email FROM users WHERE email = ?", 
+      [email]
+    );
+
+    // Check if vendor exists
+    const [vendors] = await db.query(
+      "SELECT id, name, email FROM vendors WHERE email = ?", 
+      [email]
+    );
+
+    const user = users[0] || vendors[0];
+
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "No account found with this email address" 
+      });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    console.log("Generated token for:", email);
+
+    // Store token in database based on user type
+    if (users[0]) {
+      await db.query(
+        "UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?",
+        [resetToken, resetTokenExpiry, email]
+      );
+    } else {
+      await db.query(
+        "UPDATE vendors SET reset_token = ?, reset_token_expiry = ? WHERE email = ?",
+        [resetToken, resetTokenExpiry, email]
+      );
+    }
+
+    // Create reset link
+    const resetLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+
+    console.log("Reset link generated:", resetLink);
+
+    // all time try to send email
+    try {
+      await sendResetEmail(email, resetLink, user.name);
+      console.log("✅ Reset email sent successfully to:", email);
+      
+      res.json({
+        success: true,
+        message: "Password reset link has been sent to your email"
+      });
+      
+    } catch (emailError) {
+      console.error("❌ Email sending failed:", emailError);
+      
+      // If email fails, respond like development mode
+      res.json({
+        success: true,
+        message: "Reset token generated but email failed. Use the link below.",
+        resetLink: resetLink,
+        debug: "Email error: " + emailError.message
+      });
+    }
+
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Failed to process reset request" 
+    });
+  }
+});
+
+//  Nodemailer Function 
+const sendResetEmail = async (email, resetLink, userName) => {
+  try {
+    console.log("🔄 Attempting to send email...");
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_APP_PASSWORD,
+      },
+      // Additional settings to improve delivery
+      tls: {
+        rejectUnauthorized: false
+      },
+      logger: true,
+      debug: true
+    });
+
+   const mailOptions = {
+  from: {
+    name: 'Pacific Support', // ✅ Name clearly defined
+    address: process.env.EMAIL_USER
+  },
+  to: email,
+  subject: 'Password Reset Request - Pacific Support',
+  html: `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset - Pacific Support</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                line-height: 1.6; 
+                color: #333; 
+                margin: 0; 
+                padding: 0; 
+                background: #f8fafc;
+            }
+            .container { 
+                max-width: 600px; 
+                margin: 0 auto; 
+                background: #ffffff;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+            .header { 
+                background: linear-gradient(135deg, #3c8ce7 0%, #00c6ff 100%); 
+                padding: 40px 30px; 
+                text-align: center; 
+                color: white; 
+            }
+            .header h1 {
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+            .header p {
+                font-size: 16px;
+                opacity: 0.9;
+                font-weight: 400;
+            }
+            .content { 
+                padding: 40px 30px; 
+                background: #ffffff; 
+            }
+            .content h2 {
+                color: #1e293b;
+                font-size: 24px;
+                font-weight: 600;
+                margin-bottom: 16px;
+            }
+            .content p {
+                color: #475569;
+                font-size: 16px;
+                margin-bottom: 20px;
+            }
+            .button { 
+                background: #3c8ce7; 
+                color: white; 
+                padding: 16px 36px; 
+                text-decoration: none; 
+                border-radius: 8px; 
+                display: inline-block; 
+                font-size: 16px; 
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px -1px rgba(60, 140, 231, 0.3);
+            }
+            .button:hover {
+                background: #2b7cd9;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 8px -1px rgba(60, 140, 231, 0.4);
+            }
+            .footer { 
+                text-align: center; 
+                padding: 30px; 
+                color: #64748b; 
+                font-size: 14px; 
+                background: #f8fafc;
+                border-top: 1px solid #e2e8f0;
+            }
+            .link-box { 
+                background: #f1f5f9; 
+                padding: 16px; 
+                border-radius: 8px; 
+                word-break: break-all; 
+                font-size: 14px; 
+                margin: 24px 0; 
+                border: 1px solid #e2e8f0;
+                color: #475569;
+            }
+            .warning {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                color: #dc2626;
+                padding: 16px;
+                border-radius: 8px;
+                margin: 20px 0;
+                font-weight: 600;
+            }
+            .logo {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 8px;
+            }
+            .support-text {
+                background: #f0f9ff;
+                border: 1px solid #bae6fd;
+                padding: 16px;
+                border-radius: 8px;
+                margin: 20px 0;
+                color: #0369a1;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="logo">🌊 Pacific Support</div>
+                <p>Password Reset Request</p>
+            </div>
+            <div class="content">
+                <h2>Hello ${userName},</h2>
+                <p>We received a request to reset your password for your Pacific Support account. Click the button below to create a new secure password:</p>
+                
+                <div style="text-align: center; margin: 35px 0;">
+                    <a href="${resetLink}" class="button">Reset Your Password</a>
+                </div>
+
+                <p>If the button doesn't work, copy and paste the following link into your web browser:</p>
+                <div class="link-box">${resetLink}</div>
+
+                <div class="warning">
+                    ⚠️ This password reset link will expire in 1 hour for security reasons.
+                </div>
+                
+                <p>If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged and your account secure.</p>
+                
+                <div class="support-text">
+                    <strong>Need help?</strong> Our support team is here to assist you with any questions or concerns.
+                </div>
+            </div>
+            <div class="footer">
+                <p style="margin-bottom: 8px;">&copy; 2024 Pacific Support. All rights reserved.</p>
+                <p style="font-size: 13px; opacity: 0.8;">This is an automated message, please do not reply to this email.</p>
+                <p style="font-size: 12px; opacity: 0.6; margin-top: 12px;">Securely delivered by Pacific Support System</p>
+            </div>
+        </div>
+    </body>
+    </html>
+  `,
+  // Text version for email clients that don't support HTML
+  text: `
+Password Reset Request - Pacific Support
+
+Hello ${userName},
+
+We received a request to reset your password for your Pacific Support account.
+
+Reset your password here: ${resetLink}
+
+This password reset link will expire in 1 hour for security reasons.
+
+If you didn't request this password reset, you can safely ignore this email. Your password will remain unchanged.
+
+Need help? Contact our support team.
+
+© 2024 Pacific Support. All rights reserved.
+
+This is an automated message, please do not reply to this email.
+  `
+};
+
+    console.log("📤 Sending email...");
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully!");
+    console.log("📨 Message ID:", info.messageId);
+    console.log("👤 To:", email);
+    
+    return info;
+    
+  } catch (error) {
+    console.error("❌ Email sending failed:", error.message);
+    throw new Error(`Failed to send reset email: ${error.message}`);
+  }
+};
 
 // Start server
 app.listen(port, () => {

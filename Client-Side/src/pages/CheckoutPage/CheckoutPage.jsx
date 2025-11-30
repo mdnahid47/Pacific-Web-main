@@ -13,6 +13,7 @@ import {
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import ThanaDistrictlist from "../../components/divison&thanalist/ThanaDistrictlist";
+import config from "../../config"; 
 
 const capitalizeWords = (str) =>
   str ? str.replace(/\b\w/g, (ch) => ch.toUpperCase()) : "";
@@ -29,6 +30,9 @@ const CheckoutPage = () => {
   const [cart, setCart] = useState(initialCart);
   const [selectedDate, setSelectedDate] = useState(addDays(new Date(), 1));
   const days = Array.from({ length: 7 }).map((_, i) => addDays(new Date(), i));
+
+  // Config url
+  const API_URL = config.API_URL;
 
   // Generate time slots from 8 AM to 8 PM
   const generateTimeSlots = () => {
@@ -105,7 +109,7 @@ const CheckoutPage = () => {
           return;
         }
 
-        const res = await axios.get("http://localhost:5001/api/user-profile", {
+        const res = await axios.get(`${API_URL}/api/user-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -113,7 +117,7 @@ const CheckoutPage = () => {
           const userData = res.data.user;
           setUserDetails(userData);
 
-          // Parse addresses correctly
+          // Parse addresses correctly - ensure both addresses are preserved
           const homeAddr = typeof userData.home_address === 'string' 
             ? JSON.parse(userData.home_address) 
             : userData.home_address || {};
@@ -122,6 +126,10 @@ const CheckoutPage = () => {
             ? JSON.parse(userData.office_address) 
             : userData.office_address || {};
 
+          console.log("Loaded home address:", homeAddr);
+          console.log("Loaded office address:", officeAddr);
+
+          // Set both addresses independently
           setHomeAddress({
             houseNo: homeAddr.houseNo || "",
             roadNo: homeAddr.roadNo || "",
@@ -148,7 +156,7 @@ const CheckoutPage = () => {
       }
     };
     fetchUser();
-  }, []);
+  }, [API_URL]);
 
   // Validate form on changes
   useEffect(() => {
@@ -206,7 +214,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // Place order
+  // Place order - Fixed version
   const handlePlaceOrder = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -214,34 +222,17 @@ const CheckoutPage = () => {
       return;
     }
 
-    // Prepare address data based on selected type
-    let addressData;
-    if (selectedAddressType === "another") {
-      addressData = {
-        type: "another",
-        details: {
-          ...tempAddress,
-          // Ensure we don't include empty fields
-          name: tempAddress.name.trim(),
-          phone: tempAddress.phone.trim()
-        }
-      };
-    } else {
-      // For home/office, just reference the address type
-      addressData = {
-        type: selectedAddressType
-      };
+    // Validate cart
+    if (!cart || cart.length === 0) {
+      Swal.fire("Error", "Your cart is empty", "error");
+      return;
     }
 
+    // Prepare order data according to backend expectations
     const orderData = {
-      userId: userDetails.id,
-      userName: userDetails.name,
-      userPhone: userDetails.phone_number,
-      recipientName: selectedAddressType === "another" ? tempAddress.name : userDetails.name,
-      recipientPhone: selectedAddressType === "another" ? tempAddress.phone : userDetails.phone_number,
       category: cart[0]?.category || "General",
       cart: cart.map(item => ({
-        productId: item.id,
+        id: item.id,
         name: item.name,
         quantity: item.quantity,
         price: item.price,
@@ -249,35 +240,59 @@ const CheckoutPage = () => {
       })),
       selectedDate: format(selectedDate, "yyyy-MM-dd"),
       selectedSlot: `${formatTime(selectedSlot.startTime)} - ${formatTime(selectedSlot.endTime)}`,
-      notes,
-      address: addressData,
-      promoCode: discountPercent > 0 ? promoCode.trim().toUpperCase() : null,
-      discountPercent,
-      totalAmount: total
+      notes: notes || "",
+      addressType: selectedAddressType,
+      recipientName: selectedAddressType === "another" ? tempAddress.name : userDetails?.name,
+      recipientPhone: selectedAddressType === "another" ? tempAddress.phone : userDetails?.phone_number
     };
 
+    // Add address based on type - use the correct field names expected by backend
+    if (selectedAddressType === "home") {
+      orderData.home_address = JSON.stringify(homeAddress);
+    } else if (selectedAddressType === "office") {
+      orderData.office_address = JSON.stringify(officeAddress);
+    } else if (selectedAddressType === "another") {
+      orderData.temp_address = JSON.stringify({
+        houseNo: tempAddress.houseNo,
+        roadNo: tempAddress.roadNo,
+        areaName: tempAddress.areaName,
+        division: tempAddress.division,
+        district: tempAddress.district,
+        thana: tempAddress.thana
+      });
+    }
+
+    console.log("Order data being sent:", orderData);
+
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/place-order`, orderData, {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await axios.post(`${API_URL}/api/place-order`, orderData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
       });
 
-      if (res.status === 200) {
+      if (res.data.success) {
         Swal.fire({
-          title: "Success",
-          text: "Order placed successfully!",
+          title: "Success!",
+          text: `Order placed successfully! Order ID: ${res.data.orderId}`,
           icon: "success",
-          confirmButtonText: "OK",
+          confirmButtonText: "View Orders",
         }).then(() => {
           setCart([]);
           navigate("/orders");
         });
       }
     } catch (error) {
-      Swal.fire("Error", error.response?.data?.message || error.message, "error");
+      console.error("Order error:", error.response?.data || error);
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          "Failed to place order. Please try again.";
+      Swal.fire("Error", errorMessage, "error");
     }
   };
 
-  // Handle save address
+  // Handle save address - Fixed version
   const handleSaveAddress = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -286,6 +301,7 @@ const CheckoutPage = () => {
         return;
       }
 
+      // Get the address to save based on selected type
       const addressToSave = selectedAddressType === "home" ? homeAddress : officeAddress;
 
       // Validate required fields
@@ -312,13 +328,27 @@ const CheckoutPage = () => {
         return;
       }
 
-      // Prepare the update data
+      // Prepare the update data - preserve both addresses
       const updateData = {
-        [`${selectedAddressType}_address`]: addressToSave
+        name: userDetails?.name || "",
+        phone_number: userDetails?.phone_number || "",
       };
 
-      const response = await axios.patch(
-        `${process.env.REACT_APP_API_URL}/api/user-profile/address`,
+      // Add both addresses to preserve them
+      if (selectedAddressType === "home") {
+        updateData.home_address = JSON.stringify(addressToSave);
+        // Preserve existing office address
+        updateData.office_address = JSON.stringify(officeAddress);
+      } else if (selectedAddressType === "office") {
+        updateData.office_address = JSON.stringify(addressToSave);
+        // Preserve existing home address
+        updateData.home_address = JSON.stringify(homeAddress);
+      }
+
+      console.log("Saving address data:", updateData);
+
+      const response = await axios.put(
+        `${API_URL}/api/user-profile`,
         updateData,
         {
           headers: {
@@ -328,7 +358,7 @@ const CheckoutPage = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.data.success) {
         Swal.fire({
           title: "Success!",
           text: `${selectedAddressType === "home" ? "Home" : "Office"} address saved successfully`,
@@ -336,16 +366,88 @@ const CheckoutPage = () => {
           timer: 2000,
           showConfirmButton: false,
         });
+        
+        // Update user details in state with both addresses
+        if (response.data.user) {
+          setUserDetails(response.data.user);
+          
+          // Update both addresses from response to ensure consistency
+          const updatedHomeAddress = typeof response.data.user.home_address === 'string' 
+            ? JSON.parse(response.data.user.home_address) 
+            : response.data.user.home_address || {};
+          
+          const updatedOfficeAddress = typeof response.data.user.office_address === 'string' 
+            ? JSON.parse(response.data.user.office_address) 
+            : response.data.user.office_address || {};
+
+          setHomeAddress({
+            houseNo: updatedHomeAddress.houseNo || "",
+            roadNo: updatedHomeAddress.roadNo || "",
+            areaName: updatedHomeAddress.areaName || "",
+            division: updatedHomeAddress.division || "",
+            district: updatedHomeAddress.district || "",
+            thana: updatedHomeAddress.thana || updatedHomeAddress.policeStation || ""
+          });
+
+          setOfficeAddress({
+            houseNo: updatedOfficeAddress.houseNo || "",
+            roadNo: updatedOfficeAddress.roadNo || "",
+            areaName: updatedOfficeAddress.areaName || "",
+            division: updatedOfficeAddress.division || "",
+            district: updatedOfficeAddress.district || "",
+            thana: updatedOfficeAddress.thana || updatedOfficeAddress.policeStation || ""
+          });
+        }
+        
         setAddressModalOpen(false);
       }
     } catch (err) {
       console.error("Address save error:", err);
+      
+      let errorMessage = "Failed to save address. Please try again.";
+      
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.status === 400) {
+        if (err.response.data.field === 'name') {
+          errorMessage = "Name is required. Please update your profile name first.";
+        } else {
+          errorMessage = "Invalid data provided. Please check all fields.";
+        }
+      } else if (err.response?.status === 404) {
+        errorMessage = "User not found. Please log in again.";
+      }
+      
       Swal.fire({
         title: "Save Failed",
-        text: err.response?.data?.message || "Failed to save address. Please try again.",
+        text: errorMessage,
         icon: "error",
       });
     }
+  };
+
+  // আলাদা handler for home address fields
+  const handleHomeAddressFieldChange = (field, value) => {
+    setHomeAddress(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // আলাদা handler for office address fields
+  const handleOfficeAddressFieldChange = (field, value) => {
+    setOfficeAddress(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // আলাদা handler for temp address fields
+  const handleTempAddressFieldChange = (field, value) => {
+    setTempAddress(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   // Render delivery address summary
@@ -359,7 +461,6 @@ const CheckoutPage = () => {
     if (!hasAddress) {
       return <p className="italic text-gray-500">No delivery address set</p>;
     }
-
     return (
       <div className="bg-gray-50 p-4 rounded-md border border-gray-200 text-sm space-y-1">
         {selectedAddressType === "another" && (
@@ -530,9 +631,7 @@ const CheckoutPage = () => {
                   placeholder="Enter recipient name"
                   className="input input-bordered w-full"
                   value={tempAddress.name}
-                  onChange={(e) =>
-                    setTempAddress({ ...tempAddress, name: e.target.value })
-                  }
+                  onChange={(e) => handleTempAddressFieldChange('name', e.target.value)}
                   required
                 />
               </div>
@@ -545,17 +644,17 @@ const CheckoutPage = () => {
                   placeholder="Enter recipient phone number"
                   className="input input-bordered w-full"
                   value={tempAddress.phone}
-                  onChange={(e) =>
-                    setTempAddress({ ...tempAddress, phone: e.target.value })
-                  }
+                  onChange={(e) => handleTempAddressFieldChange('phone', e.target.value)}
                   required
                 />
               </div>
             </>
           )}
 
+          {/* আলাদা ThanaDistrictlist for each address type */}
           <ThanaDistrictlist
-            key={selectedAddressType}
+            key={`${selectedAddressType}-address-selector`}
+            uniqueKey={selectedAddressType}
             initialValues={{
               division: selectedAddressType === "home" 
                 ? homeAddress.division 
@@ -574,18 +673,30 @@ const CheckoutPage = () => {
                   : tempAddress.thana
             }}
             onChange={(location) => {
+              console.log(`${selectedAddressType} address updated:`, location);
+              
               const updatedAddress = {
                 division: location.division,
                 district: location.district,
                 thana: location.policeStation
               };
 
+              // শুধুমাত্র সংশ্লিষ্ট এড্রেস টাইপ update হবে
               if (selectedAddressType === "home") {
-                setHomeAddress(prev => ({ ...prev, ...updatedAddress }));
+                setHomeAddress(prev => ({ 
+                  ...prev, 
+                  ...updatedAddress 
+                }));
               } else if (selectedAddressType === "office") {
-                setOfficeAddress(prev => ({ ...prev, ...updatedAddress }));
+                setOfficeAddress(prev => ({ 
+                  ...prev, 
+                  ...updatedAddress 
+                }));
               } else {
-                setTempAddress(prev => ({ ...prev, ...updatedAddress }));
+                setTempAddress(prev => ({ 
+                  ...prev, 
+                  ...updatedAddress 
+                }));
               }
             }}
           />
@@ -615,10 +726,10 @@ const CheckoutPage = () => {
                 onChange={(e) => {
                   const val = e.target.value;
                   if (selectedAddressType === "home")
-                    setHomeAddress({ ...homeAddress, [field]: val });
+                    handleHomeAddressFieldChange(field, val);
                   else if (selectedAddressType === "office")
-                    setOfficeAddress({ ...officeAddress, [field]: val });
-                  else setTempAddress({ ...tempAddress, [field]: val });
+                    handleOfficeAddressFieldChange(field, val);
+                  else handleTempAddressFieldChange(field, val);
                 }}
                 required
               />
@@ -781,6 +892,18 @@ const CheckoutPage = () => {
 
             {renderAddressSummary()}
           </div>
+
+          {/* Additional Notes */}
+          <div className="mb-6">
+            <h3 className="font-semibold mb-3">Additional Notes</h3>
+            <textarea
+              className="textarea textarea-bordered w-full"
+              placeholder="Any special instructions for delivery..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+            />
+          </div>
         </div>
 
         {/* Right Panel */}
@@ -808,7 +931,7 @@ const CheckoutPage = () => {
                     className="flex items-center gap-4 border-b pb-3 last:border-b-0"
                   >
                     <img
-                      src={''}
+                      src={item.image || ''}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded"
                       onError={(e) => {

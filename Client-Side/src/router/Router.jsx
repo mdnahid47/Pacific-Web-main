@@ -19,6 +19,7 @@ import VendorsPage from "../admin/VendorsPage";
 import AdminAddService from "../admin/AdminAddService";
 import RefrigeratorCategory from "../pages/Shop/RefrigeratorCategory";
 import WashingMachine from "../components/WashingMachine";
+import ResetPassword from "../components/ResetPassword";
 
 
 
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
       {
         path:'/forgot-password',
         element:<ForgotPassword/>
+      },
+      {
+        path:"/reset-password",
+         element: <ResetPassword /> 
       },
     
       {
