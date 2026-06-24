@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+    /* Custom scrollbar for sidebar */
+    .sidebar-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #0085C7 #f1f1f1;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb {
+        background: #0085C7;
+        border-radius: 10px;
+    }
+
+    .sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #006DA3;
+    }
+
+    /* Mobile bottom bar animation */
+    .mobile-bottom-bar {
+        animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    /* Notification pulse animation */
+    @keyframes notification-pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.7;
+            transform: scale(1.05);
+        }
+    }
+
+    .notification-pulse {
+        animation: notification-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Slide in animation for notifications */
+    .notification-slide-in {
+        animation: slideInRight 0.3s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Glass effect for backdrop */
+    .glass-backdrop {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+}

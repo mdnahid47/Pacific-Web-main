@@ -1,0 +1,21 @@
+[
+  { "key": "plumbing", "value": "Plumbing" },
+  { "key": "electrical", "value": "Electrical Work" },
+  { "key": "carpentry", "value": "Carpentry" },
+  { "key": "painting", "value": "Painting" },
+  { "key": "cleaning", "value": "Cleaning" },
+  { "key": "gardening", "value": "Gardening" },
+  { "key": "ac_repair", "value": "AC Repair" },
+  { "key": "appliance_repair", "value": "Appliance Repair" },
+  { "key": "moving", "value": "Moving Services" },
+  { "key": "pest_control", "value": "Pest Control" },
+  { "key": "roofing", "value": "Roofing" },
+  { "key": "flooring", "value": "Flooring" },
+  { "key": "security", "value": "Security Services" },
+  { "key": "landscaping", "value": "Landscaping" },
+  { "key": "pool_maintenance", "value": "Pool Maintenance" },
+  { "key": "window_cleaning", "value": "Window Cleaning" },
+  { "key": "handyman", "value": "Handyman Services" },
+  { "key": "home_inspection", "value": "Home Inspection" },
+  { "key": "locksmith", "value": "Locksmith Services" }
+]

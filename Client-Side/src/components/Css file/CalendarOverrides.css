@@ -1,0 +1,32 @@
+.react-calendar{
+padding: 20px;
+border: 1px solid #3c8ce7;
+}
+
+.react-calendar__tile--now{
+    background-color: rgb(221, 219, 219);
+    color: black;
+    border-radius: 5px;
+}
+
+.react-calendar__tile--now:enabled:hover, .react-calendar__tile--now:enabled:focus {
+    background-color: rgb(221, 219, 219);;
+}
+
+.react-calendar__tile--active{
+    border-radius: 5px;
+}
+
+abbr:where([title]){
+    text-decoration: none;
+}
+
+@media (max-width: 480px) {
+    /* Adjust grid layout for small screens */
+    .react-calendar{
+        width: 300px;
+        
+    }
+  }
+
+

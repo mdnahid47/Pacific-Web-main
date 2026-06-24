@@ -1,0 +1,42 @@
+/* src/TimeSlotPicker.css */
+.time-slot-picker {
+    width: 100%;
+    max-width: 600px;
+   margin-top: 20px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.time-slots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.time-slot-button {
+    border: 1px solid #ddd;
+    width: 200px;
+    padding: 10px;
+    margin: 5px;
+    background-color: #fafafa;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.time-slot-button:hover {
+    background-color: #e0e0e0;
+}
+
+.selected {
+    background-color: #3c8ce7;
+    font-weight: bold;
+}
+
+.selected-slot {
+    margin-top: 20px;
+}
