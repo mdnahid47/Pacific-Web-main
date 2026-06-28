@@ -794,12 +794,12 @@ const Navbar = () => {
     setNotificationSidebarOpen(false);
   };
 
-  // Fetch notifications
+  // Fetch notifications - REMOVED /api prefix
   const fetchNotifications = async (showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await api.get('/api/notifications', {
+      const response = await api.get('/notifications', {  // ✅ Removed /api
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -817,11 +817,11 @@ const Navbar = () => {
     }
   };
 
-  // Fetch unread count only
+  // Fetch unread count only - REMOVED /api prefix
   const fetchUnreadCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await api.get('/api/notifications/unread-count', {
+      const response = await api.get('/notifications/unread-count', {  // ✅ Removed /api
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -833,11 +833,11 @@ const Navbar = () => {
     }
   };
 
-  // Mark notification as read
+  // Mark notification as read - REMOVED /api prefix
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await api.patch(`/api/notifications/${id}/read`, {}, {
+      await api.patch(`/notifications/${id}/read`, {}, {  // ✅ Removed /api
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -850,11 +850,11 @@ const Navbar = () => {
     }
   };
 
-  // Mark all as read
+  // Mark all as read - REMOVED /api prefix
   const markAllAsRead = async () => {
     try {
       const token = localStorage.getItem('token');
-      await api.patch('/api/notifications/mark-all-read', {}, {
+      await api.patch('/notifications/mark-all-read', {}, {  // ✅ Removed /api
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -865,12 +865,12 @@ const Navbar = () => {
     }
   };
 
-  // Delete notification
+  // Delete notification - REMOVED /api prefix
   const deleteNotification = async (id, e) => {
     e.stopPropagation();
     try {
       const token = localStorage.getItem('token');
-      await api.delete(`/api/notifications/${id}`, {
+      await api.delete(`/notifications/${id}`, {  // ✅ Removed /api
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -1186,7 +1186,7 @@ const Navbar = () => {
                   <div className="w-10 rounded-full items-center">
                     {user.photo ? (
                       <img
-                        src={user.photo.startsWith('http') ? user.photo : `http://localhost:5001${user.photo}`}
+                        src={user.photo.startsWith('http') ? user.photo : `${import.meta.env.VITE_API_URL}${user.photo}`}
                         alt="Profile"
                       />
                     ) : (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import api from "../api"; // Import the configured axios instance
+import api from "../api"; // Make sure this path is correct
 
 const ProtectedRoute = ({ children, role }) => {
   const [authStatus, setAuthStatus] = useState({
@@ -17,10 +17,10 @@ const ProtectedRoute = ({ children, role }) => {
           throw new Error("No authentication token found");
         }
 
+        // Use api instance, not axios directly
         const res = await api.get("/auth/verify-role", {
           headers: { Authorization: `Bearer ${token}` },
           params: { requiredRole: Array.isArray(role) ? role.join(",") : role },
-          withCredentials: true
         });
 
         setAuthStatus({
@@ -29,7 +29,6 @@ const ProtectedRoute = ({ children, role }) => {
           error: null
         });
       } catch (err) {
-        // Clear invalid token if authentication fails
         if (err.response?.status === 401 || err.response?.status === 403) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
@@ -56,12 +55,10 @@ const ProtectedRoute = ({ children, role }) => {
   }
 
   if (!authStatus.isAllowed) {
-    // Redirect to login if not authenticated
     if (authStatus.error?.includes("No authentication token")) {
       return <Navigate to="/login" replace />;
     }
     
-    // Redirect to dashboard with error message
     return (
       <Navigate 
         to="/admin/dashboard" 
