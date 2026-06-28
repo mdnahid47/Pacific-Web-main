@@ -30,9 +30,8 @@
 // };
 
 // export default AuthProvider;
-
 import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // Import the configured axios instance
 
 export const AuthContext = createContext();
 
@@ -51,9 +50,10 @@ export const AuthProvider = ({ children }) => {
         const parsedUser = JSON.parse(storedUser);
         setUser(parsedUser);
         setIsLoggedIn(true); 
-        // Set axios default headers
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        // Set api default headers instead of axios
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       } catch (error) {
+        console.error('Error parsing stored user:', error);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
       }
@@ -66,7 +66,8 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(true); 
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('token', userData.token);
-    axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
+    // Set api default headers instead of axios
+    api.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
   };
 
   const handleLogout = () => {
@@ -74,7 +75,8 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false); 
     localStorage.removeItem('user');
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+    // Remove api default headers instead of axios
+    delete api.defaults.headers.common['Authorization'];
   };
 
   return (

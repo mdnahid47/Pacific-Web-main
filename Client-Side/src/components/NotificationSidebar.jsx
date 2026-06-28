@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../api'; // Import the configured axios instance
 import { formatDistanceToNow } from 'date-fns';
 import {
     Bell,
@@ -29,12 +29,12 @@ const NotificationSidebar = ({ isOpen, onClose }) => {
     // Olympic blue color theme
     const olympicBlue = '#0085C7';
 
-    // Fetch notifications
+    // Fetch notifications - ✅ Removed /api prefix
     const fetchNotifications = async (showLoading = true) => {
         try {
             if (showLoading) setLoading(true);
             const token = localStorage.getItem('token');
-            const response = await axios.get('/api/notifications', {
+            const response = await api.get('/notifications', {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -52,11 +52,11 @@ const NotificationSidebar = ({ isOpen, onClose }) => {
         }
     };
 
-    // Mark notification as read
+    // Mark notification as read - ✅ Removed /api prefix
     const markAsRead = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`/api/notifications/${id}/read`, {}, {
+            await api.patch(`/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -69,11 +69,11 @@ const NotificationSidebar = ({ isOpen, onClose }) => {
         }
     };
 
-    // Mark all as read
+    // Mark all as read - ✅ Removed /api prefix
     const markAllAsRead = async () => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch('/api/notifications/mark-all-read', {}, {
+            await api.patch('/notifications/mark-all-read', {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -84,12 +84,12 @@ const NotificationSidebar = ({ isOpen, onClose }) => {
         }
     };
 
-    // Delete notification
+    // Delete notification - ✅ Removed /api prefix
     const deleteNotification = async (id, e) => {
         e.stopPropagation();
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`/api/notifications/${id}`, {
+            await api.delete(`/notifications/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

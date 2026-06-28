@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
-import axios from 'axios';
+import api from '../api'; // Import the configured axios instance
 
 const NotificationTrigger = ({ onClick }) => {
     const [unreadCount, setUnreadCount] = useState(0);
@@ -25,7 +25,8 @@ const NotificationTrigger = ({ onClick }) => {
                 const token = localStorage.getItem('token');
                 if (!token) return;
 
-                const response = await axios.get('/api/notifications/unread-count', {
+                // ✅ Removed /api prefix
+                const response = await api.get('/notifications/unread-count', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
