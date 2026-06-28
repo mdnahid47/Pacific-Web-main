@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaArrowLeft } from "react-icons/fa";
-
+import api from "../api"
 const SignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -35,13 +35,9 @@ const SignUp = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5001/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await api.post("/register", data);
 
-      const result = await response.json();
+      const result = await response.data;
 
       if (result.success) {
         // Show success message using SweetAlert2

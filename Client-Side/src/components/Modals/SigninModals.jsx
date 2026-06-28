@@ -250,7 +250,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { AuthContext } from "../../contexts/AuthProvider";
-
+import api from "../../api"
 const SigninModals = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -334,11 +334,7 @@ const SigninModals = () => {
     closeModal();
 
     try {
-      const response = await axios.post(
-        "http://localhost:5001/api/login",
-        { email, password },
-        { withCredentials: true }
-      );
+      const response = await api.post("/login", { email, password }, { withCredentials: true });
 
       if (response.data.success) {
         const userData = response.data.user;
