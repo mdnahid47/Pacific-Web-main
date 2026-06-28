@@ -15756,15 +15756,25 @@ createUploadDirectories();
 // ============================================================
 // DATABASE CONNECTION
 // ============================================================
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: DB_HOST,
-  port: DB_PORT,
+  port: Number(DB_PORT),
   user: DB_USER,
   password: DB_PASSWORD,
   database: DB_NAME,
-  ...(DB_HOST && DB_HOST !== 'localhost' && DB_HOST !== '127.0.0.1'
-    ? { ssl: { rejectUnauthorized: false } }
-    : {})
+
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+
+  ...(DB_HOST !== "localhost" &&
+  DB_HOST !== "127.0.0.1"
+    ? {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : {}),
 }).promise();
 
 console.log(`📊 Database Configuration:
