@@ -16121,16 +16121,25 @@ const initializeDatabase = async () => {
 };
 
 // Database connection
-db.connect(async (err) => {
-  if (err) {
-    console.error("❌ Database connection error:", err);
-    console.error("Please check your database configuration in .env file");
-    process.exit(1);
-  } else {
+(async () => {
+  try {
+    await db.query("SELECT 1");
+
     console.log("✅ Connected to MySQL database");
+
     await initializeDatabase();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`📍 Environment: ${NODE_ENV}`);
+      console.log(`🔗 Client URL: ${CLIENT_URL}`);
+    });
+
+  } catch (err) {
+    console.error("❌ Database connection error:", err);
+    process.exit(1);
   }
-});
+})();
 
 // ============================================================
 // MULTER CONFIGURATION
