@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children, role }) => {
           throw new Error("No authentication token found");
         }
 
-        const res = await api.get("/api/auth/verify-role", {
+        const res = await api.get("/auth/verify-role", {
           headers: { Authorization: `Bearer ${token}` },
           params: { requiredRole: Array.isArray(role) ? role.join(",") : role },
           withCredentials: true
