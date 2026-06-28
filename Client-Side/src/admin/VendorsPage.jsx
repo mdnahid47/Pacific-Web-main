@@ -4002,7 +4002,7 @@
 
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import axios from "axios";
+import api from "../../api"; // Import the configured axios instance
 import Swal from "sweetalert2";
 import {
   FiHome, FiUsers, FiShoppingBag, FiTruck,
@@ -4115,7 +4115,7 @@ const VendorsList = () => {
 
     try {
       console.log("Fetching vendors data...");
-      const res = await axios.get("http://localhost:5001/api/admin/vendors", {
+      const res = await api.get("/api/admin/vendors", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           include_stats: true,
@@ -4199,7 +4199,7 @@ const VendorsList = () => {
       setDeletingId(id);
       const token = localStorage.getItem("token");
       try {
-        const response = await axios.delete(`http://localhost:5001/api/admin/vendors/${id}`, {
+        const response = await api.delete(`/api/admin/vendors/${id}`, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -4255,8 +4255,8 @@ const VendorsList = () => {
     if (result.isConfirmed) {
       const token = localStorage.getItem("token");
       try {
-        await axios.patch(
-          `http://localhost:5001/api/admin/vendors/${vendorId}/status`,
+        await api.patch(
+          `/api/admin/vendors/${vendorId}/status`,
           { status: newStatus },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -4296,8 +4296,8 @@ const VendorsList = () => {
     if (result.isConfirmed) {
       const token = localStorage.getItem("token");
       try {
-        await axios.patch(
-          `http://localhost:5001/api/admin/vendors/${vendorId}/verify`,
+        await api.patch(
+          `/api/admin/vendors/${vendorId}/verify`,
           { is_verified: true },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -4496,6 +4496,8 @@ const VendorsList = () => {
           <SidebarLink to="/admin/dashboard" icon={<FiHome />} text="Dashboard" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/orders" icon={<FiShoppingBag />} text="Order List" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/vendors" icon={<FiUsers />} text="Vendor List" onClick={() => setSidebarOpen(false)} active />
+          <SidebarLink to="/admin/users" icon={<FiTruck />} text="User Management" onClick={() => setSidebarOpen(false)} />
+          <SidebarLink to="/admin/services" icon={<FiPackage />} text="Service Management" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/analytics" icon={<FiPieChart />} text="Analytics" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/settings" icon={<FiSettings />} text="Settings" onClick={() => setSidebarOpen(false)} />
         </nav>
@@ -4730,7 +4732,7 @@ const VendorsList = () => {
                                   className="rounded-full w-full h-full object-cover"
                                   onError={(e) => {
                                     e.target.style.display = 'none';
-                                    e.target.parentElement.innerHTML = `<span class="text-lg font-bold">${vendor.name?.charAt(0)?.toUpperCase()}</span>`;
+                                    e.target.parentElement.innerHTML = `<span className="text-lg font-bold">${vendor.name?.charAt(0)?.toUpperCase()}</span>`;
                                   }}
                                 />
                               ) : (
@@ -5241,7 +5243,7 @@ const FullyResponsiveVendorDetails = ({
                   className="rounded-full w-full h-full object-cover"
                   onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.parentElement.innerHTML = `<span class="text-xl xs:text-2xl sm:text-3xl font-bold">${vendor.name?.charAt(0)?.toUpperCase()}</span>`;
+                    e.target.parentElement.innerHTML = `<span className="text-xl xs:text-2xl sm:text-3xl font-bold">${vendor.name?.charAt(0)?.toUpperCase()}</span>`;
                   }}
                 />
               ) : (
@@ -5917,7 +5919,7 @@ const AddVendorModal = ({ onClose, onSuccess }) => {
     const token = localStorage.getItem("token");
     
     try {
-      await axios.post("http://localhost:5001/api/admin/vendors", formData, {
+      await api.post("/api/admin/vendors", formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

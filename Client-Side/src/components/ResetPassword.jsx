@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaLock, FaCheck, FaArrowLeft } from 'react-icons/fa';
+import api from '../api'; // Import the configured axios instance
 
 const ResetPassword = () => {
     const navigate = useNavigate();
@@ -29,21 +30,19 @@ const ResetPassword = () => {
             }
 
             try {
-                const response = await fetch(`http://localhost:5001/api/verify-reset-token?token=${token}&email=${email}`);
+                const response = await api.get('/api/verify-reset-token', {
+                    params: { token, email }
+                });
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        setTokenValid(true);
-                    } else {
-                        toast.error(data.message);
-                    }
+                if (response.data.success) {
+                    setTokenValid(true);
                 } else {
-                    toast.error("Invalid reset link");
+                    toast.error(response.data.message || "Invalid reset link");
                 }
             } catch (error) {
                 console.error("Token verification error:", error);
-                toast.error("Failed to verify reset link");
+                const errorMessage = error.response?.data?.message || "Failed to verify reset link";
+                toast.error(errorMessage);
             } finally {
                 setVerifying(false);
             }
@@ -68,21 +67,13 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5001/api/reset-password', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token,
-                    email,
-                    newPassword: formData.password
-                }),
+            const response = await api.post('/api/reset-password', {
+                token,
+                email,
+                newPassword: formData.password
             });
 
-            const data = await response.json();
-
-            if (data.success) {
+            if (response.data.success) {
                 toast.success("Password reset successfully!", {
                     position: "top-center",
                 });
@@ -91,11 +82,12 @@ const ResetPassword = () => {
                     navigate('/login');
                 }, 2000);
             } else {
-                toast.error(data.message);
+                toast.error(response.data.message || "Failed to reset password");
             }
         } catch (error) {
             console.error("Reset password error:", error);
-            toast.error("Failed to reset password");
+            const errorMessage = error.response?.data?.message || "Failed to reset password";
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

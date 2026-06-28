@@ -653,12 +653,10 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, NavLink } from "react-router-dom";
-import axios from 'axios';
+import api from '../../api'; // Import the configured axios instance
 import { Plus, X } from 'lucide-react';
 import { FiHome, FiLogOut, FiMenu, FiPackage, FiPieChart, FiSettings, FiShoppingBag, FiTruck, FiUsers } from 'react-icons/fi';
 import Swal from 'sweetalert2';
-
-const API_BASE = 'http://localhost:5001/api';
 
 const AdminServiceManager = () => {
   const [services, setServices] = useState([]);
@@ -684,11 +682,12 @@ const AdminServiceManager = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/services`);
+      const res = await api.get('/api/services');
       setServices(res.data);
     } catch (err) {
       setMessage('Failed to load services');
       setStatus('error');
+      console.error('Error fetching services:', err);
     }
     setLoading(false);
   };
@@ -734,16 +733,37 @@ const AdminServiceManager = () => {
   };
 
   const handleDelete = async (_id) => {
-    if (!window.confirm('Are you sure you want to delete this service?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
-      await axios.delete(`${API_BASE}/services/${_id}`);
-      setMessage('Service deleted successfully');
-      setStatus('success');
+      await api.delete(`/api/services/${_id}`);
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Service deleted successfully',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      
       fetchServices();
     } catch (err) {
-      setMessage('Delete failed');
-      setStatus('error');
+      console.error('Delete error:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Delete Failed',
+        text: err.response?.data?.message || 'Failed to delete service'
+      });
     }
   };
 
@@ -766,18 +786,24 @@ const AdminServiceManager = () => {
     try {
       let res;
       if (editingServiceId) {
-        res = await axios.put(`${API_BASE}/services/${editingServiceId}`, formData, {
+        res = await api.put(`/api/services/${editingServiceId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       } else {
-        res = await axios.post(`${API_BASE}/services`, formData, {
+        res = await api.post('/api/services', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
 
       if (res.data.success) {
-        setMessage(editingServiceId ? 'Service updated successfully' : 'Service added successfully');
-        setStatus('success');
+        Swal.fire({
+          icon: 'success',
+          title: editingServiceId ? 'Updated!' : 'Added!',
+          text: editingServiceId ? 'Service updated successfully' : 'Service added successfully',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        
         setForm({ _id: '', name: '', category: '', price: '', image: null });
         setImagePreview(null);
         setEditingServiceId(null);
@@ -788,8 +814,8 @@ const AdminServiceManager = () => {
         setStatus('error');
       }
     } catch (err) {
-      console.error(err);
-      setMessage('Server error');
+      console.error('Submit error:', err);
+      setMessage(err.response?.data?.message || 'Server error');
       setStatus('error');
     }
   };
@@ -815,7 +841,7 @@ const AdminServiceManager = () => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        await axios.post('http://localhost:5001/api/auth/logout', {}, {
+        await api.post('/api/auth/logout', {}, {
           headers: {
             Authorization: `Bearer ${token}`
           }
