@@ -354,7 +354,7 @@
 // export default AdminDashboard;
 
 import { useEffect, useState, useRef } from "react";
-import api from "../../api"; // Import the configured axios instance
+import api from "../api"; // Import the configured axios instance
 import { useNavigate, NavLink } from "react-router-dom";
 import { FiHome, FiUsers, FiShoppingBag, FiTruck, FiPieChart, FiLogOut, FiSettings, FiMenu, FiX, FiPackage } from "react-icons/fi";
 import Swal from "sweetalert2";

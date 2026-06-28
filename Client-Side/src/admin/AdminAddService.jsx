@@ -653,7 +653,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, NavLink } from "react-router-dom";
-import api from '../../api'; // Import the configured axios instance
+import api from '../api'; // Import the configured axios instance
 import { Plus, X } from 'lucide-react';
 import { FiHome, FiLogOut, FiMenu, FiPackage, FiPieChart, FiSettings, FiShoppingBag, FiTruck, FiUsers } from 'react-icons/fi';
 import Swal from 'sweetalert2';

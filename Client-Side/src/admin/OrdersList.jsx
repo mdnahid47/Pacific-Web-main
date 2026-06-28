@@ -2055,7 +2055,7 @@
 // export default OrdersList;
 
 import { useEffect, useState, useRef } from "react";
-import api from "../../api"; // Import the configured axios instance
+import api from "../api"; // Import the configured axios instance
 import Swal from "sweetalert2";
 import {
   FiHome, FiUsers, FiShoppingBag, FiTruck,
