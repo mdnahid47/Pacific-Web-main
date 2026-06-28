@@ -17652,6 +17652,8 @@ app.put(
 );
 
 // ---------- USER REGISTRATION ----------
+console.log("✅ /api/register route registered");
+
 app.post("/api/register", async (req, res) => {
   const { firstName, email, phoneNumber, password } = req.body;
 
