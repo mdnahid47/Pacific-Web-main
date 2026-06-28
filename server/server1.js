@@ -20554,11 +20554,3 @@ app.use((req, res) => {
   });
 });
 
-// ---------- START SERVER ----------
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${NODE_ENV || 'development'}`);
-  console.log(`📅 Started at: ${new Date().toLocaleString()}`);
-  console.log(`🔗 Client URL: ${CLIENT_URL}`);
-  console.log(`📊 Database: ${DB_NAME}@${DB_HOST}:${DB_PORT}`);
-});
