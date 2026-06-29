@@ -142,7 +142,7 @@ import React, { useEffect, useState } from "react";
 import Cards from "../Cards";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import api from "../api"; // Import the configured axios instance
+import api from "../../api"; // Import the configured axios instance
 
 const UniversalModal = ({ category }) => {
   const [services, setServices] = useState([]);

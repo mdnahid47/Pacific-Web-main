@@ -180,7 +180,7 @@
 import { addDays, format, isSameDay, isToday } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import api from '../api'; // Import the configured axios instance
+import api from '../../api'; // Import the configured axios instance
 
 const LeftSide = () => {
   const location = useLocation();
