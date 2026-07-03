@@ -757,7 +757,7 @@ const UsersList = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const usersRes = await api.get("/api/admin/all-users", {
+      const usersRes = await api.get("/admin/all-users", {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -776,7 +776,7 @@ const UsersList = () => {
       
       // stats API call
       try {
-        const statsRes = await api.get("/api/admin/user-stats", {
+        const statsRes = await api.get("/admin/user-stats", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStats(statsRes.data);
@@ -805,7 +805,7 @@ const UsersList = () => {
 
     const fetchUserOrders = async () => {
       try {
-        const res = await api.get(`/api/admin/user-orders/${viewUser.id}`, {
+        const res = await api.get(`/admin/user-orders/${viewUser.id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -834,7 +834,7 @@ const UsersList = () => {
     if (result.isConfirmed) {
       const token = localStorage.getItem("token");
       try {
-        await api.delete(`/api/admin/user/${id}`, {
+        await api.delete(`/admin/user/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         Swal.fire("Deleted!", "User has been deleted.", "success");
@@ -1351,7 +1351,7 @@ const UsersList = () => {
                     };
 
                     await api.put(
-                      `/api/admin/user/${editUser._id}`,
+                      `/admin/user/${editUser._id}`,
                       updatedUser,
                       { headers: { Authorization: `Bearer ${token}` } }
                     );

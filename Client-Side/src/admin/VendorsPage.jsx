@@ -4115,7 +4115,7 @@ const VendorsList = () => {
 
     try {
       console.log("Fetching vendors data...");
-      const res = await api.get("/api/admin/vendors", {
+      const res = await api.get("/admin/vendors", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           include_stats: true,
@@ -4199,7 +4199,7 @@ const VendorsList = () => {
       setDeletingId(id);
       const token = localStorage.getItem("token");
       try {
-        const response = await api.delete(`/api/admin/vendors/${id}`, {
+        const response = await api.delete(`/admin/vendors/${id}`, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -4256,7 +4256,7 @@ const VendorsList = () => {
       const token = localStorage.getItem("token");
       try {
         await api.patch(
-          `/api/admin/vendors/${vendorId}/status`,
+          `/admin/vendors/${vendorId}/status`,
           { status: newStatus },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -4297,7 +4297,7 @@ const VendorsList = () => {
       const token = localStorage.getItem("token");
       try {
         await api.patch(
-          `/api/admin/vendors/${vendorId}/verify`,
+          `/admin/vendors/${vendorId}/verify`,
           { is_verified: true },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -5919,7 +5919,7 @@ const AddVendorModal = ({ onClose, onSuccess }) => {
     const token = localStorage.getItem("token");
     
     try {
-      await api.post("/api/admin/vendors", formData, {
+      await api.post("/admin/vendors", formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
