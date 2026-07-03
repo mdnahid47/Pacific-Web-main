@@ -400,7 +400,7 @@ const AdminDashboard = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No authentication token");
 
-        const response = await api.get("/api/admin/dashboard", {
+        const response = await api.get("/admin/dashboard", {
           headers: { Authorization: `Bearer ${token}` },
           timeout: 10000,
         });
@@ -441,7 +441,7 @@ const AdminDashboard = () => {
       // Optional: Make API call to invalidate token on server
       const token = localStorage.getItem("token");
       if (token) {
-        await api.post('/api/auth/logout', {}, {
+        await api.post('/auth/logout', {}, {
           headers: {
             Authorization: `Bearer ${token}`
           }
