@@ -142,10 +142,12 @@ import React, { useEffect, useState } from "react";
 import Cards from "../Cards";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import api from "../../api"; // Import the configured axios instance
+import api from "../../api";
+import { FiPackage, FiAlertCircle } from "react-icons/fi"; // আইকন যোগ করুন
 
 const UniversalModal = ({ category }) => {
   const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true); // loading state যোগ করুন
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem("universalCart");
     return saved ? JSON.parse(saved) : [];
@@ -156,17 +158,21 @@ const UniversalModal = ({ category }) => {
   useEffect(() => {
     // Fetch category services
     const fetchServices = async () => {
+      setLoading(true); // loading শুরু
       try {
         const encodedCategory = encodeURIComponent(category);
         const response = await api.get(`/services/${encodedCategory}`);
         setServices(response.data);
       } catch (error) {
         console.error("Error fetching services:", error);
+        setServices([]); // error হলে খালি array সেট করুন
         Swal.fire({
           icon: "error",
           title: "Error",
           text: "Failed to load services. Please try again."
         });
+      } finally {
+        setLoading(false); // loading শেষ
       }
     };
 
@@ -183,7 +189,6 @@ const UniversalModal = ({ category }) => {
           if (response.data.success) setUser(response.data.user);
         } catch (error) {
           console.error("Auth verification error:", error);
-          // If token is invalid, remove it
           if (error.response?.status === 401 || error.response?.status === 403) {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
@@ -197,11 +202,9 @@ const UniversalModal = ({ category }) => {
   }, [category]);
 
   useEffect(() => {
-    // Whenever cart changes, save to localStorage
     localStorage.setItem("universalCart", JSON.stringify(cart));
   }, [cart]);
 
-  // Add item or increase quantity
   const addToCart = (item) => {
     if (!user) {
       Swal.fire({
@@ -225,7 +228,6 @@ const UniversalModal = ({ category }) => {
     }
   };
 
-  // Decrease quantity or remove item
   const decreaseFromCart = (id) => {
     const item = cart.find((c) => c.id === id);
     if (!item) return;
@@ -236,15 +238,12 @@ const UniversalModal = ({ category }) => {
     }
   };
 
-  // Remove item from cart
   const removeFromCart = (id) => {
     setCart(cart.filter((item) => item.id !== id));
   };
 
-  // Clear entire cart
   const clearCart = () => setCart([]);
 
-  // Checkout
   const proceedToCheckout = () => {
     if (cart.length === 0) {
       Swal.fire({
@@ -263,11 +262,49 @@ const UniversalModal = ({ category }) => {
       {/* Services */}
       <div className="w-full lg:w-2/3 overflow-y-auto">
         <h2 className="text-xl font-bold text-white mb-4">{category} Services</h2>
-        <div className="space-y-3">
-          {services.map((item) => (
-            <Cards key={item.id} item={item} addToCart={addToCart} isLoggedIn={!!user} />
-          ))}
-        </div>
+        
+        {/* Loading State */}
+        {loading && (
+          <div className="flex flex-col items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+            <p className="text-gray-400">Loading services...</p>
+          </div>
+        )}
+
+        {/* No Services Available Message */}
+        {!loading && services.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-12 bg-gray-800/50 rounded-lg">
+            <FiPackage className="text-6xl text-gray-500 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-300 mb-2">No Services Available</h3>
+            <p className="text-gray-400 text-center max-w-md">
+              We're currently updating our {category} services. 
+              Please check back later or explore other categories.
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button 
+                onClick={() => window.location.reload()}
+                className="btn btn-sm btn-primary"
+              >
+                Refresh
+              </button>
+              <button 
+                onClick={() => navigate("/services")}
+                className="btn btn-sm btn-ghost"
+              >
+                Browse All Services
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Services List */}
+        {!loading && services.length > 0 && (
+          <div className="space-y-3">
+            {services.map((item) => (
+              <Cards key={item.id} item={item} addToCart={addToCart} isLoggedIn={!!user} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Cart */}
