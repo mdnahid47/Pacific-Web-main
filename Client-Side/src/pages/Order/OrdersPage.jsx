@@ -2807,7 +2807,7 @@ const OrdersPage = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const res = await api.get("/api/orders", {
+      const res = await api.get("/orders", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -2975,7 +2975,7 @@ const OrdersPage = () => {
       const orderId = selectedOrder.order_id;
 
       const response = await api.patch(
-        `/api/orders/${encodeURIComponent(orderId)}/schedule`,
+        `/orders/${encodeURIComponent(orderId)}/schedule`,
         {
           newDate: newSchedule.date,
           newTimeSlot: newSchedule.timeSlot
@@ -3197,7 +3197,7 @@ const OrdersPage = () => {
       const orderId = selectedOrder.order_id;
 
       const encodedOrderId = encodeURIComponent(orderId);
-      const url = `/api/orders/${encodedOrderId}/cancel`;
+      const url = `/orders/${encodedOrderId}/cancel`;
 
       const response = await api.patch(
         url,
@@ -3287,7 +3287,7 @@ const OrdersPage = () => {
       const orderId = selectedOrder.order_id;
 
       const encodedOrderId = encodeURIComponent(orderId);
-      const url = `/api/orders/${encodedOrderId}/cancel`;
+      const url = `/orders/${encodedOrderId}/cancel`;
 
       const response = await api.patch(
         url,
@@ -3419,7 +3419,7 @@ const OrdersPage = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       await api.post(
-        `/api/orders/${encodeURIComponent(selectedOrder.order_id)}/review`,
+        `/orders/${encodeURIComponent(selectedOrder.order_id)}/review`,
         reviewData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
