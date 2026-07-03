@@ -604,7 +604,7 @@
 // // =============================== NEW ENDPOINTS ===============================
 
 // // 1. vendor order assginment endpoint
-// app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   // URL প্যারামিটার ডিকোড করুন
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { vendor_id, status } = req.body;
@@ -726,7 +726,7 @@
 // });
 
 // // 2. order completion endpoint
-// app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 //   const userRole = req.user.role;
 
@@ -794,7 +794,7 @@
 // });
 
 // // 3. vendor's own orders viewing endpoint
-// app.get('/vendor/orders', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/orders', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -899,7 +899,7 @@
 // });
 
 // // 4. order review submission endpoint
-// app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
+// app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { serviceExpert, websiteService, comments } = req.body;
 //   const userId = req.user.userId;
@@ -987,7 +987,7 @@
 // });
 
 // // 5. order review viewing endpoint
-// app.get('/orders/:orderId/reviews', async (req, res) => {
+// app.get('/api/orders/:orderId/reviews', async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -1033,7 +1033,7 @@
 // });
 
 // // 6. order tracking information
-// app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const userId = req.user.userId;
 
@@ -1197,7 +1197,7 @@
 // });
 
 // // 7. password reset verification
-// app.post('/verify-reset-token', async (req, res) => {
+// app.post('/api/verify-reset-token', async (req, res) => {
 //   const { token, email } = req.body;
 
 //   if (!token || !email) {
@@ -1243,7 +1243,7 @@
 // });
 
 // // 8. password reset
-// app.post('/reset-password', async (req, res) => {
+// app.post('/api/reset-password', async (req, res) => {
 //   const { token, email, newPassword } = req.body;
 
 //   if (!token || !email || !newPassword) {
@@ -1318,7 +1318,7 @@
 // });
 
 // // 9. get orders based on filters
-// app.get('/orders/filter', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -1433,7 +1433,7 @@
 // });
 
 // // 10. order confirmation endpoint (Pending to Active)
-// app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -1487,7 +1487,7 @@
 // // vendor details fetching endpoint
 
 // // ভেন্ডর ডিটেইলস ফেচ করার API (ডাইনামিক কলাম চেক)
-// app.get('/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
+// app.get('/api/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
 //   const vendorId = req.params.vendorId;
 
 //   try {
@@ -1642,7 +1642,7 @@
 // });
 
 // // Report issue API
-// app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+// app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const userId = req.user.id;
 
@@ -1720,7 +1720,7 @@
 // // =============================== EXISTING ENDPOINTS ===============================
 
 // app.put(
-//   "/user-profile",
+//   "/api/user-profile",
 //   authenticateJWT,
 //   uploadProfile.single("photo"),
 //   async (req, res) => {
@@ -1822,7 +1822,7 @@
 // );
 
 // // User Registration
-// app.post("/register", async (req, res) => {
+// app.post("/api/register", async (req, res) => {
 //   const { firstName, email, phoneNumber, password } = req.body;
 
 //   // Input validation
@@ -1871,7 +1871,7 @@
 // });
 
 // // // universal login endpoint for all user types
-// // app.post("/login", async (req, res) => {
+// // app.post("/api/login", async (req, res) => {
 // //   const { email, password } = req.body;
 
 // //   // 🔐 Check Super Admin
@@ -1933,7 +1933,7 @@
 // // });
 
 // // universal login endpoint for all user types
-// app.post("/login", async (req, res) => {
+// app.post("/api/login", async (req, res) => {
 //   const { email, password } = req.body;
 
 //   console.log(`🔐 Login attempt for: ${email}`);
@@ -2073,7 +2073,7 @@
 // });
 
 // //  verify JWT token
-// app.post("/auth/verify", authenticateJWT, async (req, res) => {
+// app.post("/api/auth/verify", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   try {
 //     const [result] = await db.query("SELECT name, email FROM users WHERE custom_id = ?", [userId]);
@@ -2089,7 +2089,7 @@
 
 
 // // // Get User Profile
-// app.get("/user-profile", authenticateJWT, async (req, res) => {
+// app.get("/api/user-profile", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   console.log("Authenticated userId:", userId);
 
@@ -2115,7 +2115,7 @@
 
 
 // // Place Order
-// app.post("/place-order", authenticateJWT, async (req, res) => {
+// app.post("/api/place-order", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const {
 //     category,
@@ -2190,7 +2190,7 @@
 
 
 // // // Cancel Order
-// // app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// // app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 // //   const { orderId } = req.params;
 // //   const { reason } = req.body;
 // //   const userId = req.user.userId;
@@ -2222,7 +2222,7 @@
 // // });
 
 // // Get All Orders of the Logged-in User
-// app.get("/orders", authenticateJWT, async (req, res) => {
+// app.get("/api/orders", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 
 //   try {
@@ -2333,7 +2333,7 @@
 // });
 
 // // verify role endpoint for multi-role support
-// app.get('/auth/verify-role', verifyToken(), (req, res) => {
+// app.get('/api/auth/verify-role', verifyToken(), (req, res) => {
 //   const requiredRoles = req.query.requiredRole?.split(",") || [];
 //   const userRole = req.user.role;
 
@@ -2363,7 +2363,7 @@
 // });
 
 // //  Super Admin Registration with security checks
-// app.post("/superadmin/register", async (req, res) => {
+// app.post("/api/superadmin/register", async (req, res) => {
 //   const { email, password } = req.body;
 
 //   // Input validation
@@ -2430,7 +2430,7 @@
 //   message: "Too many login attempts, please try again later"
 // });
 
-// app.post("/superadmin/login", loginLimiter, async (req, res) => {
+// app.post("/api/superadmin/login", loginLimiter, async (req, res) => {
 //   const { email, password } = req.body;
 
 //   try {
@@ -2487,7 +2487,7 @@
 // });
 
 // // Enhanced Admin Creation with validation
-// app.post("/admin/create",
+// app.post("/api/admin/create",
 //   verifyToken(["superadmin"]),
 //   async (req, res) => {
 //     const { email, password } = req.body;
@@ -2526,7 +2526,7 @@
 //   }
 // );
 
-// app.get("/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [orders] = await db.query(`
 //       SELECT 
@@ -2631,7 +2631,7 @@
 // // DASHBOARD API for Admins
 // // This endpoint provides basic stats and recent activity for the admin dashboard
 
-// app.get('/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     // Basic stats
 //     const [users] = await db.query("SELECT COUNT(*) as count FROM users");
@@ -2696,7 +2696,7 @@
 // // Get all users
 
 
-// app.get("/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [users] = await db.query(`
 //       SELECT 
@@ -2737,7 +2737,7 @@
 //     return null;
 //   }
 // }
-// app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { userId } = req.params;
 
 //   try {
@@ -2784,7 +2784,7 @@
 //   }
 // });
 
-// app.get("/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [total] = await db.query("SELECT COUNT(*) as count FROM users");
 //     const [newUsers] = await db.query(`
@@ -2809,7 +2809,7 @@
 //   }
 // });
 // // API endpoint to update user with address handling
-// app.put("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.put("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { id } = req.params;
 //   const { name, email, phone, isActive, homeAddress, officeAddress } = req.body;
 
@@ -2841,7 +2841,7 @@
 // });
 
 // // Delete user
-// app.delete("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.delete("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { id } = req.params;
 
 //   try {
@@ -2854,7 +2854,7 @@
 // });
 // // =============================Service Setup============================= //
 // // All services
-// app.get('/services', async (req, res) => {
+// app.get('/api/services', async (req, res) => {
 //   try {
 //     const [results] = await db.query('SELECT * FROM services');
 
@@ -2883,7 +2883,7 @@
 // });
 
 // // Category-wise services
-// app.get('/services/:category', async (req, res) => {
+// app.get('/api/services/:category', async (req, res) => {
 //   const category = req.params.category.trim();
 
 //   try {
@@ -2914,7 +2914,7 @@
 // });
 
 // // Add new service
-// app.post('/services', uploadService.single('image'), async (req, res) => {
+// app.post('/api/services', uploadService.single('image'), async (req, res) => {
 //   const { _id, name, price, category } = req.body;
 //   const image = req.file ? `/uploads/services/${req.file.filename}` : null;
 
@@ -2934,7 +2934,7 @@
 // });
 
 // // update an existing service
-// app.put('/services/:_id', uploadService.single('image'), async (req, res) => {
+// app.put('/api/services/:_id', uploadService.single('image'), async (req, res) => {
 //   const { _id } = req.params;
 //   const { name, price, category } = req.body;
 //   let image = req.file ? `/uploads/services/${req.file.filename}` : null;
@@ -2982,7 +2982,7 @@
 
 
 // // Fix: Use _id instead of id
-// app.delete("/services/:_id", (req, res) => {
+// app.delete("/api/services/:_id", (req, res) => {
 //   const { _id } = req.params;
 //   db.query("DELETE FROM services WHERE _id = ?", [_id], (err) => {
 //     if (err) {
@@ -2995,7 +2995,7 @@
 
 // // ================================Vendor =================================================
 // // Update the vendor registration endpoint to handle all fields
-// app.post("/vendor/register", uploadVendorDocs.fields([
+// app.post("/api/vendor/register", uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -3161,7 +3161,7 @@
 
 // // register technician
 
-// app.post("/technician/register", uploadVendorDocs.fields([
+// app.post("/api/technician/register", uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -3188,7 +3188,7 @@
 // });
 
 // // // ✅ Universal Login for both Vendor and Technician
-// // app.post("/login", async (req, res) => {
+// // app.post("/api/login", async (req, res) => {
 // //   const { email, password } = req.body;
 
 // //   try {
@@ -3291,7 +3291,7 @@
 // //   }
 // // });
 
-// app.get("/vendor/profile", authenticateVendor, async (req, res) => {
+// app.get("/api/vendor/profile", authenticateVendor, async (req, res) => {
 //   try {
 //     console.log('📱 Vendor Profile Request - Vendor ID:', req.vendor?.vendorId);
 //     console.log('📱 Vendor Email:', req.vendor?.email);
@@ -3427,7 +3427,7 @@
 //   }
 // });
 // // Add update profile endpoint
-// app.put("/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
+// app.put("/api/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -3603,7 +3603,7 @@
 //   }
 // });
 // // Forgot Password Routes 
-// app.post("/forgot-password", async (req, res) => {
+// app.post("/api/forgot-password", async (req, res) => {
 //   console.log("Forgot password request received:", req.body);
 
 //   const { email } = req.body;
@@ -3910,7 +3910,7 @@
 // };
 
 // // 11.vendors list for admin
-// app.get('/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [vendors] = await db.query(`
 //       SELECT 
@@ -3948,7 +3948,7 @@
 // });
 
 // // 12. vendor status update (approve/reject)
-// app.patch('/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { id } = req.params;
 //   const { status } = req.body;
 
@@ -3980,7 +3980,7 @@
 
 // // 13. generic endpoint for updating order status
 // // order stats update
-// app.patch('/orders/:orderId/status', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/status', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   // URL perameter 
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { status, notes } = req.body;
@@ -4086,7 +4086,7 @@
 
 
 // // 14. service expert rating update
-// app.post('/service-expert/:id/rate', authenticateJWT, async (req, res) => {
+// app.post('/api/service-expert/:id/rate', authenticateJWT, async (req, res) => {
 //   const { id } = req.params;
 //   const { rating, orderId } = req.body;
 //   const userId = req.user.userId;
@@ -4122,7 +4122,7 @@
 // });
 
 // // Order Management Routes
-// // app.patch('/order/:orderId/assign-vendor', authenticateAdmin, async (req, res) => {
+// // app.patch('/api/order/:orderId/assign-vendor', authenticateAdmin, async (req, res) => {
 // //   try {
 // //     const { orderId } = req.params;
 // //     const { vendor_id, status } = req.body;
@@ -4180,7 +4180,7 @@
 // // });
 
 // // Order cancel API - FIXED for user/admin separation
-// app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { reason, penaltyFee = 0, accept_fee = false } = req.body;
@@ -4462,7 +4462,7 @@
 // });
 
 // // Get cancellation details - WITH ROLE-BASED ACCESS
-// app.get('/orders/:orderId/cancellation-details', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/cancellation-details', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -4547,7 +4547,7 @@
 // });
 
 // // Get user's cancellation summary (user can only see their own)
-// app.get('/cancellations/user-summary', authenticateJWT, async (req, res) => {
+// app.get('/api/cancellations/user-summary', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userRole = req.user.role || 'user';
@@ -4589,7 +4589,7 @@
 
 
 // // Vendor cancellation compensation API (for admin)
-// app.get('/vendor-cancellations', authenticateAdmin, async (req, res) => {
+// app.get('/api/vendor-cancellations', authenticateAdmin, async (req, res) => {
 //   try {
 //     const { vendor_id, start_date, end_date } = req.query;
 
@@ -4657,7 +4657,7 @@
 // // vendor accept penalty fee
 
 // // Vendor accept penalty fee
-// app.post('/orders/:orderId/vendor-accept-penalty', authenticateJWT, async (req, res) => {
+// app.post('/api/orders/:orderId/vendor-accept-penalty', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -4755,7 +4755,7 @@
 
 
 // // Get vendor cancellation details with acceptance status
-// app.get('/vendor/cancellations/:orderId', authenticateJWT, async (req, res) => {
+// app.get('/api/vendor/cancellations/:orderId', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -4814,7 +4814,7 @@
 
 
 // // Update your existing status update endpoint to handle service started
-// app.patch('/orders/:orderId/status', authenticateAdmin, async (req, res) => {
+// app.patch('/api/orders/:orderId/status', authenticateAdmin, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { status, service_started } = req.body;
@@ -4901,7 +4901,7 @@
 //   }
 // });
 
-// app.put('/order/:orderId', authenticateAdmin, async (req, res) => {
+// app.put('/api/order/:orderId', authenticateAdmin, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { status, notes, vendor_id } = req.body;
@@ -4960,7 +4960,7 @@
 // });
 
 // // order hold api
-// app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { reason, checkoutCharge } = req.body;
 //   const userId = req.user.userId;
@@ -5033,7 +5033,7 @@
 
 
 // // =============================== HEALTH CHECK ===============================     
-// app.get('/vendor/health', (req, res) => {
+// app.get('/api/vendor/health', (req, res) => {
 //   res.json({
 //     success: true,
 //     status: 'Server is running',
@@ -5043,7 +5043,7 @@
 // });
 
 // // Add a general health check endpoint too
-// app.get('/health', (req, res) => {
+// app.get('/api/health', (req, res) => {
 //   res.json({
 //     success: true,
 //     status: 'Server is healthy',
@@ -5057,7 +5057,7 @@
 // // ======================================================Notification====================================
 
 // // Get user notifications
-// app.get('/notifications', authenticateJWT, async (req, res) => {
+// app.get('/api/notifications', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user'; // Assuming role field
@@ -5095,7 +5095,7 @@
 // });
 
 // // Mark notification as read
-// app.patch('/notifications/:id/read', authenticateJWT, async (req, res) => {
+// app.patch('/api/notifications/:id/read', authenticateJWT, async (req, res) => {
 //   try {
 //     const { id } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -5129,7 +5129,7 @@
 // });
 
 // // Mark all notifications as read
-// app.patch('/notifications/mark-all-read', authenticateJWT, async (req, res) => {
+// app.patch('/api/notifications/mark-all-read', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -5155,7 +5155,7 @@
 // });
 
 // // Delete notification
-// app.delete('/notifications/:id', authenticateJWT, async (req, res) => {
+// app.delete('/api/notifications/:id', authenticateJWT, async (req, res) => {
 //   try {
 //     const { id } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -5188,7 +5188,7 @@
 // });
 
 // // Get unread notification count API
-// app.get('/notifications/unread-count', authenticateJWT, async (req, res) => {
+// app.get('/api/notifications/unread-count', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -5229,7 +5229,7 @@
 // // ======================== SCHEDULE CHANGE API ========================
 
 // // Schedule Change API
-// app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { newDate, newTimeSlot, reason } = req.body;
@@ -5474,7 +5474,7 @@
 // });
 
 // // Get schedule change history for an order
-// app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -5532,7 +5532,7 @@
 // });
 
 // // Check if schedule can be changed for an order
-// app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -6374,7 +6374,7 @@
 // // ============================================================
 
 // // ---------- VENDOR ORDER ASSIGNMENT ----------
-// app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { vendor_id, status } = req.body;
 
@@ -6485,7 +6485,7 @@
 // });
 
 // // ---------- ORDER COMPLETION ----------
-// app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 //   const userRole = req.user.role;
 
@@ -6549,7 +6549,7 @@
 // });
 
 // // ---------- VENDOR ORDERS ----------
-// app.get('/vendor/orders', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/orders', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -6651,7 +6651,7 @@
 // });
 
 // // ---------- ORDER REVIEW SUBMISSION ----------
-// app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
+// app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { serviceExpert, websiteService, comments } = req.body;
 //   const userId = req.user.userId;
@@ -6732,7 +6732,7 @@
 // });
 
 // // ---------- GET ORDER REVIEWS ----------
-// app.get('/orders/:orderId/reviews', async (req, res) => {
+// app.get('/api/orders/:orderId/reviews', async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -6778,7 +6778,7 @@
 // });
 
 // // ---------- ORDER TRACKING ----------
-// app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const userId = req.user.userId;
 
@@ -6935,7 +6935,7 @@
 // });
 
 // // ---------- VERIFY RESET TOKEN ----------
-// app.post('/verify-reset-token', async (req, res) => {
+// app.post('/api/verify-reset-token', async (req, res) => {
 //   const { token, email } = req.body;
 
 //   if (!token || !email) {
@@ -6979,7 +6979,7 @@
 // });
 
 // // ---------- RESET PASSWORD ----------
-// app.post('/reset-password', async (req, res) => {
+// app.post('/api/reset-password', async (req, res) => {
 //   const { token, email, newPassword } = req.body;
 
 //   if (!token || !email || !newPassword) {
@@ -7048,7 +7048,7 @@
 // });
 
 // // ---------- FILTER ORDERS ----------
-// app.get('/orders/filter', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -7157,7 +7157,7 @@
 // });
 
 // // ---------- ORDER CONFIRMATION ----------
-// app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -7209,7 +7209,7 @@
 // });
 
 // // ---------- GET VENDOR DETAILS ----------
-// app.get('/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
+// app.get('/api/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
 //   const vendorId = req.params.vendorId;
 
 //   try {
@@ -7346,7 +7346,7 @@
 // });
 
 // // ---------- REPORT ISSUE ----------
-// app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+// app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const userId = req.user.id;
 
@@ -7418,7 +7418,7 @@
 
 // // ---------- USER PROFILE UPDATE ----------
 // app.put(
-//   "/user-profile",
+//   "/api/user-profile",
 //   authenticateJWT,
 //   uploadProfile.single("photo"),
 //   async (req, res) => {
@@ -7517,7 +7517,7 @@
 // );
 
 // // ---------- USER REGISTRATION ----------
-// app.post("/register", async (req, res) => {
+// app.post("/api/register", async (req, res) => {
 //   const { firstName, email, phoneNumber, password } = req.body;
 
 //   if (!firstName || !email || !phoneNumber || !password) {
@@ -7561,7 +7561,7 @@
 // });
 
 // // ---------- LOGIN ----------
-// app.post("/login", async (req, res) => {
+// app.post("/api/login", async (req, res) => {
 //   const { email, password } = req.body;
 
 //   console.log(`🔐 Login attempt for: ${email}`);
@@ -7696,7 +7696,7 @@
 // });
 
 // // ---------- VERIFY JWT TOKEN ----------
-// app.post("/auth/verify", authenticateJWT, async (req, res) => {
+// app.post("/api/auth/verify", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   try {
 //     const [result] = await db.query("SELECT name, email FROM users WHERE custom_id = ?", [userId]);
@@ -7711,7 +7711,7 @@
 // });
 
 // // ---------- GET USER PROFILE ----------
-// app.get("/user-profile", authenticateJWT, async (req, res) => {
+// app.get("/api/user-profile", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   console.log("Authenticated userId:", userId);
 
@@ -7736,7 +7736,7 @@
 // });
 
 // // ---------- PLACE ORDER ----------
-// app.post("/place-order", authenticateJWT, async (req, res) => {
+// app.post("/api/place-order", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const {
 //     category,
@@ -7808,7 +7808,7 @@
 // });
 
 // // ---------- GET USER ORDERS ----------
-// app.get("/orders", authenticateJWT, async (req, res) => {
+// app.get("/api/orders", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 
 //   try {
@@ -7912,7 +7912,7 @@
 // });
 
 // // ---------- VERIFY ROLE ----------
-// app.get('/auth/verify-role', verifyToken(), (req, res) => {
+// app.get('/api/auth/verify-role', verifyToken(), (req, res) => {
 //   const requiredRoles = req.query.requiredRole?.split(",") || [];
 //   const userRole = req.user.role;
 
@@ -7940,7 +7940,7 @@
 // });
 
 // // ---------- SUPER ADMIN REGISTRATION ----------
-// app.post("/superadmin/register", async (req, res) => {
+// app.post("/api/superadmin/register", async (req, res) => {
 //   const { email, password } = req.body;
 
 //   if (!email || !password) {
@@ -8003,7 +8003,7 @@
 //   message: "Too many login attempts, please try again later"
 // });
 
-// app.post("/superadmin/login", loginLimiter, async (req, res) => {
+// app.post("/api/superadmin/login", loginLimiter, async (req, res) => {
 //   const { email, password } = req.body;
 
 //   try {
@@ -8060,7 +8060,7 @@
 // });
 
 // // ---------- ADMIN CREATION ----------
-// app.post("/admin/create",
+// app.post("/api/admin/create",
 //   verifyToken(["superadmin"]),
 //   async (req, res) => {
 //     const { email, password } = req.body;
@@ -8099,7 +8099,7 @@
 // );
 
 // // ---------- ADMIN ALL ORDERS ----------
-// app.get("/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [orders] = await db.query(`
 //       SELECT 
@@ -8198,7 +8198,7 @@
 // });
 
 // // ---------- ADMIN DASHBOARD ----------
-// app.get('/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [users] = await db.query("SELECT COUNT(*) as count FROM users");
 //     const [orders] = await db.query("SELECT COUNT(*) as count FROM orders");
@@ -8255,7 +8255,7 @@
 // });
 
 // // ---------- ADMIN ALL USERS ----------
-// app.get("/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [users] = await db.query(`
 //       SELECT 
@@ -8287,7 +8287,7 @@
 // });
 
 // // ---------- ADMIN USER ORDERS ----------
-// app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { userId } = req.params;
 
 //   try {
@@ -8335,7 +8335,7 @@
 // });
 
 // // ---------- ADMIN USER STATS ----------
-// app.get("/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [total] = await db.query("SELECT COUNT(*) as count FROM users");
 //     const [newUsers] = await db.query(`
@@ -8361,7 +8361,7 @@
 // });
 
 // // ---------- ADMIN UPDATE USER ----------
-// app.put("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.put("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { id } = req.params;
 //   const { name, email, phone, isActive, homeAddress, officeAddress } = req.body;
 
@@ -8393,7 +8393,7 @@
 // });
 
 // // ---------- ADMIN DELETE USER ----------
-// app.delete("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.delete("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { id } = req.params;
 
 //   try {
@@ -8406,7 +8406,7 @@
 // });
 
 // // ---------- SERVICES ----------
-// app.get('/services', async (req, res) => {
+// app.get('/api/services', async (req, res) => {
 //   try {
 //     const [results] = await db.query('SELECT * FROM services');
 
@@ -8438,7 +8438,7 @@
 //   }
 // });
 
-// app.get('/services/:category', async (req, res) => {
+// app.get('/api/services/:category', async (req, res) => {
 //   const category = req.params.category.trim();
 
 //   try {
@@ -8472,7 +8472,7 @@
 //   }
 // });
 
-// app.post('/services', uploadService.single('image'), async (req, res) => {
+// app.post('/api/services', uploadService.single('image'), async (req, res) => {
 //   const { _id, name, price, category } = req.body;
 //   const image = req.file ? `/uploads/services/${req.file.filename}` : null;
 
@@ -8491,7 +8491,7 @@
 //   }
 // });
 
-// app.put('/services/:_id', uploadService.single('image'), async (req, res) => {
+// app.put('/api/services/:_id', uploadService.single('image'), async (req, res) => {
 //   const { _id } = req.params;
 //   const { name, price, category } = req.body;
 //   let image = req.file ? `/uploads/services/${req.file.filename}` : null;
@@ -8537,7 +8537,7 @@
 //   }
 // });
 
-// app.delete("/services/:_id", async (req, res) => {
+// app.delete("/api/services/:_id", async (req, res) => {
 //   const { _id } = req.params;
 //   try {
 //     await db.query("DELETE FROM services WHERE _id = ?", [_id]);
@@ -8549,7 +8549,7 @@
 // });
 
 // // ---------- VENDOR REGISTRATION ----------
-// app.post("/vendor/register", uploadVendorDocs.fields([
+// app.post("/api/vendor/register", uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -8696,7 +8696,7 @@
 // });
 
 // // ---------- TECHNICIAN REGISTRATION ----------
-// app.post("/technician/register", uploadVendorDocs.fields([
+// app.post("/api/technician/register", uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -8817,7 +8817,7 @@
 // });
 
 // // ---------- VENDOR PROFILE ----------
-// app.get("/vendor/profile", authenticateVendor, async (req, res) => {
+// app.get("/api/vendor/profile", authenticateVendor, async (req, res) => {
 //   try {
 //     console.log('📱 Vendor Profile Request - Vendor ID:', req.vendor?.vendorId);
 
@@ -8938,7 +8938,7 @@
 // });
 
 // // ---------- VENDOR PROFILE UPDATE ----------
-// app.put("/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
+// app.put("/api/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -9108,7 +9108,7 @@
 // });
 
 // // ---------- FORGOT PASSWORD ----------
-// app.post("/forgot-password", async (req, res) => {
+// app.post("/api/forgot-password", async (req, res) => {
 //   console.log("Forgot password request received:", req.body);
 
 //   const { email } = req.body;
@@ -9294,7 +9294,7 @@
 // };
 
 // // ---------- ADMIN VENDORS LIST ----------
-// app.get('/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [vendors] = await db.query(`
 //       SELECT 
@@ -9334,7 +9334,7 @@
 // });
 
 // // ---------- ADMIN VENDOR STATUS UPDATE ----------
-// app.patch('/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { id } = req.params;
 //   const { status } = req.body;
 
@@ -9365,7 +9365,7 @@
 // });
 
 // // ---------- ORDER STATUS UPDATE (COMPLETE) ----------
-// app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { status, notes, service_started } = req.body;
 //   const userId = req.user.userId || req.user.id;
@@ -9493,7 +9493,7 @@
 // });
 
 // // ---------- ORDER CANCELLATION (COMPLETE) ----------
-// app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { reason, penaltyFee = 0 } = req.body;
@@ -9738,7 +9738,7 @@
 // });
 
 // // ---------- SERVICE EXPERT RATING ----------
-// app.post('/service-expert/:id/rate', authenticateJWT, async (req, res) => {
+// app.post('/api/service-expert/:id/rate', authenticateJWT, async (req, res) => {
 //   const { id } = req.params;
 //   const { rating, orderId } = req.body;
 //   const userId = req.user.userId;
@@ -9770,7 +9770,7 @@
 // });
 
 // // ---------- ORDER HOLD ----------
-// app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { reason, checkoutCharge } = req.body;
 //   const userId = req.user.userId;
@@ -9838,7 +9838,7 @@
 // });
 
 // // ---------- NOTIFICATIONS ----------
-// app.get('/notifications', authenticateJWT, async (req, res) => {
+// app.get('/api/notifications', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -9874,7 +9874,7 @@
 //   }
 // });
 
-// app.patch('/notifications/:id/read', authenticateJWT, async (req, res) => {
+// app.patch('/api/notifications/:id/read', authenticateJWT, async (req, res) => {
 //   try {
 //     const { id } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -9907,7 +9907,7 @@
 //   }
 // });
 
-// app.patch('/notifications/mark-all-read', authenticateJWT, async (req, res) => {
+// app.patch('/api/notifications/mark-all-read', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -9932,7 +9932,7 @@
 //   }
 // });
 
-// app.delete('/notifications/:id', authenticateJWT, async (req, res) => {
+// app.delete('/api/notifications/:id', authenticateJWT, async (req, res) => {
 //   try {
 //     const { id } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -9964,7 +9964,7 @@
 //   }
 // });
 
-// app.get('/notifications/unread-count', authenticateJWT, async (req, res) => {
+// app.get('/api/notifications/unread-count', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -10000,7 +10000,7 @@
 // });
 
 // // ---------- SCHEDULE CHANGE ----------
-// app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { newDate, newTimeSlot, reason } = req.body;
@@ -10147,7 +10147,7 @@
 // });
 
 // // ---------- SCHEDULE HISTORY ----------
-// app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -10203,7 +10203,7 @@
 // });
 
 // // ---------- CAN CHANGE SCHEDULE ----------
-// app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -10294,7 +10294,7 @@
 // });
 
 // // ---------- VENDOR DASHBOARD ----------
-// app.get('/vendor/dashboard', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/dashboard', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -10383,7 +10383,7 @@
 // });
 
 // // ---------- VENDOR ORDER DETAILS ----------
-// app.get('/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const vendorId = req.vendor.vendorId;
@@ -10488,7 +10488,7 @@
 // });
 
 // // ---------- VENDOR REVIEWS ----------
-// app.get('/vendor/reviews', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/reviews', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 //     const { limit = 20, offset = 0 } = req.query;
@@ -10551,7 +10551,7 @@
 // });
 
 // // ---------- VENDOR TECHNICIANS ----------
-// app.get('/vendor/technicians', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/technicians', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -10592,7 +10592,7 @@
 // });
 
 // // ---------- ADMIN TECHNICIANS ----------
-// app.get('/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [technicians] = await db.query(
 //       `SELECT 
@@ -10631,7 +10631,7 @@
 // });
 
 // // ---------- ADMIN TECHNICIAN STATUS UPDATE ----------
-// app.patch('/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { id } = req.params;
 //   const { status } = req.body;
 
@@ -10663,7 +10663,7 @@
 // });
 
 // // ---------- HEALTH CHECK ----------
-// app.get('/health', (req, res) => {
+// app.get('/api/health', (req, res) => {
 //   res.json({
 //     success: true,
 //     status: 'Server is healthy',
@@ -10674,7 +10674,7 @@
 //   });
 // });
 
-// app.get('/vendor/health', (req, res) => {
+// app.get('/api/vendor/health', (req, res) => {
 //   res.json({
 //     success: true,
 //     status: 'Server is running',
@@ -11550,7 +11550,7 @@
 // // ============================================================
 
 // // ---------- VENDOR ORDER ASSIGNMENT ----------
-// app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { vendor_id, status } = req.body;
 
@@ -11661,7 +11661,7 @@
 // });
 
 // // ---------- ORDER COMPLETION ----------
-// app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 //   const userRole = req.user.role;
 
@@ -11725,7 +11725,7 @@
 // });
 
 // // ---------- VENDOR ORDERS ----------
-// app.get('/vendor/orders', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/orders', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -11803,7 +11803,7 @@
 // });
 
 // // ---------- ORDER REVIEW SUBMISSION ----------
-// app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
+// app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { serviceExpert, websiteService, comments } = req.body;
 //   const userId = req.user.userId;
@@ -11884,7 +11884,7 @@
 // });
 
 // // ---------- GET ORDER REVIEWS ----------
-// app.get('/orders/:orderId/reviews', async (req, res) => {
+// app.get('/api/orders/:orderId/reviews', async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -11930,7 +11930,7 @@
 // });
 
 // // ---------- ORDER TRACKING ----------
-// app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const userId = req.user.userId;
 
@@ -12050,7 +12050,7 @@
 // });
 
 // // ---------- VERIFY RESET TOKEN ----------
-// app.post('/verify-reset-token', async (req, res) => {
+// app.post('/api/verify-reset-token', async (req, res) => {
 //   const { token, email } = req.body;
 
 //   if (!token || !email) {
@@ -12094,7 +12094,7 @@
 // });
 
 // // ---------- RESET PASSWORD ----------
-// app.post('/reset-password', async (req, res) => {
+// app.post('/api/reset-password', async (req, res) => {
 //   const { token, email, newPassword } = req.body;
 
 //   if (!token || !email || !newPassword) {
@@ -12163,7 +12163,7 @@
 // });
 
 // // ---------- FILTER ORDERS ----------
-// app.get('/orders/filter', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -12245,7 +12245,7 @@
 // });
 
 // // ---------- ORDER CONFIRMATION ----------
-// app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -12297,7 +12297,7 @@
 // });
 
 // // ---------- GET VENDOR DETAILS ----------
-// app.get('/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
+// app.get('/api/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
 //   const vendorId = req.params.vendorId;
 
 //   try {
@@ -12424,7 +12424,7 @@
 // });
 
 // // ---------- REPORT ISSUE ----------
-// app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+// app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const userId = req.user.id;
 
@@ -12496,7 +12496,7 @@
 
 // // ---------- USER PROFILE UPDATE ----------
 // app.put(
-//   "/user-profile",
+//   "/api/user-profile",
 //   authenticateJWT,
 //   uploadProfile.single("photo"),
 //   async (req, res) => {
@@ -12582,7 +12582,7 @@
 // );
 
 // // ---------- USER REGISTRATION ----------
-// app.post("/register", async (req, res) => {
+// app.post("/api/register", async (req, res) => {
 //   const { firstName, email, phoneNumber, password } = req.body;
 
 //   if (!firstName || !email || !phoneNumber || !password) {
@@ -12626,7 +12626,7 @@
 // });
 
 // // ---------- LOGIN ----------
-// app.post("/login", async (req, res) => {
+// app.post("/api/login", async (req, res) => {
 //   const { email, password } = req.body;
 
 //   console.log(`🔐 Login attempt for: ${email}`);
@@ -12761,7 +12761,7 @@
 // });
 
 // // ---------- VERIFY JWT TOKEN ----------
-// app.post("/auth/verify", authenticateJWT, async (req, res) => {
+// app.post("/api/auth/verify", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   try {
 //     const [result] = await db.query("SELECT name, email FROM users WHERE custom_id = ?", [userId]);
@@ -12776,7 +12776,7 @@
 // });
 
 // // ---------- GET USER PROFILE ----------
-// app.get("/user-profile", authenticateJWT, async (req, res) => {
+// app.get("/api/user-profile", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   console.log("Authenticated userId:", userId);
 
@@ -12801,7 +12801,7 @@
 // });
 
 // // ---------- PLACE ORDER ----------
-// app.post("/place-order", authenticateJWT, async (req, res) => {
+// app.post("/api/place-order", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const {
 //     category,
@@ -12873,7 +12873,7 @@
 // });
 
 // // ---------- GET USER ORDERS ----------
-// app.get("/orders", authenticateJWT, async (req, res) => {
+// app.get("/api/orders", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 
 //   try {
@@ -12936,7 +12936,7 @@
 // });
 
 // // ---------- VERIFY ROLE ----------
-// app.get('/auth/verify-role', verifyToken(), (req, res) => {
+// app.get('/api/auth/verify-role', verifyToken(), (req, res) => {
 //   const requiredRoles = req.query.requiredRole?.split(",") || [];
 //   const userRole = req.user.role;
 
@@ -12964,7 +12964,7 @@
 // });
 
 // // ---------- SUPER ADMIN REGISTRATION ----------
-// app.post("/superadmin/register", async (req, res) => {
+// app.post("/api/superadmin/register", async (req, res) => {
 //   const { email, password } = req.body;
 
 //   if (!email || !password) {
@@ -13027,7 +13027,7 @@
 //   message: "Too many login attempts, please try again later"
 // });
 
-// app.post("/superadmin/login", loginLimiter, async (req, res) => {
+// app.post("/api/superadmin/login", loginLimiter, async (req, res) => {
 //   const { email, password } = req.body;
 
 //   try {
@@ -13084,7 +13084,7 @@
 // });
 
 // // ---------- ADMIN CREATION ----------
-// app.post("/admin/create",
+// app.post("/api/admin/create",
 //   verifyToken(["superadmin"]),
 //   async (req, res) => {
 //     const { email, password } = req.body;
@@ -13123,7 +13123,7 @@
 // );
 
 // // ---------- ADMIN ALL ORDERS ----------
-// app.get("/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [orders] = await db.query(`
 //       SELECT 
@@ -13188,7 +13188,7 @@
 // });
 
 // // ---------- ADMIN DASHBOARD ----------
-// app.get('/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [users] = await db.query("SELECT COUNT(*) as count FROM users");
 //     const [orders] = await db.query("SELECT COUNT(*) as count FROM orders");
@@ -13245,7 +13245,7 @@
 // });
 
 // // ---------- ADMIN ALL USERS ----------
-// app.get("/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [users] = await db.query(`
 //       SELECT 
@@ -13277,7 +13277,7 @@
 // });
 
 // // ---------- ADMIN USER ORDERS ----------
-// app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { userId } = req.params;
 
 //   try {
@@ -13318,7 +13318,7 @@
 // });
 
 // // ---------- ADMIN USER STATS ----------
-// app.get("/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.get("/api/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   try {
 //     const [total] = await db.query("SELECT COUNT(*) as count FROM users");
 //     const [newUsers] = await db.query(`
@@ -13344,7 +13344,7 @@
 // });
 
 // // ---------- ADMIN UPDATE USER ----------
-// app.put("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.put("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { id } = req.params;
 //   const { name, email, phone, isActive, homeAddress, officeAddress } = req.body;
 
@@ -13376,7 +13376,7 @@
 // });
 
 // // ---------- ADMIN DELETE USER ----------
-// app.delete("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+// app.delete("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
 //   const { id } = req.params;
 
 //   try {
@@ -13389,7 +13389,7 @@
 // });
 
 // // ---------- SERVICES ----------
-// app.get('/services', async (req, res) => {
+// app.get('/api/services', async (req, res) => {
 //   try {
 //     const [results] = await db.query('SELECT * FROM services');
 
@@ -13421,7 +13421,7 @@
 //   }
 // });
 
-// app.get('/services/:category', async (req, res) => {
+// app.get('/api/services/:category', async (req, res) => {
 //   const category = req.params.category.trim();
 
 //   try {
@@ -13455,7 +13455,7 @@
 //   }
 // });
 
-// app.post('/services', uploadService.single('image'), async (req, res) => {
+// app.post('/api/services', uploadService.single('image'), async (req, res) => {
 //   const { _id, name, price, category } = req.body;
 //   const image = req.file ? `/uploads/services/${req.file.filename}` : null;
 
@@ -13474,7 +13474,7 @@
 //   }
 // });
 
-// app.put('/services/:_id', uploadService.single('image'), async (req, res) => {
+// app.put('/api/services/:_id', uploadService.single('image'), async (req, res) => {
 //   const { _id } = req.params;
 //   const { name, price, category } = req.body;
 //   let image = req.file ? `/uploads/services/${req.file.filename}` : null;
@@ -13520,7 +13520,7 @@
 //   }
 // });
 
-// app.delete("/services/:_id", async (req, res) => {
+// app.delete("/api/services/:_id", async (req, res) => {
 //   const { _id } = req.params;
 //   try {
 //     await db.query("DELETE FROM services WHERE _id = ?", [_id]);
@@ -13532,7 +13532,7 @@
 // });
 
 // // ---------- VENDOR REGISTRATION ----------
-// app.post("/vendor/register", uploadVendorDocs.fields([
+// app.post("/api/vendor/register", uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -13661,7 +13661,7 @@
 // });
 
 // // ---------- TECHNICIAN REGISTRATION ----------
-// app.post("/technician/register", uploadVendorDocs.fields([
+// app.post("/api/technician/register", uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -13764,7 +13764,7 @@
 // });
 
 // // ---------- VENDOR PROFILE ----------
-// app.get("/vendor/profile", authenticateVendor, async (req, res) => {
+// app.get("/api/vendor/profile", authenticateVendor, async (req, res) => {
 //   try {
 //     console.log('📱 Vendor Profile Request - Vendor ID:', req.vendor?.vendorId);
 
@@ -13853,7 +13853,7 @@
 // });
 
 // // ---------- VENDOR PROFILE UPDATE ----------
-// app.put("/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
+// app.put("/api/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
 //   { name: 'profile_image', maxCount: 1 },
 //   { name: 'nid_front', maxCount: 1 },
 //   { name: 'nid_back', maxCount: 1 },
@@ -14024,7 +14024,7 @@
 // });
 
 // // ---------- FORGOT PASSWORD ----------
-// app.post("/forgot-password", async (req, res) => {
+// app.post("/api/forgot-password", async (req, res) => {
 //   console.log("Forgot password request received:", req.body);
 
 //   const { email } = req.body;
@@ -14210,7 +14210,7 @@
 // };
 
 // // ---------- ADMIN VENDORS LIST ----------
-// app.get('/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [vendors] = await db.query(`
 //       SELECT 
@@ -14250,7 +14250,7 @@
 // });
 
 // // ---------- ADMIN VENDOR STATUS UPDATE ----------
-// app.patch('/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { id } = req.params;
 //   const { status } = req.body;
 
@@ -14281,7 +14281,7 @@
 // });
 
 // // ---------- ORDER STATUS UPDATE (COMPLETE) ----------
-// app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { status, notes, service_started } = req.body;
 //   const userId = req.user.userId || req.user.id;
@@ -14409,7 +14409,7 @@
 // });
 
 // // ---------- ORDER CANCELLATION (COMPLETE) ----------
-// app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { reason, penaltyFee = 0 } = req.body;
@@ -14654,7 +14654,7 @@
 // });
 
 // // ---------- SERVICE EXPERT RATING ----------
-// app.post('/service-expert/:id/rate', authenticateJWT, async (req, res) => {
+// app.post('/api/service-expert/:id/rate', authenticateJWT, async (req, res) => {
 //   const { id } = req.params;
 //   const { rating, orderId } = req.body;
 //   const userId = req.user.userId;
@@ -14686,7 +14686,7 @@
 // });
 
 // // ---------- ORDER HOLD ----------
-// app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { reason, checkoutCharge } = req.body;
 //   const userId = req.user.userId;
@@ -14754,7 +14754,7 @@
 // });
 
 // // ---------- NOTIFICATIONS ----------
-// app.get('/notifications', authenticateJWT, async (req, res) => {
+// app.get('/api/notifications', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -14790,7 +14790,7 @@
 //   }
 // });
 
-// app.patch('/notifications/:id/read', authenticateJWT, async (req, res) => {
+// app.patch('/api/notifications/:id/read', authenticateJWT, async (req, res) => {
 //   try {
 //     const { id } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -14823,7 +14823,7 @@
 //   }
 // });
 
-// app.patch('/notifications/mark-all-read', authenticateJWT, async (req, res) => {
+// app.patch('/api/notifications/mark-all-read', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -14848,7 +14848,7 @@
 //   }
 // });
 
-// app.delete('/notifications/:id', authenticateJWT, async (req, res) => {
+// app.delete('/api/notifications/:id', authenticateJWT, async (req, res) => {
 //   try {
 //     const { id } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -14880,7 +14880,7 @@
 //   }
 // });
 
-// app.get('/notifications/unread-count', authenticateJWT, async (req, res) => {
+// app.get('/api/notifications/unread-count', authenticateJWT, async (req, res) => {
 //   try {
 //     const userId = req.user.userId || req.user.id;
 //     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -14916,7 +14916,7 @@
 // });
 
 // // ---------- SCHEDULE CHANGE ----------
-// app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+// app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { newDate, newTimeSlot, reason } = req.body;
@@ -15063,7 +15063,7 @@
 // });
 
 // // ---------- SCHEDULE HISTORY ----------
-// app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -15119,7 +15119,7 @@
 // });
 
 // // ---------- CAN CHANGE SCHEDULE ----------
-// app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+// app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -15210,7 +15210,7 @@
 // });
 
 // // ---------- VENDOR DASHBOARD ----------
-// app.get('/vendor/dashboard', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/dashboard', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -15299,7 +15299,7 @@
 // });
 
 // // ---------- VENDOR ORDER DETAILS ----------
-// app.get('/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const vendorId = req.vendor.vendorId;
@@ -15367,7 +15367,7 @@
 // });
 
 // // ---------- VENDOR REVIEWS ----------
-// app.get('/vendor/reviews', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/reviews', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 //     const { limit = 20, offset = 0 } = req.query;
@@ -15430,7 +15430,7 @@
 // });
 
 // // ---------- VENDOR TECHNICIANS ----------
-// app.get('/vendor/technicians', authenticateVendor, async (req, res) => {
+// app.get('/api/vendor/technicians', authenticateVendor, async (req, res) => {
 //   try {
 //     const vendorId = req.vendor.vendorId;
 
@@ -15466,7 +15466,7 @@
 // });
 
 // // ---------- ADMIN TECHNICIANS ----------
-// app.get('/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.get('/api/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   try {
 //     const [technicians] = await db.query(
 //       `SELECT 
@@ -15499,7 +15499,7 @@
 // });
 
 // // ---------- ADMIN TECHNICIAN STATUS UPDATE ----------
-// app.patch('/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/api/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { id } = req.params;
 //   const { status } = req.body;
 
@@ -15531,7 +15531,7 @@
 // });
 
 // // ---------- HEALTH CHECK ----------
-// app.get('/health', (req, res) => {
+// app.get('/api/health', (req, res) => {
 //   res.json({
 //     success: true,
 //     status: 'Server is healthy',
@@ -15542,7 +15542,7 @@
 //   });
 // });
 
-// app.get('/vendor/health', (req, res) => {
+// app.get('/api/vendor/health', (req, res) => {
 //   res.json({
 //     success: true,
 //     status: 'Server is running',
@@ -16624,7 +16624,7 @@ If you didn't request this password reset, you can safely ignore this email.
 // ============================================================
 
 // ---------- VENDOR ORDER ASSIGNMENT ----------
-app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
   const orderId = decodeURIComponent(req.params.orderId);
   const { vendor_id, status } = req.body;
 
@@ -16735,7 +16735,7 @@ app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async
 });
 
 // ---------- ORDER COMPLETION ----------
-app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
   const { orderId } = req.params;
   const userRole = req.user.role;
 
@@ -16799,7 +16799,7 @@ app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadm
 });
 
 // ---------- VENDOR ORDERS ----------
-app.get('/vendor/orders', authenticateVendor, async (req, res) => {
+app.get('/api/vendor/orders', authenticateVendor, async (req, res) => {
   try {
     const vendorId = req.vendor.vendorId;
 
@@ -16874,7 +16874,7 @@ app.get('/vendor/orders', authenticateVendor, async (req, res) => {
 });
 
 // ---------- ORDER REVIEW SUBMISSION ----------
-app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
+app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const { serviceExpert, websiteService, comments } = req.body;
   const userId = req.user.userId;
@@ -16955,7 +16955,7 @@ app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
 });
 
 // ---------- GET ORDER REVIEWS ----------
-app.get('/orders/:orderId/reviews', async (req, res) => {
+app.get('/api/orders/:orderId/reviews', async (req, res) => {
   const { orderId } = req.params;
 
   try {
@@ -17001,7 +17001,7 @@ app.get('/orders/:orderId/reviews', async (req, res) => {
 });
 
 // ---------- ORDER TRACKING ----------
-app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const userId = req.user.userId;
 
@@ -17121,7 +17121,7 @@ app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 });
 
 // ---------- VERIFY RESET TOKEN ----------
-app.post('/verify-reset-token', async (req, res) => {
+app.post('/api/verify-reset-token', async (req, res) => {
   const { token, email } = req.body;
 
   if (!token || !email) {
@@ -17165,7 +17165,7 @@ app.post('/verify-reset-token', async (req, res) => {
 });
 
 // ---------- RESET PASSWORD ----------
-app.post('/reset-password', async (req, res) => {
+app.post('/api/reset-password', async (req, res) => {
   const { token, email, newPassword } = req.body;
 
   if (!token || !email || !newPassword) {
@@ -17234,7 +17234,7 @@ app.post('/reset-password', async (req, res) => {
 });
 
 // ---------- FILTER ORDERS ----------
-app.get('/orders/filter', authenticateJWT, async (req, res) => {
+app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -17316,7 +17316,7 @@ app.get('/orders/filter', authenticateJWT, async (req, res) => {
 });
 
 // ---------- ORDER CONFIRMATION ----------
-app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
   const { orderId } = req.params;
 
   try {
@@ -17368,7 +17368,7 @@ app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), asyn
 });
 
 // ---------- GET VENDOR DETAILS ----------
-app.get('/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
+app.get('/api/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), async (req, res) => {
   const vendorId = req.params.vendorId;
 
   try {
@@ -17495,7 +17495,7 @@ app.get('/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), asyn
 });
 
 // ---------- REPORT ISSUE ----------
-app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
   const orderId = decodeURIComponent(req.params.orderId);
   const userId = req.user.id;
 
@@ -17567,7 +17567,7 @@ app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, 
 
 // ---------- USER PROFILE UPDATE ----------
 app.put(
-  "/user-profile",
+  "/api/user-profile",
   authenticateJWT,
   uploadProfile.single("photo"),
   async (req, res) => {
@@ -17652,9 +17652,9 @@ app.put(
 );
 
 // ---------- USER REGISTRATION ----------
-console.log("✅ /register route registered");
+console.log("✅ /api/register route registered");
 
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
   const { firstName, email, phoneNumber, password } = req.body;
 
   if (!firstName || !email || !phoneNumber || !password) {
@@ -17698,7 +17698,7 @@ app.post("/register", async (req, res) => {
 });
 
 // ---------- LOGIN ----------
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
   console.log(`🔐 Login attempt for: ${email}`);
@@ -17833,7 +17833,7 @@ app.post("/login", async (req, res) => {
 });
 
 // ---------- VERIFY JWT TOKEN ----------
-app.post("/auth/verify", authenticateJWT, async (req, res) => {
+app.post("/api/auth/verify", authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   try {
     const [result] = await db.query("SELECT name, email FROM users WHERE custom_id = ?", [userId]);
@@ -17848,7 +17848,7 @@ app.post("/auth/verify", authenticateJWT, async (req, res) => {
 });
 
 // ---------- GET USER PROFILE ----------
-app.get("/user-profile", authenticateJWT, async (req, res) => {
+app.get("/api/user-profile", authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   console.log("Authenticated userId:", userId);
 
@@ -17873,7 +17873,7 @@ app.get("/user-profile", authenticateJWT, async (req, res) => {
 });
 
 // ---------- PLACE ORDER ----------
-app.post("/place-order", authenticateJWT, async (req, res) => {
+app.post("/api/place-order", authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   const {
     category,
@@ -17945,7 +17945,7 @@ app.post("/place-order", authenticateJWT, async (req, res) => {
 });
 
 // ---------- GET USER ORDERS ----------
-app.get("/orders", authenticateJWT, async (req, res) => {
+app.get("/api/orders", authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
 
   try {
@@ -18008,7 +18008,7 @@ app.get("/orders", authenticateJWT, async (req, res) => {
 });
 
 // ---------- VERIFY ROLE ----------
-app.get('/auth/verify-role', verifyToken(), (req, res) => {
+app.get('/api/auth/verify-role', verifyToken(), (req, res) => {
   const requiredRoles = req.query.requiredRole?.split(",") || [];
   const userRole = req.user.role;
 
@@ -18036,7 +18036,7 @@ app.get('/auth/verify-role', verifyToken(), (req, res) => {
 });
 
 // ---------- SUPER ADMIN REGISTRATION ----------
-app.post("/superadmin/register", async (req, res) => {
+app.post("/api/superadmin/register", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -18099,7 +18099,7 @@ const loginLimiter = rateLimit({
   message: "Too many login attempts, please try again later"
 });
 
-app.post("/superadmin/login", loginLimiter, async (req, res) => {
+app.post("/api/superadmin/login", loginLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -18156,7 +18156,7 @@ app.post("/superadmin/login", loginLimiter, async (req, res) => {
 });
 
 // ---------- ADMIN CREATION ----------
-app.post("/admin/create",
+app.post("/api/admin/create",
   verifyToken(["superadmin"]),
   async (req, res) => {
     const { email, password } = req.body;
@@ -18195,7 +18195,7 @@ app.post("/admin/create",
 );
 
 // ---------- ADMIN ALL ORDERS ----------
-app.get("/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.get("/api/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, res) => {
   try {
     const [orders] = await db.query(`
       SELECT 
@@ -18260,7 +18260,7 @@ app.get("/admin/all-orders", verifyToken(["admin", "superadmin"]), async (req, r
 });
 
 // ---------- ADMIN DASHBOARD ----------
-app.get('/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.get('/api/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, res) => {
   try {
     const [users] = await db.query("SELECT COUNT(*) as count FROM users");
     const [orders] = await db.query("SELECT COUNT(*) as count FROM orders");
@@ -18317,7 +18317,7 @@ app.get('/admin/dashboard', verifyToken(['admin', 'superadmin']), async (req, re
 });
 
 // ---------- ADMIN ALL USERS ----------
-app.get("/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, res) => {
   try {
     const [users] = await db.query(`
       SELECT 
@@ -18349,7 +18349,7 @@ app.get("/admin/all-users", verifyToken(["admin", "superadmin"]), async (req, re
 });
 
 // ---------- ADMIN USER ORDERS ----------
-app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.get("/api/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -18390,7 +18390,7 @@ app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), asyn
 });
 
 // ---------- ADMIN USER STATS ----------
-app.get("/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.get("/api/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, res) => {
   try {
     const [total] = await db.query("SELECT COUNT(*) as count FROM users");
     const [newUsers] = await db.query(`
@@ -18416,7 +18416,7 @@ app.get("/admin/user-stats", verifyToken(["admin", "superadmin"]), async (req, r
 });
 
 // ---------- ADMIN UPDATE USER ----------
-app.put("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.put("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
   const { id } = req.params;
   const { name, email, phone, isActive, homeAddress, officeAddress } = req.body;
 
@@ -18448,7 +18448,7 @@ app.put("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res
 });
 
 // ---------- ADMIN DELETE USER ----------
-app.delete("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.delete("/api/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -18461,7 +18461,7 @@ app.delete("/admin/user/:id", verifyToken(["admin", "superadmin"]), async (req, 
 });
 
 // ---------- SERVICES ----------
-app.get('/services', async (req, res) => {
+app.get('/api/services', async (req, res) => {
   try {
     const [results] = await db.query('SELECT * FROM services');
 
@@ -18493,7 +18493,7 @@ app.get('/services', async (req, res) => {
   }
 });
 
-app.get('/services/:category', async (req, res) => {
+app.get('/api/services/:category', async (req, res) => {
   const category = req.params.category.trim();
 
   try {
@@ -18527,7 +18527,7 @@ app.get('/services/:category', async (req, res) => {
   }
 });
 
-app.post('/services', uploadService.single('image'), async (req, res) => {
+app.post('/api/services', uploadService.single('image'), async (req, res) => {
   const { _id, name, price, category } = req.body;
   const image = req.file ? `/uploads/services/${req.file.filename}` : null;
 
@@ -18546,7 +18546,7 @@ app.post('/services', uploadService.single('image'), async (req, res) => {
   }
 });
 
-app.put('/services/:_id', uploadService.single('image'), async (req, res) => {
+app.put('/api/services/:_id', uploadService.single('image'), async (req, res) => {
   const { _id } = req.params;
   const { name, price, category } = req.body;
   let image = req.file ? `/uploads/services/${req.file.filename}` : null;
@@ -18592,7 +18592,7 @@ app.put('/services/:_id', uploadService.single('image'), async (req, res) => {
   }
 });
 
-app.delete("/services/:_id", async (req, res) => {
+app.delete("/api/services/:_id", async (req, res) => {
   const { _id } = req.params;
   try {
     await db.query("DELETE FROM services WHERE _id = ?", [_id]);
@@ -18604,7 +18604,7 @@ app.delete("/services/:_id", async (req, res) => {
 });
 
 // ---------- VENDOR REGISTRATION ----------
-app.post("/vendor/register", uploadVendorDocs.fields([
+app.post("/api/vendor/register", uploadVendorDocs.fields([
   { name: 'profile_image', maxCount: 1 },
   { name: 'nid_front', maxCount: 1 },
   { name: 'nid_back', maxCount: 1 },
@@ -18733,7 +18733,7 @@ app.post("/vendor/register", uploadVendorDocs.fields([
 });
 
 // ---------- TECHNICIAN REGISTRATION ----------
-app.post("/technician/register", uploadVendorDocs.fields([
+app.post("/api/technician/register", uploadVendorDocs.fields([
   { name: 'profile_image', maxCount: 1 },
   { name: 'nid_front', maxCount: 1 },
   { name: 'nid_back', maxCount: 1 },
@@ -18836,7 +18836,7 @@ app.post("/technician/register", uploadVendorDocs.fields([
 });
 
 // ---------- VENDOR PROFILE ----------
-app.get("/vendor/profile", authenticateVendor, async (req, res) => {
+app.get("/api/vendor/profile", authenticateVendor, async (req, res) => {
   try {
     console.log('📱 Vendor Profile Request - Vendor ID:', req.vendor?.vendorId);
 
@@ -18925,7 +18925,7 @@ app.get("/vendor/profile", authenticateVendor, async (req, res) => {
 });
 
 // ---------- VENDOR PROFILE UPDATE ----------
-app.put("/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
+app.put("/api/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
   { name: 'profile_image', maxCount: 1 },
   { name: 'nid_front', maxCount: 1 },
   { name: 'nid_back', maxCount: 1 },
@@ -19096,7 +19096,7 @@ app.put("/vendor/profile", authenticateVendor, uploadVendorDocs.fields([
 });
 
 // ---------- FORGOT PASSWORD ----------
-app.post("/forgot-password", async (req, res) => {
+app.post("/api/forgot-password", async (req, res) => {
   console.log("Forgot password request received:", req.body);
 
   const { email } = req.body;
@@ -19179,7 +19179,7 @@ app.post("/forgot-password", async (req, res) => {
 });
 
 // ---------- ADMIN VENDORS LIST ----------
-app.get('/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
   try {
     const [vendors] = await db.query(`
       SELECT 
@@ -19219,7 +19219,7 @@ app.get('/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res)
 });
 
 // ---------- ADMIN VENDOR STATUS UPDATE ----------
-app.patch('/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.patch('/api/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -19250,7 +19250,7 @@ app.patch('/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']), asy
 });
 
 // ---------- ORDER STATUS UPDATE ----------
-app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
+app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const { status, notes, service_started } = req.body;
   const userId = req.user.userId || req.user.id;
@@ -19378,7 +19378,7 @@ app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
 });
 
 // ---------- ORDER CANCELLATION ----------
-app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const { reason, penaltyFee = 0 } = req.body;
@@ -19623,7 +19623,7 @@ app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 });
 
 // ---------- SERVICE EXPERT RATING ----------
-app.post('/service-expert/:id/rate', authenticateJWT, async (req, res) => {
+app.post('/api/service-expert/:id/rate', authenticateJWT, async (req, res) => {
   const { id } = req.params;
   const { rating, orderId } = req.body;
   const userId = req.user.userId;
@@ -19655,7 +19655,7 @@ app.post('/service-expert/:id/rate', authenticateJWT, async (req, res) => {
 });
 
 // ---------- ORDER HOLD ----------
-app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const { reason, checkoutCharge } = req.body;
   const userId = req.user.userId;
@@ -19723,7 +19723,7 @@ app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 });
 
 // ---------- NOTIFICATIONS ----------
-app.get('/notifications', authenticateJWT, async (req, res) => {
+app.get('/api/notifications', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user.userId || req.user.id;
     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -19759,7 +19759,7 @@ app.get('/notifications', authenticateJWT, async (req, res) => {
   }
 });
 
-app.patch('/notifications/:id/read', authenticateJWT, async (req, res) => {
+app.patch('/api/notifications/:id/read', authenticateJWT, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId || req.user.id;
@@ -19792,7 +19792,7 @@ app.patch('/notifications/:id/read', authenticateJWT, async (req, res) => {
   }
 });
 
-app.patch('/notifications/mark-all-read', authenticateJWT, async (req, res) => {
+app.patch('/api/notifications/mark-all-read', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user.userId || req.user.id;
     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -19817,7 +19817,7 @@ app.patch('/notifications/mark-all-read', authenticateJWT, async (req, res) => {
   }
 });
 
-app.delete('/notifications/:id', authenticateJWT, async (req, res) => {
+app.delete('/api/notifications/:id', authenticateJWT, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.userId || req.user.id;
@@ -19849,7 +19849,7 @@ app.delete('/notifications/:id', authenticateJWT, async (req, res) => {
   }
 });
 
-app.get('/notifications/unread-count', authenticateJWT, async (req, res) => {
+app.get('/api/notifications/unread-count', authenticateJWT, async (req, res) => {
   try {
     const userId = req.user.userId || req.user.id;
     const userType = req.user.role === 'vendor' ? 'vendor' : 'user';
@@ -19885,7 +19885,7 @@ app.get('/notifications/unread-count', authenticateJWT, async (req, res) => {
 });
 
 // ---------- SCHEDULE CHANGE ----------
-app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const { newDate, newTimeSlot, reason } = req.body;
@@ -20032,7 +20032,7 @@ app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 });
 
 // ---------- SCHEDULE HISTORY ----------
-app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.userId || req.user.id;
@@ -20088,7 +20088,7 @@ app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) =
 });
 
 // ---------- CAN CHANGE SCHEDULE ----------
-app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.userId || req.user.id;
@@ -20179,7 +20179,7 @@ app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res
 });
 
 // ---------- VENDOR DASHBOARD ----------
-app.get('/vendor/dashboard', authenticateVendor, async (req, res) => {
+app.get('/api/vendor/dashboard', authenticateVendor, async (req, res) => {
   try {
     const vendorId = req.vendor.vendorId;
 
@@ -20268,7 +20268,7 @@ app.get('/vendor/dashboard', authenticateVendor, async (req, res) => {
 });
 
 // ---------- VENDOR ORDER DETAILS ----------
-app.get('/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
+app.get('/api/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
   try {
     const { orderId } = req.params;
     const vendorId = req.vendor.vendorId;
@@ -20336,7 +20336,7 @@ app.get('/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
 });
 
 // ---------- VENDOR REVIEWS ----------
-app.get('/vendor/reviews', authenticateVendor, async (req, res) => {
+app.get('/api/vendor/reviews', authenticateVendor, async (req, res) => {
   try {
     const vendorId = req.vendor.vendorId;
     const { limit = 20, offset = 0 } = req.query;
@@ -20399,7 +20399,7 @@ app.get('/vendor/reviews', authenticateVendor, async (req, res) => {
 });
 
 // ---------- VENDOR TECHNICIANS ----------
-app.get('/vendor/technicians', authenticateVendor, async (req, res) => {
+app.get('/api/vendor/technicians', authenticateVendor, async (req, res) => {
   try {
     const vendorId = req.vendor.vendorId;
 
@@ -20435,7 +20435,7 @@ app.get('/vendor/technicians', authenticateVendor, async (req, res) => {
 });
 
 // ---------- ADMIN TECHNICIANS ----------
-app.get('/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.get('/api/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, res) => {
   try {
     const [technicians] = await db.query(
       `SELECT 
@@ -20468,7 +20468,7 @@ app.get('/admin/technicians', verifyToken(['admin', 'superadmin']), async (req, 
 });
 
 // ---------- ADMIN TECHNICIAN STATUS UPDATE ----------
-app.patch('/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.patch('/api/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']), async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -20500,7 +20500,7 @@ app.patch('/admin/technicians/:id/status', verifyToken(['admin', 'superadmin']),
 });
 
 // ---------- HEALTH CHECK ----------
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({
     success: true,
     status: 'Server is healthy',
@@ -20515,7 +20515,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.get('/vendor/health', (req, res) => {
+app.get('/api/vendor/health', (req, res) => {
   res.json({
     success: true,
     status: 'Server is running',
