@@ -16800,7 +16800,7 @@ app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadm
 
 
 // ---------- GET USER ORDERS ----------
-app.get("/orders", authenticateJWT, async (req, res) => {
+app.get("/api/orders", authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
 
   try {
