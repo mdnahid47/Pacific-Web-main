@@ -18349,7 +18349,7 @@ app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req
 });
 
 // ---------- ADMIN USER ORDERS ----------
-app.get("/api/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -20268,7 +20268,7 @@ app.get('/api/vendor/dashboard', authenticateVendor, async (req, res) => {
 });
 
 // ---------- VENDOR ORDER DETAILS ----------
-app.get('/api/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
+app.get('/vendor/orders/:orderId', authenticateVendor, async (req, res) => {
   try {
     const { orderId } = req.params;
     const vendorId = req.vendor.vendorId;
