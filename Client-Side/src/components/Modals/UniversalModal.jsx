@@ -276,7 +276,7 @@ const UniversalModal = ({ category }) => {
           <div className="flex flex-col items-center justify-center py-12 bg-gray-800/50 rounded-lg">
             <FiPackage className="text-6xl text-gray-500 mb-4" />
             <h3 className="text-xl font-semibold text-gray-300 mb-2">No Services Available</h3>
-            <p className="text-gray-400 text-center max-w-md">
+            <p className="text-white text-center max-w-md">
               We're currently updating our {category} services. 
               Please check back later or explore other categories.
             </p>
