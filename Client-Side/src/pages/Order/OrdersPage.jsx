@@ -3058,7 +3058,7 @@ const OrdersPage = () => {
     try {
       setVendorLoading(true);
       const token = localStorage.getItem("token");
-      const res = await api.get(`/api/vendors/${vendorId}`, {
+      const res = await api.get(`/vendors/${vendorId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
