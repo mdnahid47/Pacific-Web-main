@@ -635,7 +635,7 @@ import Swal from "sweetalert2";
 import ThanaDistrictlist from "../../components/divison&thanalist/ThanaDistrictlist";
 import { Navigate, useNavigate } from "react-router-dom";
 import { FaUser, FaPhone, FaEnvelope, FaMapMarkerAlt, FaHome, FaBuilding, FaCamera, FaSignOutAlt, FaEdit } from "react-icons/fa";
-
+import axios from "axios";
 function UserProfile() {
   const navigate = useNavigate();
   const { user, handleLogin, handleLogout } = useContext(AuthContext);
@@ -653,12 +653,11 @@ function UserProfile() {
 
   // Fetch user profile data
   useEffect(() => {
-    const source = api.CancelToken.source();
-
+const source = axios.CancelToken.source();
     const fetchUserProfile = async () => {
       try {
         const response = await api.get(
-          "/api/user-profile",
+          "/user-profile",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
