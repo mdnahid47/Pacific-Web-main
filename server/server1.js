@@ -16798,6 +16798,70 @@ app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadm
   }
 });
 
+
+// ---------- GET USER ORDERS ----------
+app.get("/orders", authenticateJWT, async (req, res) => {
+  const userId = req.user.userId;
+
+  try {
+    const [orders] = await db.query(
+      "SELECT * FROM orders WHERE user_id = ? ORDER BY order_date DESC",
+      [userId]
+    );
+
+    const parsedOrders = orders.map(order => {
+      const parsedCart = safeParseJSON(order.cart_items, []);
+      const parsedServiceExpert = safeParseJSON(order.service_expert, null);
+      const parsedReviews = safeParseJSON(order.reviews, null);
+      
+      const homeAddress = safeParseJSON(order.home_address, null);
+      const officeAddress = safeParseJSON(order.office_address, null);
+      const tempAddress = safeParseJSON(order.temp_address, null);
+
+      let primaryAddress = null;
+      let addressType = order.address_type || 'home';
+
+      if (addressType === 'home' && homeAddress) primaryAddress = homeAddress;
+      else if (addressType === 'office' && officeAddress) primaryAddress = officeAddress;
+      else if (addressType === 'another' && tempAddress) primaryAddress = tempAddress;
+
+      let fullAddress = "";
+      if (primaryAddress) {
+        const parts = [];
+        if (primaryAddress.addressLine1) parts.push(primaryAddress.addressLine1);
+        if (primaryAddress.addressLine2) parts.push(primaryAddress.addressLine2);
+        if (primaryAddress.areaName) parts.push(primaryAddress.areaName);
+        if (primaryAddress.city) parts.push(primaryAddress.city);
+        if (primaryAddress.landmark) parts.push(`Near ${primaryAddress.landmark}`);
+        fullAddress = parts.join(", ");
+      }
+
+      const cartItems = Array.isArray(parsedCart) ? parsedCart : [];
+      const total = cartItems.reduce((sum, item) =>
+        sum + ((item?.price || 0) * (item?.quantity || 0)), 0
+      );
+
+      return {
+        ...order,
+        cart_items: cartItems,
+        service_expert: parsedServiceExpert,
+        reviews: parsedReviews,
+        home_address: homeAddress,
+        office_address: officeAddress,
+        temp_address: tempAddress,
+        address: primaryAddress,
+        full_address: fullAddress,
+        total: total.toFixed(2)
+      };
+    });
+
+    res.status(200).json({ success: true, orders: parsedOrders });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch orders" });
+  }
+});
+
 // ---------- VENDOR ORDERS ----------
 app.get('/api/vendor/orders', authenticateVendor, async (req, res) => {
   try {
@@ -18349,7 +18413,7 @@ app.get("/api/admin/all-users", verifyToken(["admin", "superadmin"]), async (req
 });
 
 // ---------- ADMIN USER ORDERS ----------
-app.get("/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
+app.get("/api/admin/user-orders/:userId", verifyToken(["admin", "superadmin"]), async (req, res) => {
   const { userId } = req.params;
 
   try {
