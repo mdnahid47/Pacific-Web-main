@@ -770,7 +770,7 @@ const source = axios.CancelToken.source();
       }
 
       const response = await api.put(
-        "/api/user-profile",
+        "/user-profile",
         formData,
         {
           headers: {
