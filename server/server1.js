@@ -604,7 +604,7 @@
 // // =============================== NEW ENDPOINTS ===============================
 
 // // 1. vendor order assginment endpoint
-// app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   // URL প্যারামিটার ডিকোড করুন
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { vendor_id, status } = req.body;
@@ -726,7 +726,7 @@
 // });
 
 // // 2. order completion endpoint
-// app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 //   const userRole = req.user.role;
 
@@ -899,7 +899,7 @@
 // });
 
 // // 4. order review submission endpoint
-// app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
+// app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { serviceExpert, websiteService, comments } = req.body;
 //   const userId = req.user.userId;
@@ -987,7 +987,7 @@
 // });
 
 // // 5. order review viewing endpoint
-// app.get('/api/orders/:orderId/reviews', async (req, res) => {
+// app.get('/orders/:orderId/reviews', async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -1033,7 +1033,7 @@
 // });
 
 // // 6. order tracking information
-// app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const userId = req.user.userId;
 
@@ -1318,7 +1318,7 @@
 // });
 
 // // 9. get orders based on filters
-// app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
+// app.get('/orders/filter', authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -1433,7 +1433,7 @@
 // });
 
 // // 10. order confirmation endpoint (Pending to Active)
-// app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -1642,7 +1642,7 @@
 // });
 
 // // Report issue API
-// app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+// app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const userId = req.user.id;
 
@@ -2190,7 +2190,7 @@
 
 
 // // // Cancel Order
-// // app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// // app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 // //   const { orderId } = req.params;
 // //   const { reason } = req.body;
 // //   const userId = req.user.userId;
@@ -2222,7 +2222,7 @@
 // // });
 
 // // Get All Orders of the Logged-in User
-// app.get("/api/orders", authenticateJWT, async (req, res) => {
+// app.get("/orders", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 
 //   try {
@@ -3980,7 +3980,7 @@
 
 // // 13. generic endpoint for updating order status
 // // order stats update
-// app.patch('/api/orders/:orderId/status', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/status', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   // URL perameter 
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { status, notes } = req.body;
@@ -4180,7 +4180,7 @@
 // // });
 
 // // Order cancel API - FIXED for user/admin separation
-// app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { reason, penaltyFee = 0, accept_fee = false } = req.body;
@@ -4462,7 +4462,7 @@
 // });
 
 // // Get cancellation details - WITH ROLE-BASED ACCESS
-// app.get('/api/orders/:orderId/cancellation-details', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/cancellation-details', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -4657,7 +4657,7 @@
 // // vendor accept penalty fee
 
 // // Vendor accept penalty fee
-// app.post('/api/orders/:orderId/vendor-accept-penalty', authenticateJWT, async (req, res) => {
+// app.post('/orders/:orderId/vendor-accept-penalty', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -4814,7 +4814,7 @@
 
 
 // // Update your existing status update endpoint to handle service started
-// app.patch('/api/orders/:orderId/status', authenticateAdmin, async (req, res) => {
+// app.patch('/orders/:orderId/status', authenticateAdmin, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { status, service_started } = req.body;
@@ -4960,7 +4960,7 @@
 // });
 
 // // order hold api
-// app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { reason, checkoutCharge } = req.body;
 //   const userId = req.user.userId;
@@ -5229,7 +5229,7 @@
 // // ======================== SCHEDULE CHANGE API ========================
 
 // // Schedule Change API
-// app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { newDate, newTimeSlot, reason } = req.body;
@@ -5474,7 +5474,7 @@
 // });
 
 // // Get schedule change history for an order
-// app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -5532,7 +5532,7 @@
 // });
 
 // // Check if schedule can be changed for an order
-// app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -6374,7 +6374,7 @@
 // // ============================================================
 
 // // ---------- VENDOR ORDER ASSIGNMENT ----------
-// app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { vendor_id, status } = req.body;
 
@@ -6485,7 +6485,7 @@
 // });
 
 // // ---------- ORDER COMPLETION ----------
-// app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 //   const userRole = req.user.role;
 
@@ -6651,7 +6651,7 @@
 // });
 
 // // ---------- ORDER REVIEW SUBMISSION ----------
-// app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
+// app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { serviceExpert, websiteService, comments } = req.body;
 //   const userId = req.user.userId;
@@ -6732,7 +6732,7 @@
 // });
 
 // // ---------- GET ORDER REVIEWS ----------
-// app.get('/api/orders/:orderId/reviews', async (req, res) => {
+// app.get('/orders/:orderId/reviews', async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -6778,7 +6778,7 @@
 // });
 
 // // ---------- ORDER TRACKING ----------
-// app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const userId = req.user.userId;
 
@@ -7048,7 +7048,7 @@
 // });
 
 // // ---------- FILTER ORDERS ----------
-// app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
+// app.get('/orders/filter', authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -7157,7 +7157,7 @@
 // });
 
 // // ---------- ORDER CONFIRMATION ----------
-// app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -7346,7 +7346,7 @@
 // });
 
 // // ---------- REPORT ISSUE ----------
-// app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+// app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const userId = req.user.id;
 
@@ -7808,7 +7808,7 @@
 // });
 
 // // ---------- GET USER ORDERS ----------
-// app.get("/api/orders", authenticateJWT, async (req, res) => {
+// app.get("/orders", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 
 //   try {
@@ -9365,7 +9365,7 @@
 // });
 
 // // ---------- ORDER STATUS UPDATE (COMPLETE) ----------
-// app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { status, notes, service_started } = req.body;
 //   const userId = req.user.userId || req.user.id;
@@ -9493,7 +9493,7 @@
 // });
 
 // // ---------- ORDER CANCELLATION (COMPLETE) ----------
-// app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { reason, penaltyFee = 0 } = req.body;
@@ -9770,7 +9770,7 @@
 // });
 
 // // ---------- ORDER HOLD ----------
-// app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { reason, checkoutCharge } = req.body;
 //   const userId = req.user.userId;
@@ -10000,7 +10000,7 @@
 // });
 
 // // ---------- SCHEDULE CHANGE ----------
-// app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { newDate, newTimeSlot, reason } = req.body;
@@ -10147,7 +10147,7 @@
 // });
 
 // // ---------- SCHEDULE HISTORY ----------
-// app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -10203,7 +10203,7 @@
 // });
 
 // // ---------- CAN CHANGE SCHEDULE ----------
-// app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -11550,7 +11550,7 @@
 // // ============================================================
 
 // // ---------- VENDOR ORDER ASSIGNMENT ----------
-// app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const { vendor_id, status } = req.body;
 
@@ -11661,7 +11661,7 @@
 // });
 
 // // ---------- ORDER COMPLETION ----------
-// app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 //   const userRole = req.user.role;
 
@@ -11803,7 +11803,7 @@
 // });
 
 // // ---------- ORDER REVIEW SUBMISSION ----------
-// app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
+// app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { serviceExpert, websiteService, comments } = req.body;
 //   const userId = req.user.userId;
@@ -11884,7 +11884,7 @@
 // });
 
 // // ---------- GET ORDER REVIEWS ----------
-// app.get('/api/orders/:orderId/reviews', async (req, res) => {
+// app.get('/orders/:orderId/reviews', async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -11930,7 +11930,7 @@
 // });
 
 // // ---------- ORDER TRACKING ----------
-// app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const userId = req.user.userId;
 
@@ -12163,7 +12163,7 @@
 // });
 
 // // ---------- FILTER ORDERS ----------
-// app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
+// app.get('/orders/filter', authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 //   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -12245,7 +12245,7 @@
 // });
 
 // // ---------- ORDER CONFIRMATION ----------
-// app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+// app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
 //   const { orderId } = req.params;
 
 //   try {
@@ -12424,7 +12424,7 @@
 // });
 
 // // ---------- REPORT ISSUE ----------
-// app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+// app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
 //   const orderId = decodeURIComponent(req.params.orderId);
 //   const userId = req.user.id;
 
@@ -12873,7 +12873,7 @@
 // });
 
 // // ---------- GET USER ORDERS ----------
-// app.get("/api/orders", authenticateJWT, async (req, res) => {
+// app.get("/orders", authenticateJWT, async (req, res) => {
 //   const userId = req.user.userId;
 
 //   try {
@@ -14281,7 +14281,7 @@
 // });
 
 // // ---------- ORDER STATUS UPDATE (COMPLETE) ----------
-// app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { status, notes, service_started } = req.body;
 //   const userId = req.user.userId || req.user.id;
@@ -14409,7 +14409,7 @@
 // });
 
 // // ---------- ORDER CANCELLATION (COMPLETE) ----------
-// app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { reason, penaltyFee = 0 } = req.body;
@@ -14686,7 +14686,7 @@
 // });
 
 // // ---------- ORDER HOLD ----------
-// app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
 //   const { orderId } = req.params;
 //   const { reason, checkoutCharge } = req.body;
 //   const userId = req.user.userId;
@@ -14916,7 +14916,7 @@
 // });
 
 // // ---------- SCHEDULE CHANGE ----------
-// app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+// app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const { newDate, newTimeSlot, reason } = req.body;
@@ -15063,7 +15063,7 @@
 // });
 
 // // ---------- SCHEDULE HISTORY ----------
-// app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -15119,7 +15119,7 @@
 // });
 
 // // ---------- CAN CHANGE SCHEDULE ----------
-// app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+// app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
 //   try {
 //     const { orderId } = req.params;
 //     const userId = req.user.userId || req.user.id;
@@ -16624,7 +16624,7 @@ If you didn't request this password reset, you can safely ignore this email.
 // ============================================================
 
 // ---------- VENDOR ORDER ASSIGNMENT ----------
-app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.patch('/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), async (req, res) => {
   const orderId = decodeURIComponent(req.params.orderId);
   const { vendor_id, status } = req.body;
 
@@ -16735,7 +16735,7 @@ app.patch('/api/orders/:orderId/assign', verifyToken(['admin', 'superadmin']), a
 });
 
 // ---------- ORDER COMPLETION ----------
-app.patch('/api/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
+app.patch('/orders/:orderId/complete', verifyToken(['admin', 'vendor', 'superadmin']), async (req, res) => {
   const { orderId } = req.params;
   const userRole = req.user.role;
 
@@ -16874,7 +16874,7 @@ app.get('/api/vendor/orders', authenticateVendor, async (req, res) => {
 });
 
 // ---------- ORDER REVIEW SUBMISSION ----------
-app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
+app.post('/orders/:orderId/review', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const { serviceExpert, websiteService, comments } = req.body;
   const userId = req.user.userId;
@@ -16955,7 +16955,7 @@ app.post('/api/orders/:orderId/review', authenticateJWT, async (req, res) => {
 });
 
 // ---------- GET ORDER REVIEWS ----------
-app.get('/api/orders/:orderId/reviews', async (req, res) => {
+app.get('/orders/:orderId/reviews', async (req, res) => {
   const { orderId } = req.params;
 
   try {
@@ -17001,7 +17001,7 @@ app.get('/api/orders/:orderId/reviews', async (req, res) => {
 });
 
 // ---------- ORDER TRACKING ----------
-app.get('/api/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
+app.get('/orders/:orderId/tracking', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const userId = req.user.userId;
 
@@ -17234,7 +17234,7 @@ app.post('/api/reset-password', async (req, res) => {
 });
 
 // ---------- FILTER ORDERS ----------
-app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
+app.get('/orders/filter', authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
   const { status, dateFrom, dateTo, search } = req.query;
 
@@ -17316,7 +17316,7 @@ app.get('/api/orders/filter', authenticateJWT, async (req, res) => {
 });
 
 // ---------- ORDER CONFIRMATION ----------
-app.patch('/api/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
+app.patch('/orders/:orderId/confirm', verifyToken(['admin', 'superadmin']), async (req, res) => {
   const { orderId } = req.params;
 
   try {
@@ -17495,7 +17495,7 @@ app.get('/api/vendors/:vendorId', verifyToken(['admin', 'superadmin', 'user']), 
 });
 
 // ---------- REPORT ISSUE ----------
-app.post('/api/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
+app.post('/orders/:orderId/report', verifyToken(['user', 'admin']), async (req, res) => {
   const orderId = decodeURIComponent(req.params.orderId);
   const userId = req.user.id;
 
@@ -17945,7 +17945,7 @@ app.post("/api/place-order", authenticateJWT, async (req, res) => {
 });
 
 // ---------- GET USER ORDERS ----------
-app.get("/api/orders", authenticateJWT, async (req, res) => {
+app.get("/orders", authenticateJWT, async (req, res) => {
   const userId = req.user.userId;
 
   try {
@@ -19250,7 +19250,7 @@ app.patch('/api/admin/vendors/:id/status', verifyToken(['admin', 'superadmin']),
 });
 
 // ---------- ORDER STATUS UPDATE ----------
-app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
+app.patch('/orders/:orderId/status', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const { status, notes, service_started } = req.body;
   const userId = req.user.userId || req.user.id;
@@ -19378,7 +19378,7 @@ app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
 });
 
 // ---------- ORDER CANCELLATION ----------
-app.patch('/api/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
+app.patch('/orders/:orderId/cancel', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const { reason, penaltyFee = 0 } = req.body;
@@ -19655,7 +19655,7 @@ app.post('/api/service-expert/:id/rate', authenticateJWT, async (req, res) => {
 });
 
 // ---------- ORDER HOLD ----------
-app.patch('/api/orders/:orderId/hold', authenticateJWT, async (req, res) => {
+app.patch('/orders/:orderId/hold', authenticateJWT, async (req, res) => {
   const { orderId } = req.params;
   const { reason, checkoutCharge } = req.body;
   const userId = req.user.userId;
@@ -19885,7 +19885,7 @@ app.get('/api/notifications/unread-count', authenticateJWT, async (req, res) => 
 });
 
 // ---------- SCHEDULE CHANGE ----------
-app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
+app.patch('/orders/:orderId/schedule', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const { newDate, newTimeSlot, reason } = req.body;
@@ -20032,7 +20032,7 @@ app.patch('/api/orders/:orderId/schedule', authenticateJWT, async (req, res) => 
 });
 
 // ---------- SCHEDULE HISTORY ----------
-app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
+app.get('/orders/:orderId/schedule-history', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.userId || req.user.id;
@@ -20088,7 +20088,7 @@ app.get('/api/orders/:orderId/schedule-history', authenticateJWT, async (req, re
 });
 
 // ---------- CAN CHANGE SCHEDULE ----------
-app.get('/api/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
+app.get('/orders/:orderId/can-change-schedule', authenticateJWT, async (req, res) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.userId || req.user.id;
