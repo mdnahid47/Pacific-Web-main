@@ -3478,7 +3478,7 @@ const OrdersPage = () => {
       };
 
       const response = await api.post(
-        "/api/place-order",
+        "/place-order",
         reorderData,
         {
           headers: {
