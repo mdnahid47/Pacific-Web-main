@@ -2072,13 +2072,13 @@ import { NavLink, useNavigate } from "react-router-dom";
 // API Configuration - Base URL removed, using api instance instead
 const API_CONFIG = {
   ENDPOINTS: {
-    GET_ALL_ORDERS: "/api/admin/all-orders",
-    UPDATE_ORDER_STATUS: (orderId) => `/api/orders/${encodeURIComponent(orderId)}/status`,
-    ASSIGN_VENDOR: (orderId) => `/api/orders/${encodeURIComponent(orderId)}/assign`,
-    UPDATE_ORDER: (orderId) => `/api/order/${encodeURIComponent(orderId)}`,
-    GET_VENDORS: "/api/admin/vendors",
-    CANCEL_CHECK: (orderId) => `/api/orders/${encodeURIComponent(orderId)}/cancel-check`,
-    CANCEL_ORDER: (orderId) => `/api/orders/${encodeURIComponent(orderId)}/cancel`,
+    GET_ALL_ORDERS: "/admin/all-orders",
+    UPDATE_ORDER_STATUS: (orderId) => `/orders/${encodeURIComponent(orderId)}/status`,
+    ASSIGN_VENDOR: (orderId) => `/orders/${encodeURIComponent(orderId)}/assign`,
+    UPDATE_ORDER: (orderId) => `/order/${encodeURIComponent(orderId)}`,
+    GET_VENDORS: "/admin/vendors",
+    CANCEL_CHECK: (orderId) => `/orders/${encodeURIComponent(orderId)}/cancel-check`,
+    CANCEL_ORDER: (orderId) => `/orders/${encodeURIComponent(orderId)}/cancel`,
   }
 };
 
@@ -2283,7 +2283,7 @@ const OrdersList = () => {
       const encodedOrderId = encodeURIComponent(orderId);
 
       const response = await api.patch(
-        `/api/orders/${encodedOrderId}/status`,
+        `/orders/${encodedOrderId}/status`,
         {
           status: newStatus,
           service_started: serviceStarted
@@ -2346,7 +2346,7 @@ const OrdersList = () => {
       const encodedOrderId = encodeURIComponent(orderId);
 
       const response = await api.patch(
-        `/api/orders/${encodedOrderId}/assign`,
+        `/orders/${encodedOrderId}/assign`,
         {
           vendor_id: vendorId,
           status: 'Assigned to Vendor'
@@ -2392,7 +2392,7 @@ const OrdersList = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.get(
-        `/api/orders/${encodeURIComponent(orderId)}/cancel-check`,
+        `/orders/${encodeURIComponent(orderId)}/cancel-check`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -2469,7 +2469,7 @@ const OrdersList = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await api.patch(
-        `/api/orders/${encodeURIComponent(selectedOrderForCancel.order_id)}/cancel`,
+        `/orders/${encodeURIComponent(selectedOrderForCancel.order_id)}/cancel`,
         {
           reason: cancelReason,
           penaltyFee: penaltyFee
@@ -3932,7 +3932,7 @@ const OrdersList = () => {
                         try {
                           const token = localStorage.getItem("token");
                           const response = await api.patch(
-                            `/api/orders/${encodeURIComponent(selectedOrderForAssign.order_id)}/assign`,
+                            `/orders/${encodeURIComponent(selectedOrderForAssign.order_id)}/assign`,
                             {
                               vendor_id: null,
                               status: 'Pending'
