@@ -682,7 +682,7 @@ const AdminServiceManager = () => {
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/api/services');
+      const res = await api.get('/services');
       setServices(res.data);
     } catch (err) {
       setMessage('Failed to load services');
@@ -746,7 +746,7 @@ const AdminServiceManager = () => {
     if (!result.isConfirmed) return;
 
     try {
-      await api.delete(`/api/services/${_id}`);
+      await api.delete(`/services/${_id}`);
       
       Swal.fire({
         icon: 'success',
@@ -786,11 +786,11 @@ const AdminServiceManager = () => {
     try {
       let res;
       if (editingServiceId) {
-        res = await api.put(`/api/services/${editingServiceId}`, formData, {
+        res = await api.put(`/services/${editingServiceId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       } else {
-        res = await api.post('/api/services', formData, {
+        res = await api.post('/services', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
@@ -841,7 +841,7 @@ const AdminServiceManager = () => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        await api.post('/api/auth/logout', {}, {
+        await api.post('/auth/logout', {}, {
           headers: {
             Authorization: `Bearer ${token}`
           }
