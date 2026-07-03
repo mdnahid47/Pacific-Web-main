@@ -158,7 +158,7 @@ const UniversalModal = ({ category }) => {
     const fetchServices = async () => {
       try {
         const encodedCategory = encodeURIComponent(category);
-        const response = await api.get(`/api/services/${encodedCategory}`);
+        const response = await api.get(`/services/${encodedCategory}`);
         setServices(response.data);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -176,7 +176,7 @@ const UniversalModal = ({ category }) => {
       if (token) {
         try {
           const response = await api.post(
-            "/api/auth/verify",
+            "/auth/verify",
             {},
             { headers: { Authorization: `Bearer ${token}` } }
           );
