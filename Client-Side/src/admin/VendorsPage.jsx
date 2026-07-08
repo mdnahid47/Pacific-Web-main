@@ -18,29 +18,21 @@ import {
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
 
-// ✅ API বেস URL - কনস্ট্যান্ট
+// ✅ API বেস URL
 const API_BASE_URL = 'https://pacific-web-main-production.up.railway.app';
 
-// ✅ URL নরমালাইজ করার ফাংশন
+// ✅ URL নরমালাইজ ফাংশন
 const normalizeUrl = (url) => {
   if (!url) return null;
-  
-  // যদি ইতিমধ্যে সম্পূর্ণ URL হয়
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  
-  // যদি স্ল্যাশ দিয়ে শুরু হয়
   if (url.startsWith('/')) {
     return `${API_BASE_URL}${url}`;
   }
-  
-  // যদি 'uploads/' দিয়ে শুরু হয়
   if (url.startsWith('uploads/')) {
     return `${API_BASE_URL}/${url}`;
   }
-  
-  // অন্যথায়
   return `${API_BASE_URL}/uploads/${url}`;
 };
 
@@ -158,18 +150,6 @@ const VendorsList = () => {
 
       if (vendorsData.length > 0) {
         console.log("🔍 Sample vendor data:", vendorsData[0]);
-        console.log("📄 Documents in first vendor:", {
-          nid_front: vendorsData[0].nid_front,
-          nid_back: vendorsData[0].nid_back,
-          trade_license: vendorsData[0].trade_license,
-          cv: vendorsData[0].cv,
-          profile_image: vendorsData[0].profile_image || vendorsData[0].photo,
-          dob: vendorsData[0].dob,
-          permanent_address: vendorsData[0].permanent_address,
-          present_address: vendorsData[0].present_address,
-          service_areas: vendorsData[0].service_areas,
-          services: vendorsData[0].services
-        });
       }
 
       setVendors(vendorsData);
@@ -504,7 +484,6 @@ const VendorsList = () => {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-900 text-white relative">
-      {/* Mobile Sidebar Toggle */}
       <div className="lg:hidden p-4 bg-gray-900 flex justify-between items-center border-b border-gray-800">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -516,7 +495,6 @@ const VendorsList = () => {
         <div className="w-10"></div>
       </div>
 
-      {/* Sidebar */}
       <div
         ref={sidebarRef}
         className={`bg-gray-800 p-4 lg:w-64 w-64 fixed lg:static z-50 transition-transform duration-300 h-full
@@ -551,15 +529,12 @@ const VendorsList = () => {
         </div>
       </div>
 
-      {/* Overlay for mobile */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={() => setSidebarOpen(false)}></div>
       )}
 
-      {/* Main Content */}
       <main className="flex-1 p-4 lg:p-6 lg:ml-0">
-        {/* Header Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold">Vendor Management</h1>
@@ -592,7 +567,6 @@ const VendorsList = () => {
           </div>
         </div>
 
-        {/* Stats Dashboard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-6">
           <StatsCard
             title="Total Vendors"
@@ -644,7 +618,6 @@ const VendorsList = () => {
           />
         </div>
 
-        {/* Filters and Search */}
         <div className="card bg-gray-800 shadow-lg mb-6">
           <div className="card-body p-4">
             <div className="flex flex-col lg:flex-row gap-4">
@@ -739,7 +712,6 @@ const VendorsList = () => {
           </div>
         </div>
 
-        {/* Vendors Table */}
         <div className="card bg-gray-800 shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="table w-full">
@@ -1086,7 +1058,6 @@ const VendorsList = () => {
           )}
         </div>
 
-        {/* View Vendor Modal */}
         <dialog id="view_vendor_modal" className="modal modal-bottom sm:modal-middle">
           <div className="modal-box max-w-6xl w-[98vw] sm:w-[95vw] md:w-[90vw] lg:w-full max-h-[95vh] sm:max-h-[92vh] md:max-h-[90vh] bg-gray-800 border border-gray-700 overflow-y-auto p-3 sm:p-4 md:p-6 m-0 sm:m-2 md:m-4">
             <form method="dialog">
@@ -1113,60 +1084,6 @@ const VendorsList = () => {
           </form>
         </dialog>
 
-        {/* Document Preview Modal */}
-        <dialog id="doc_preview_modal" className="modal modal-bottom sm:modal-middle">
-          <div className="modal-box max-w-4xl w-[95vw] bg-gray-800 border border-gray-700 p-0 overflow-hidden max-h-[90vh]">
-            <form method="dialog" className="absolute right-2 top-2 z-10">
-              <button className="btn btn-sm btn-circle btn-ghost text-white hover:bg-gray-700">
-                <FiX className="w-5 h-5" />
-              </button>
-            </form>
-            {viewVendor?.previewDoc && (
-              <div className="w-full h-[80vh]">
-                {viewVendor.previewDoc.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) ? (
-                  <img 
-                    src={viewVendor.previewDoc} 
-                    alt="Document" 
-                    className="w-full h-full object-contain p-4" 
-                    onError={() => {
-                      Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to load image',
-                        timer: 2000,
-                        showConfirmButton: false
-                      });
-                    }}
-                  />
-                ) : viewVendor.previewDoc.match(/\.(pdf)$/i) ? (
-                  <iframe 
-                    src={viewVendor.previewDoc} 
-                    className="w-full h-full border-0"
-                    title="PDF Document"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-center">
-                      <FiFile className="text-6xl text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-300">Unable to preview this file type</p>
-                      <button 
-                        onClick={() => window.open(viewVendor.previewDoc, '_blank')}
-                        className="btn btn-primary mt-4"
-                      >
-                        <FiExternalLink className="mr-2" /> Open in New Tab
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
-          </form>
-        </dialog>
-
-        {/* Add Vendor Modal */}
         {showAddVendorModal && (
           <AddVendorModal
             onClose={() => setShowAddVendorModal(false)}
@@ -1182,7 +1099,7 @@ const VendorsList = () => {
 };
 
 // ============================================
-// Fully Responsive Vendor Details Component - ফিক্সড
+// Fully Responsive Vendor Details Component
 // ============================================
 const FullyResponsiveVendorDetails = ({
   vendor,
@@ -1194,9 +1111,8 @@ const FullyResponsiveVendorDetails = ({
 }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [documents, setDocuments] = useState([]);
-  const [previewDoc, setPreviewDoc] = useState(null);
 
-  // ✅ ডকুমেন্ট ভিউ ফাংশন - ফিক্সড
+  // ✅ সরাসরি নতুন ট্যাবে ডকুমেন্ট ওপেন করুন
   const viewDocument = (url) => {
     if (!url) {
       Swal.fire({
@@ -1209,12 +1125,8 @@ const FullyResponsiveVendorDetails = ({
       return;
     }
 
-    console.log("📄 Original URL:", url);
-    
-    // ✅ URL নরমালাইজ করুন
-    let fullUrl = normalizeUrl(url);
-    
-    console.log("🔗 Final URL:", fullUrl);
+    const fullUrl = normalizeUrl(url);
+    console.log("📄 Opening document:", fullUrl);
     
     if (!fullUrl) {
       Swal.fire({
@@ -1226,23 +1138,19 @@ const FullyResponsiveVendorDetails = ({
       });
       return;
     }
-    
-    // ✅ প্রিভিউ ডকুমেন্ট সেট করুন এবং মডাল খুলুন
-    setPreviewDoc(fullUrl);
-    document.getElementById("doc_preview_modal").showModal();
+
+    // ✅ নতুন ট্যাবে ওপেন করুন
+    window.open(fullUrl, '_blank');
   };
 
-  // ✅ ডকুমেন্ট সংগ্রহ
   useEffect(() => {
-    console.log("🔍 Vendor data received in modal:", vendor);
     const docs = [];
     
     if (vendor.profile_image || vendor.photo) {
-      const url = vendor.profile_image || vendor.photo;
       docs.push({
         type: 'image',
         label: 'Profile Image',
-        url: url,
+        url: vendor.profile_image || vendor.photo,
         icon: <FiImage className="text-blue-400 text-base sm:text-lg" />
       });
     }
@@ -1283,24 +1191,10 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    if (vendor.documents && Array.isArray(vendor.documents)) {
-      vendor.documents.forEach((doc, idx) => {
-        docs.push({
-          type: 'document',
-          label: doc.name || `Document ${idx + 1}`,
-          url: doc.url,
-          icon: <FiFile className="text-gray-400 text-base sm:text-lg" />
-        });
-      });
-    }
-    
-    console.log("📄 Documents collected:", docs);
     setDocuments(docs);
   }, [vendor]);
 
-  // ✅ service_areas পার্সিং
   const formatServiceAreas = (areas) => {
-    console.log("📍 Formatting service areas:", areas);
     if (!areas) return [];
     if (Array.isArray(areas)) return areas;
     try {
@@ -1312,14 +1206,11 @@ const FullyResponsiveVendorDetails = ({
       }
       return [];
     } catch (e) {
-      console.warn("⚠️ Error parsing service areas:", e);
       return typeof areas === 'string' ? [areas] : [];
     }
   };
 
-  // ✅ services পার্সিং
   const formatServices = (services) => {
-    console.log("🔧 Formatting services:", services);
     if (!services) return [];
     if (Array.isArray(services)) return services;
     try {
@@ -1331,7 +1222,6 @@ const FullyResponsiveVendorDetails = ({
       }
       return [];
     } catch (e) {
-      console.warn("⚠️ Error parsing services:", e);
       return typeof services === 'string' ? [services] : [];
     }
   };
@@ -1453,9 +1343,8 @@ const FullyResponsiveVendorDetails = ({
         ))}
       </div>
 
-      {/* Tab Content */}
+      {/* Tab Content - সংক্ষিপ্ত করা হয়েছে */}
       <div className="mt-3 sm:mt-4 md:mt-6">
-        {/* Overview Tab */}
         {activeTab === "overview" && (
           <div className="grid grid-cols-1 2xs:grid-cols-2 lg:grid-cols-3 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
             <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
@@ -1579,7 +1468,6 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Details Tab */}
         {activeTab === "details" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
@@ -1648,7 +1536,6 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Services Tab */}
         {activeTab === "services" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
@@ -1688,7 +1575,6 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Orders Tab */}
         {activeTab === "orders" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 2xs:grid-cols-2 lg:grid-cols-3 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
@@ -1777,7 +1663,6 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Documents Tab - ফিক্সড */}
         {activeTab === "documents" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
@@ -1799,9 +1684,9 @@ const FullyResponsiveVendorDetails = ({
                       </div>
                       <button
                         onClick={() => viewDocument(vendor.nid_front)}
-                        className="btn btn-xs btn-outline flex-shrink-0 ml-1 xs:ml-2"
+                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
                       >
-                        <FiExternalLink className="text-[10px] xs:text-xs" /> View
+                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
                       </button>
                     </div>
                   )}
@@ -1818,9 +1703,9 @@ const FullyResponsiveVendorDetails = ({
                       </div>
                       <button
                         onClick={() => viewDocument(vendor.nid_back)}
-                        className="btn btn-xs btn-outline flex-shrink-0 ml-1 xs:ml-2"
+                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
                       >
-                        <FiExternalLink className="text-[10px] xs:text-xs" /> View
+                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
                       </button>
                     </div>
                   )}
@@ -1850,9 +1735,9 @@ const FullyResponsiveVendorDetails = ({
                       </div>
                       <button
                         onClick={() => viewDocument(vendor.trade_license)}
-                        className="btn btn-xs btn-outline flex-shrink-0 ml-1 xs:ml-2"
+                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
                       >
-                        <FiExternalLink className="text-[10px] xs:text-xs" /> View
+                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
                       </button>
                     </div>
                   )}
@@ -1869,9 +1754,9 @@ const FullyResponsiveVendorDetails = ({
                       </div>
                       <button
                         onClick={() => viewDocument(vendor.cv)}
-                        className="btn btn-xs btn-outline flex-shrink-0 ml-1 xs:ml-2"
+                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
                       >
-                        <FiExternalLink className="text-[10px] xs:text-xs" /> View
+                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
                       </button>
                     </div>
                   )}
@@ -1929,9 +1814,9 @@ const FullyResponsiveVendorDetails = ({
                       </div>
                       <button
                         onClick={() => viewDocument(doc.url)}
-                        className="btn btn-xs btn-outline flex-shrink-0 ml-1 xs:ml-2"
+                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
                       >
-                        <FiExternalLink className="text-[10px] xs:text-xs" /> View
+                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
                       </button>
                     </div>
                   ))}
@@ -1959,7 +1844,6 @@ const FullyResponsiveVendorDetails = ({
         )}
       </div>
 
-      {/* Bottom Action Buttons */}
       <div className="flex flex-wrap gap-1.5 xs:gap-2 justify-end pt-3 sm:pt-4 md:pt-6 border-t border-gray-700">
         <button
           onClick={() => onStatusChange?.(vendor.id, 'suspended')}
