@@ -18796,6 +18796,85 @@ app.post("/api/vendor/register", uploadVendorDocs.fields([
   }
 });
 
+
+// GET - Vendor Details by ID (সমস্ত ডাটা সহ)
+app.get("/api/admin/vendors/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [vendors] = await db.query(
+      `SELECT 
+        v.*,
+        v.dob,
+        v.permanent_address,
+        v.present_address,
+        v.business_address,
+        v.nid_front,
+        v.nid_back,
+        v.cv,
+        v.trade_license,
+        v.service_areas,
+        v.services,
+        v.vendor_photo as profile_image,
+        v.nid_number,
+        v.company_name,
+        v.technician_quantity,
+        v.total_orders,
+        v.completed_orders,
+        v.pending_orders,
+        v.canceled_orders,
+        v.average_rating,
+        v.wallet_balance,
+        v.status,
+        v.is_verified,
+        v.created_at,
+        v.updated_at
+      FROM vendors v 
+      WHERE v.id = ?`,
+      [id]
+    );
+
+    if (vendors.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found"
+      });
+    }
+
+    const vendor = vendors[0];
+    
+    // JSON ফিল্ড পার্স করুন
+    if (vendor.service_areas) {
+      try {
+        vendor.service_areas = JSON.parse(vendor.service_areas);
+      } catch (e) {
+        vendor.service_areas = [];
+      }
+    }
+    
+    if (vendor.services) {
+      try {
+        vendor.services = JSON.parse(vendor.services);
+      } catch (e) {
+        vendor.services = [];
+      }
+    }
+
+    res.json({
+      success: true,
+      vendor: vendor
+    });
+
+  } catch (error) {
+    console.error("❌ Error fetching vendor details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch vendor details",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
 // ---------- TECHNICIAN REGISTRATION ----------
 app.post("/api/technician/register", uploadVendorDocs.fields([
   { name: 'profile_image', maxCount: 1 },
@@ -19242,10 +19321,13 @@ app.post("/api/forgot-password", async (req, res) => {
   }
 });
 
-// ---------- ADMIN VENDORS LIST ----------
+// ---------- ADMIN VENDORS LIST (DETAILED) ----------
 app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
   try {
-    const [vendors] = await db.query(`
+    const { include_details = 'false', include_documents = 'false', include_address = 'false' } = req.query;
+
+    // বেসিক কুয়েরি
+    let query = `
       SELECT 
         id,
         name,
@@ -19255,6 +19337,7 @@ app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, 
         nid_number,
         technician_quantity,
         status,
+        is_verified,
         total_orders,
         completed_orders,
         pending_orders,
@@ -19264,20 +19347,95 @@ app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, 
         average_rating,
         success_rate,
         wallet_balance,
-        created_at
-      FROM vendors
-      ORDER BY created_at DESC
-    `);
+        created_at as join_date
+    `;
+
+    // ডিটেইল ফিল্ড (যখন প্রয়োজন)
+    if (include_details === 'true') {
+      query += `,
+        dob,
+        gender,
+        company_name,
+        business_type,
+        business_phone,
+        registration_date
+      `;
+    }
+
+    // ডকুমেন্ট ফিল্ড (যখন প্রয়োজন)
+    if (include_documents === 'true') {
+      query += `,
+        nid_front,
+        nid_back,
+        cv,
+        trade_license
+      `;
+    }
+
+    // ঠিকানা ফিল্ড (যখন প্রয়োজন)
+    if (include_address === 'true') {
+      query += `,
+        permanent_address,
+        present_address,
+        business_address
+      `;
+    }
+
+    // সার্ভিস এবং সার্ভিস এলাকা (সর্বদা যোগ করুন)
+    query += `,
+        service_areas,
+        services
+    `;
+
+    query += ` FROM vendors ORDER BY created_at DESC`;
+
+    const [vendors] = await db.query(query);
+
+    // JSON ফিল্ড পার্স করুন
+    const parsedVendors = vendors.map(vendor => {
+      const parsed = { ...vendor };
+      
+      // service_areas পার্স
+      if (parsed.service_areas) {
+        try {
+          parsed.service_areas = typeof parsed.service_areas === 'string' 
+            ? JSON.parse(parsed.service_areas) 
+            : parsed.service_areas;
+        } catch (e) {
+          parsed.service_areas = [];
+        }
+      } else {
+        parsed.service_areas = [];
+      }
+      
+      // services পার্স
+      if (parsed.services) {
+        try {
+          parsed.services = typeof parsed.services === 'string' 
+            ? JSON.parse(parsed.services) 
+            : parsed.services;
+        } catch (e) {
+          parsed.services = [];
+        }
+      } else {
+        parsed.services = [];
+      }
+      
+      return parsed;
+    });
 
     res.json({
       success: true,
-      vendors
+      vendors: parsedVendors,
+      count: parsedVendors.length
     });
+
   } catch (error) {
-    console.error('Get vendors error:', error);
+    console.error('❌ Get vendors error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch vendors'
+      message: 'Failed to fetch vendors',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
