@@ -6079,7 +6079,7 @@ const VendorsList = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
   const [deletingId, setDeletingId] = useState(null);
-  const [vendorsPerPage, setVendorsPerPage] = useState(10); // স্টেট হিসেবে নেওয়া হয়েছে
+  const [vendorsPerPage, setVendorsPerPage] = useState(10);
   const [stats, setStats] = useState({
     totalVendors: 0,
     activeVendors: 0,
@@ -6098,7 +6098,6 @@ const VendorsList = () => {
   const navigate = useNavigate();
   const sidebarRef = useRef(null);
 
-  // স্ট্যাটাস কালার
   const statusColors = {
     active: "bg-green-500/20 text-green-500 border border-green-500/30",
     pending: "bg-yellow-500/20 text-yellow-500 border border-yellow-500/30",
@@ -6137,7 +6136,6 @@ const VendorsList = () => {
     { value: "revenue", label: "Highest Revenue" }
   ];
 
-  // সাইডবার ক্লিক আউটসাইড
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -6154,7 +6152,7 @@ const VendorsList = () => {
     };
   }, [sidebarOpen]);
 
-  // ভেন্ডর ফেচ - ডিবাগ করা
+  // ✅ আপডেটেড fetchVendors - সব ডাটা একসাথে
   const fetchVendors = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -6165,15 +6163,14 @@ const VendorsList = () => {
       const res = await api.get("/admin/vendors", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
-          include_stats: true,
-          include_details: true,
-          include_documents: true // ← ডকুমেন্ট ইনক্লুড করুন
+          include_details: 'true',    // dob, gender, company_name
+          include_documents: 'true',  // nid_front, nid_back, cv, trade_license
+          include_address: 'true'     // permanent_address, present_address, business_address
         }
       });
 
       console.log("✅ Vendors data received:", res.data);
 
-      // ডাটা পার্সিং - বিভিন্ন ফরম্যাট সাপোর্ট
       let vendorsData = [];
       if (res.data.success && res.data.vendors) {
         vendorsData = res.data.vendors;
@@ -6186,7 +6183,6 @@ const VendorsList = () => {
         console.warn("⚠️ Unexpected data format:", res.data);
       }
 
-      // ডিবাগ: প্রথম ভেন্ডরের ডাটা চেক
       if (vendorsData.length > 0) {
         console.log("🔍 Sample vendor data:", vendorsData[0]);
         console.log("📄 Documents in first vendor:", {
@@ -6194,11 +6190,12 @@ const VendorsList = () => {
           nid_back: vendorsData[0].nid_back,
           trade_license: vendorsData[0].trade_license,
           cv: vendorsData[0].cv,
-          profile_image: vendorsData[0].profile_image,
+          profile_image: vendorsData[0].profile_image || vendorsData[0].photo,
           dob: vendorsData[0].dob,
           permanent_address: vendorsData[0].permanent_address,
           present_address: vendorsData[0].present_address,
-          service_areas: vendorsData[0].service_areas
+          service_areas: vendorsData[0].service_areas,
+          services: vendorsData[0].services
         });
       }
 
@@ -6220,7 +6217,6 @@ const VendorsList = () => {
     }
   }, []);
 
-  // স্ট্যাটস ক্যালকুলেট
   const calculateStats = (vendorsData) => {
     const statsData = {
       totalVendors: vendorsData.length,
@@ -6248,7 +6244,6 @@ const VendorsList = () => {
     return (totalRating / vendorsWithRating.length).toFixed(1);
   };
 
-  // ডিলিট
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Delete Vendor?",
@@ -6299,7 +6294,6 @@ const VendorsList = () => {
     }
   };
 
-  // স্ট্যাটাস চেঞ্জ
   const handleStatusChange = async (vendorId, newStatus) => {
     const statusLabels = {
       active: "Active",
@@ -6349,7 +6343,6 @@ const VendorsList = () => {
     }
   };
 
-  // ভেরিফাই
   const handleVerifyVendor = async (vendorId) => {
     const result = await Swal.fire({
       title: "Verify Vendor",
@@ -6391,7 +6384,6 @@ const VendorsList = () => {
     }
   };
 
-  // লগআউট
   const handleLogout = () => {
     Swal.fire({
       title: "Logout?",
@@ -6413,7 +6405,6 @@ const VendorsList = () => {
     fetchVendors();
   }, [fetchVendors]);
 
-  // ফিল্টার এবং সর্ট
   const filterAndSortVendors = () => {
     let filtered = vendors;
 
@@ -6465,7 +6456,6 @@ const VendorsList = () => {
   const currentVendors = filteredVendors.slice(indexOfFirstVendor, indexOfLastVendor);
   const totalPages = Math.ceil(filteredVendors.length / vendorsPerPage) || 1;
 
-  // এক্সপোর্ট
   const exportVendorsData = () => {
     const dataToExport = filteredVendors.map(vendor => ({
       ID: vendor.id,
@@ -6503,7 +6493,6 @@ const VendorsList = () => {
     });
   };
 
-  // লোডিং স্টেট
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-gray-900">
@@ -6963,7 +6952,6 @@ const VendorsList = () => {
                             <FiEdit className="w-4 h-4" />
                           </button>
 
-                          {/* Status Actions Dropdown */}
                           <div className="dropdown dropdown-end">
                             <button tabIndex={0} className="btn btn-xs btn-ghost btn-square text-primary hover:bg-primary/20 tooltip" data-tip="Change Status">
                               <FiActivity className="w-4 h-4" />
@@ -7060,7 +7048,6 @@ const VendorsList = () => {
             </table>
           </div>
 
-          {/* Pagination */}
           {currentVendors.length > 0 && (
             <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-t border-gray-700 gap-4">
               <div className="text-sm text-gray-400">
@@ -7126,7 +7113,7 @@ const VendorsList = () => {
           )}
         </div>
 
-        {/* View Vendor Modal - Fully Responsive */}
+        {/* View Vendor Modal */}
         <dialog id="view_vendor_modal" className="modal modal-bottom sm:modal-middle">
           <div className="modal-box max-w-6xl w-[98vw] sm:w-[95vw] md:w-[90vw] lg:w-full max-h-[95vh] sm:max-h-[92vh] md:max-h-[90vh] bg-gray-800 border border-gray-700 overflow-y-auto p-3 sm:p-4 md:p-6 m-0 sm:m-2 md:m-4">
             <form method="dialog">
@@ -7169,7 +7156,7 @@ const VendorsList = () => {
 };
 
 // ============================================
-// Fully Responsive Vendor Details Component - ডিবাগ করা ভার্সন
+// Fully Responsive Vendor Details Component
 // ============================================
 const FullyResponsiveVendorDetails = ({
   vendor,
@@ -7182,12 +7169,10 @@ const FullyResponsiveVendorDetails = ({
   const [activeTab, setActiveTab] = useState("overview");
   const [documents, setDocuments] = useState([]);
 
-  // 🔧 ডকুমেন্ট সংগ্রহ - ডিবাগ করা
   useEffect(() => {
     console.log("🔍 Vendor data received in modal:", vendor);
     const docs = [];
     
-    // প্রোফাইল ইমেজ
     if (vendor.profile_image || vendor.photo) {
       docs.push({
         type: 'image',
@@ -7197,7 +7182,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // NID Front
     if (vendor.nid_front) {
       docs.push({
         type: 'image',
@@ -7207,7 +7191,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // NID Back
     if (vendor.nid_back) {
       docs.push({
         type: 'image',
@@ -7217,7 +7200,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // Trade License
     if (vendor.trade_license) {
       docs.push({
         type: 'document',
@@ -7227,7 +7209,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // CV
     if (vendor.cv) {
       docs.push({
         type: 'document',
@@ -7237,7 +7218,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // অতিরিক্ত ডকুমেন্ট
     if (vendor.documents && Array.isArray(vendor.documents)) {
       vendor.documents.forEach((doc, idx) => {
         docs.push({
@@ -7253,16 +7233,15 @@ const FullyResponsiveVendorDetails = ({
     setDocuments(docs);
   }, [vendor]);
 
-  // 🔧 হেল্পার ফাংশন - সেবা এলাকা ফরম্যাট (ডিবাগ করা)
   const formatServiceAreas = (areas) => {
     console.log("📍 Formatting service areas:", areas);
     if (!areas) return [];
     if (Array.isArray(areas)) return areas;
     try {
-      if (typeof areas === 'string' && areas.startsWith('[')) {
-        return JSON.parse(areas);
-      }
       if (typeof areas === 'string') {
+        if (areas.startsWith('[')) {
+          return JSON.parse(areas);
+        }
         return areas.split(',').map(s => s.trim()).filter(Boolean);
       }
       return [];
@@ -7272,16 +7251,15 @@ const FullyResponsiveVendorDetails = ({
     }
   };
 
-  // 🔧 হেল্পার ফাংশন - সেবা ফরম্যাট (ডিবাগ করা)
   const formatServices = (services) => {
     console.log("🔧 Formatting services:", services);
     if (!services) return [];
     if (Array.isArray(services)) return services;
     try {
-      if (typeof services === 'string' && services.startsWith('[')) {
-        return JSON.parse(services);
-      }
       if (typeof services === 'string') {
+        if (services.startsWith('[')) {
+          return JSON.parse(services);
+        }
         return services.split(',').map(s => s.trim()).filter(Boolean);
       }
       return [];
@@ -7291,7 +7269,6 @@ const FullyResponsiveVendorDetails = ({
     }
   };
 
-  // সেবা লেবেল
   const serviceLabels = {
     'ac_service': 'AC Service ❄️',
     'fridge_service': 'Fridge Service 🧊',
@@ -7325,7 +7302,7 @@ const FullyResponsiveVendorDetails = ({
 
   return (
     <div className="space-y-4 sm:space-y-6 w-full">
-      {/* Vendor Header - Fully Responsive */}
+      {/* Vendor Header */}
       <div className="flex flex-col xs:flex-row gap-3 xs:gap-4 sm:gap-6 items-start xs:items-center pb-4 sm:pb-6 border-b border-gray-700">
         <div className="flex items-center gap-3 sm:gap-4 w-full xs:w-auto">
           <div className="avatar flex-shrink-0">
@@ -7370,7 +7347,6 @@ const FullyResponsiveVendorDetails = ({
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex flex-wrap gap-1.5 sm:gap-2 w-full xs:w-auto justify-start xs:justify-end mt-2 xs:mt-0">
           <button
             onClick={() => onVerify?.(vendor.id)}
@@ -7542,7 +7518,7 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Details Tab - ডিবাগ করা */}
+        {/* Details Tab */}
         {activeTab === "details" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
@@ -7625,7 +7601,7 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Services Tab - ডিবাগ করা */}
+        {/* Services Tab */}
         {activeTab === "services" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
             <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
@@ -7762,10 +7738,9 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Documents Tab - ডিবাগ করা */}
+        {/* Documents Tab */}
         {activeTab === "documents" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
-            {/* Identity Documents */}
             <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
               <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
                 <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
@@ -7866,7 +7841,6 @@ const FullyResponsiveVendorDetails = ({
               </div>
             </div>
 
-            {/* Profile Image */}
             {(vendor.profile_image || vendor.photo) && (
               <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
                 <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
@@ -7893,7 +7867,6 @@ const FullyResponsiveVendorDetails = ({
               </div>
             )}
 
-            {/* All Documents */}
             {hasDocuments && (
               <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
                 <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
@@ -7923,7 +7896,6 @@ const FullyResponsiveVendorDetails = ({
               </div>
             )}
             
-            {/* No Documents Message */}
             {!hasDocuments && !vendor.nid_front && !vendor.nid_back && 
              !vendor.trade_license && !vendor.cv && !vendor.profile_image && 
              !vendor.photo && (
@@ -7936,7 +7908,6 @@ const FullyResponsiveVendorDetails = ({
         )}
       </div>
 
-      {/* Bottom Action Buttons */}
       <div className="flex flex-wrap gap-1.5 xs:gap-2 justify-end pt-3 sm:pt-4 md:pt-6 border-t border-gray-700">
         <button
           onClick={() => onStatusChange?.(vendor.id, 'suspended')}
@@ -7955,9 +7926,7 @@ const FullyResponsiveVendorDetails = ({
           <span className="2xs:hidden">✕</span>
         </button>
         <button
-          onClick={() => {
-            // ভেন্ডরের অর্ডার হিস্ট্রিতে নেভিগেট করুন
-          }}
+          onClick={() => {}}
           className="btn btn-xs xs:btn-sm sm:btn-md btn-primary flex-1 xs:flex-none"
         >
           <FiShoppingBag className="text-xs xs:text-sm" /> 
