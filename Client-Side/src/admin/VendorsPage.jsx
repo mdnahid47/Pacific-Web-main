@@ -18,6 +18,32 @@ import {
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
 
+// ✅ API বেস URL - কনস্ট্যান্ট
+const API_BASE_URL = 'https://pacific-web-main-production.up.railway.app';
+
+// ✅ URL নরমালাইজ করার ফাংশন
+const normalizeUrl = (url) => {
+  if (!url) return null;
+  
+  // যদি ইতিমধ্যে সম্পূর্ণ URL হয়
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // যদি স্ল্যাশ দিয়ে শুরু হয়
+  if (url.startsWith('/')) {
+    return `${API_BASE_URL}${url}`;
+  }
+  
+  // যদি 'uploads/' দিয়ে শুরু হয়
+  if (url.startsWith('uploads/')) {
+    return `${API_BASE_URL}/${url}`;
+  }
+  
+  // অন্যথায়
+  return `${API_BASE_URL}/uploads/${url}`;
+};
+
 const VendorsList = () => {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -105,7 +131,6 @@ const VendorsList = () => {
     };
   }, [sidebarOpen]);
 
-  // ✅ আপডেটেড fetchVendors - প্যারামিটার ছাড়া
   const fetchVendors = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -113,8 +138,6 @@ const VendorsList = () => {
 
     try {
       console.log("🚀 Fetching vendors data...");
-      
-      // ✅ প্যারামিটার ছাড়া কল করুন (ব্যাকএন্ডে সব ডাটা আছে)
       const res = await api.get("/admin/vendors", {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -740,7 +763,7 @@ const VendorsList = () => {
                             <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border-2 border-gray-700 group-hover:border-primary/30 transition-colors">
                               {vendor.profile_image || vendor.photo ? (
                                 <img
-                                  src={vendor.profile_image || vendor.photo}
+                                  src={normalizeUrl(vendor.profile_image || vendor.photo)}
                                   alt={vendor.name}
                                   className="rounded-full w-full h-full object-cover"
                                   onError={(e) => {
@@ -1090,6 +1113,59 @@ const VendorsList = () => {
           </form>
         </dialog>
 
+        {/* Document Preview Modal */}
+        <dialog id="doc_preview_modal" className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box max-w-4xl w-[95vw] bg-gray-800 border border-gray-700 p-0 overflow-hidden max-h-[90vh]">
+            <form method="dialog" className="absolute right-2 top-2 z-10">
+              <button className="btn btn-sm btn-circle btn-ghost text-white hover:bg-gray-700">
+                <FiX className="w-5 h-5" />
+              </button>
+            </form>
+            {viewVendor?.previewDoc && (
+              <div className="w-full h-[80vh]">
+                {viewVendor.previewDoc.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) ? (
+                  <img 
+                    src={viewVendor.previewDoc} 
+                    alt="Document" 
+                    className="w-full h-full object-contain p-4" 
+                    onError={() => {
+                      Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to load image',
+                        timer: 2000,
+                        showConfirmButton: false
+                      });
+                    }}
+                  />
+                ) : viewVendor.previewDoc.match(/\.(pdf)$/i) ? (
+                  <iframe 
+                    src={viewVendor.previewDoc} 
+                    className="w-full h-full border-0"
+                    title="PDF Document"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <FiFile className="text-6xl text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-300">Unable to preview this file type</p>
+                      <button 
+                        onClick={() => window.open(viewVendor.previewDoc, '_blank')}
+                        className="btn btn-primary mt-4"
+                      >
+                        <FiExternalLink className="mr-2" /> Open in New Tab
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+
         {/* Add Vendor Modal */}
         {showAddVendorModal && (
           <AddVendorModal
@@ -1106,7 +1182,7 @@ const VendorsList = () => {
 };
 
 // ============================================
-// Fully Responsive Vendor Details Component - আপডেটেড
+// Fully Responsive Vendor Details Component - ফিক্সড
 // ============================================
 const FullyResponsiveVendorDetails = ({
   vendor,
@@ -1118,22 +1194,59 @@ const FullyResponsiveVendorDetails = ({
 }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [documents, setDocuments] = useState([]);
+  const [previewDoc, setPreviewDoc] = useState(null);
 
+  // ✅ ডকুমেন্ট ভিউ ফাংশন - ফিক্সড
+  const viewDocument = (url) => {
+    if (!url) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Document URL is not available',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      return;
+    }
+
+    console.log("📄 Original URL:", url);
+    
+    // ✅ URL নরমালাইজ করুন
+    let fullUrl = normalizeUrl(url);
+    
+    console.log("🔗 Final URL:", fullUrl);
+    
+    if (!fullUrl) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Invalid document URL',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      return;
+    }
+    
+    // ✅ প্রিভিউ ডকুমেন্ট সেট করুন এবং মডাল খুলুন
+    setPreviewDoc(fullUrl);
+    document.getElementById("doc_preview_modal").showModal();
+  };
+
+  // ✅ ডকুমেন্ট সংগ্রহ
   useEffect(() => {
     console.log("🔍 Vendor data received in modal:", vendor);
     const docs = [];
     
-    // ✅ profile_image অথবা photo চেক
     if (vendor.profile_image || vendor.photo) {
+      const url = vendor.profile_image || vendor.photo;
       docs.push({
         type: 'image',
         label: 'Profile Image',
-        url: vendor.profile_image || vendor.photo,
+        url: url,
         icon: <FiImage className="text-blue-400 text-base sm:text-lg" />
       });
     }
     
-    // ✅ nid_front চেক
     if (vendor.nid_front) {
       docs.push({
         type: 'image',
@@ -1143,7 +1256,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // ✅ nid_back চেক
     if (vendor.nid_back) {
       docs.push({
         type: 'image',
@@ -1153,7 +1265,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // ✅ trade_license চেক
     if (vendor.trade_license) {
       docs.push({
         type: 'document',
@@ -1163,7 +1274,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // ✅ cv চেক
     if (vendor.cv) {
       docs.push({
         type: 'document',
@@ -1173,7 +1283,6 @@ const FullyResponsiveVendorDetails = ({
       });
     }
     
-    // ✅ অতিরিক্ত ডকুমেন্ট
     if (vendor.documents && Array.isArray(vendor.documents)) {
       vendor.documents.forEach((doc, idx) => {
         docs.push({
@@ -1189,7 +1298,7 @@ const FullyResponsiveVendorDetails = ({
     setDocuments(docs);
   }, [vendor]);
 
-  // ✅ service_areas পার্সিং - উন্নত
+  // ✅ service_areas পার্সিং
   const formatServiceAreas = (areas) => {
     console.log("📍 Formatting service areas:", areas);
     if (!areas) return [];
@@ -1208,7 +1317,7 @@ const FullyResponsiveVendorDetails = ({
     }
   };
 
-  // ✅ services পার্সিং - উন্নত
+  // ✅ services পার্সিং
   const formatServices = (services) => {
     console.log("🔧 Formatting services:", services);
     if (!services) return [];
@@ -1250,12 +1359,6 @@ const FullyResponsiveVendorDetails = ({
     { id: "documents", label: `Docs (${documents.length})`, icon: <FiFolder className="text-xs sm:text-sm" /> }
   ];
 
-  const viewDocument = (url) => {
-    if (url) {
-      window.open(url, '_blank');
-    }
-  };
-
   const hasDocuments = documents.length > 0;
 
   return (
@@ -1267,7 +1370,7 @@ const FullyResponsiveVendorDetails = ({
             <div className="w-14 h-14 xs:w-16 xs:h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-primary/20 flex items-center justify-center border-4 border-gray-700">
               {vendor.profile_image || vendor.photo ? (
                 <img
-                  src={vendor.profile_image || vendor.photo}
+                  src={normalizeUrl(vendor.profile_image || vendor.photo)}
                   alt={vendor.name}
                   className="rounded-full w-full h-full object-cover"
                   onError={(e) => {
@@ -1674,10 +1777,9 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {/* Documents Tab - আপডেটেড */}
+        {/* Documents Tab - ফিক্সড */}
         {activeTab === "documents" && (
           <div className="space-y-3 sm:space-y-4 md:space-y-6">
-            {/* Identity Documents */}
             <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
               <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
                 <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
@@ -1782,7 +1884,6 @@ const FullyResponsiveVendorDetails = ({
               </div>
             </div>
 
-            {/* Profile Image */}
             {(vendor.profile_image || vendor.photo) && (
               <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
                 <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
@@ -1791,7 +1892,7 @@ const FullyResponsiveVendorDetails = ({
                 <div className="flex flex-wrap gap-2 sm:gap-4">
                   <div className="relative group">
                     <img
-                      src={vendor.profile_image || vendor.photo}
+                      src={normalizeUrl(vendor.profile_image || vendor.photo)}
                       alt="Profile"
                       className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 object-cover rounded-lg border-2 border-gray-600"
                       onError={(e) => {
@@ -1809,7 +1910,6 @@ const FullyResponsiveVendorDetails = ({
               </div>
             )}
 
-            {/* All Documents */}
             {hasDocuments && (
               <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
                 <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
@@ -1839,7 +1939,6 @@ const FullyResponsiveVendorDetails = ({
               </div>
             )}
             
-            {/* No Documents Message */}
             {!hasDocuments && !vendor.nid_front && !vendor.nid_back && 
              !vendor.trade_license && !vendor.cv && !vendor.profile_image && 
              !vendor.photo && (
