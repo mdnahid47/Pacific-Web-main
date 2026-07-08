@@ -1676,185 +1676,259 @@ const FullyResponsiveVendorDetails = ({
           </div>
         )}
 
-        {activeTab === "documents" && (
-          <div className="space-y-3 sm:space-y-4 md:space-y-6">
-            <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
-              <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
-                <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                  <FiCreditCard className="text-purple-400 text-xs sm:text-sm" /> Identity Documents
-                </h4>
-                <div className="space-y-2 sm:space-y-3">
-                  {vendor.nid_front && (
-                    <div className="flex items-center justify-between p-1.5 xs:p-2 sm:p-3 bg-gray-800 rounded-lg hover:bg-gray-700/50 transition-colors">
-                      <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 min-w-0">
-                        <div className="p-1 xs:p-1.5 sm:p-2 bg-gray-700 rounded flex-shrink-0">
-                          <FiCreditCard className="text-purple-400 text-xs sm:text-sm" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-[10px] xs:text-xs sm:text-sm truncate max-w-[80px] xs:max-w-[100px] sm:max-w-[150px]">NID Front</p>
-                          <p className="text-[8px] xs:text-[10px] text-gray-400 truncate">Identity</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => viewDocument(vendor.nid_front)}
-                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
-                      >
-                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
-                      </button>
-                    </div>
-                  )}
-                  {vendor.nid_back && (
-                    <div className="flex items-center justify-between p-1.5 xs:p-2 sm:p-3 bg-gray-800 rounded-lg hover:bg-gray-700/50 transition-colors">
-                      <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 min-w-0">
-                        <div className="p-1 xs:p-1.5 sm:p-2 bg-gray-700 rounded flex-shrink-0">
-                          <FiCreditCard className="text-purple-400 text-xs sm:text-sm" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-[10px] xs:text-xs sm:text-sm truncate max-w-[80px] xs:max-w-[100px] sm:max-w-[150px]">NID Back</p>
-                          <p className="text-[8px] xs:text-[10px] text-gray-400 truncate">Identity</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => viewDocument(vendor.nid_back)}
-                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
-                      >
-                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
-                      </button>
-                    </div>
-                  )}
-                  {!vendor.nid_front && !vendor.nid_back && (
-                    <div className="text-center text-gray-400 py-2 xs:py-3 sm:py-4">
-                      <p className="text-[10px] xs:text-xs sm:text-sm">No identity documents uploaded</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
-                <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                  <FiFolder className="text-amber-400 text-xs sm:text-sm" /> Business Documents
-                </h4>
-                <div className="space-y-2 sm:space-y-3">
-                  {vendor.trade_license && (
-                    <div className="flex items-center justify-between p-1.5 xs:p-2 sm:p-3 bg-gray-800 rounded-lg hover:bg-gray-700/50 transition-colors">
-                      <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 min-w-0">
-                        <div className="p-1 xs:p-1.5 sm:p-2 bg-gray-700 rounded flex-shrink-0">
-                          <FiFile className="text-amber-400 text-xs sm:text-sm" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-[10px] xs:text-xs sm:text-sm truncate max-w-[80px] xs:max-w-[100px] sm:max-w-[150px]">Trade License</p>
-                          <p className="text-[8px] xs:text-[10px] text-gray-400 truncate">Business Reg.</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => viewDocument(vendor.trade_license)}
-                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
-                      >
-                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
-                      </button>
-                    </div>
-                  )}
-                  {vendor.cv && (
-                    <div className="flex items-center justify-between p-1.5 xs:p-2 sm:p-3 bg-gray-800 rounded-lg hover:bg-gray-700/50 transition-colors">
-                      <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 min-w-0">
-                        <div className="p-1 xs:p-1.5 sm:p-2 bg-gray-700 rounded flex-shrink-0">
-                          <FiFile className="text-cyan-400 text-xs sm:text-sm" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-[10px] xs:text-xs sm:text-sm truncate max-w-[80px] xs:max-w-[100px] sm:max-w-[150px]">CV/Resume</p>
-                          <p className="text-[8px] xs:text-[10px] text-gray-400 truncate">Professional</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => viewDocument(vendor.cv)}
-                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
-                      >
-                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
-                      </button>
-                    </div>
-                  )}
-                  {!vendor.trade_license && !vendor.cv && (
-                    <div className="text-center text-gray-400 py-2 xs:py-3 sm:py-4">
-                      <p className="text-[10px] xs:text-xs sm:text-sm">No business documents uploaded</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {(vendor.profile_image || vendor.photo) && (
-              <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
-                <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                  <FiImage className="text-blue-400 text-xs sm:text-sm" /> Profile Image
-                </h4>
-                <div className="flex flex-wrap gap-2 sm:gap-4">
-                  <div className="relative group">
-                    <img
-                      src={normalizeUrl(vendor.profile_image || vendor.photo)}
-                      alt="Profile"
-                      className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 object-cover rounded-lg border-2 border-gray-600"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                    <button
-                      onClick={() => viewDocument(vendor.profile_image || vendor.photo)}
-                      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+       {activeTab === "documents" && (
+  <div className="space-y-3 sm:space-y-4 md:space-y-6">
+    
+    {/* NID Documents - সরাসরি ইমেজ প্রিভিউ সহ */}
+    <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
+      
+      {/* NID Front */}
+      <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
+        <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
+          <FiCreditCard className="text-purple-400 text-xs sm:text-sm" /> NID - Front
+        </h4>
+        {vendor.nid_front ? (
+          <div className="relative group">
+            <img
+              src={normalizeUrl(vendor.nid_front)}
+              alt="NID Front"
+              className="w-full h-auto max-h-[300px] object-contain rounded-lg border border-gray-600 bg-gray-800"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = `
+                  <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600">
+                    <FiImage className="text-4xl text-gray-500 mb-2" />
+                    <p className="text-sm text-gray-400">Failed to load image</p>
+                    <button 
+                      onClick={() => viewDocument(vendor.nid_front)}
+                      className="btn btn-xs btn-primary mt-2"
                     >
-                      <FiExternalLink className="text-white text-base xs:text-lg sm:text-xl" />
+                      <FiExternalLink className="mr-1" /> Open in New Tab
                     </button>
                   </div>
-                </div>
-              </div>
-            )}
-
-            {hasDocuments && (
-              <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
-                <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
-                  <FiFile className="text-gray-400 text-xs sm:text-sm" /> All Documents ({documents.length})
-                </h4>
-                <div className="grid grid-cols-1 2xs:grid-cols-2 gap-1.5 xs:gap-2 sm:gap-3">
-                  {documents.map((doc, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-1.5 xs:p-2 sm:p-3 bg-gray-800 rounded-lg hover:bg-gray-700/50 transition-colors">
-                      <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 min-w-0">
-                        <div className="p-1 xs:p-1.5 sm:p-2 bg-gray-700 rounded flex-shrink-0">
-                          {doc.icon}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-[10px] xs:text-xs sm:text-sm truncate max-w-[70px] xs:max-w-[90px] sm:max-w-[150px]">{doc.label}</p>
-                          <p className="text-[8px] xs:text-[10px] text-gray-400 truncate">Click to view</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => viewDocument(doc.url)}
-                        className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
-                      >
-                        <FiEye className="text-[10px] xs:text-xs mr-1" /> View
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            {!hasDocuments && !vendor.nid_front && !vendor.nid_back && 
-             !vendor.trade_license && !vendor.cv && !vendor.profile_image && 
-             !vendor.photo && (
-              <div className="card bg-gray-700/30 p-6 text-center">
-                <FiFile className="text-5xl text-gray-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-300 mb-2">No Documents Available</h3>
-                <p className="text-gray-400 text-sm">
-                  This vendor hasn't uploaded any documents yet.
-                </p>
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                  <span className="badge badge-outline">📁 NID Required</span>
-                  <span className="badge badge-outline">📄 Trade License Required</span>
-                  <span className="badge badge-outline">📋 CV Required</span>
-                </div>
-              </div>
-            )}
+                `;
+              }}
+            />
+            <button
+              onClick={() => viewDocument(vendor.nid_front)}
+              className="absolute top-2 right-2 btn btn-xs btn-primary opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <FiExternalLink className="mr-1" /> Full Screen
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600 min-h-[150px]">
+            <FiImage className="text-4xl text-gray-500 mb-2" />
+            <p className="text-sm text-gray-400">No NID Front uploaded</p>
           </div>
         )}
+      </div>
+
+      {/* NID Back */}
+      <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
+        <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
+          <FiCreditCard className="text-purple-400 text-xs sm:text-sm" /> NID - Back
+        </h4>
+        {vendor.nid_back ? (
+          <div className="relative group">
+            <img
+              src={normalizeUrl(vendor.nid_back)}
+              alt="NID Back"
+              className="w-full h-auto max-h-[300px] object-contain rounded-lg border border-gray-600 bg-gray-800"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = `
+                  <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600">
+                    <FiImage className="text-4xl text-gray-500 mb-2" />
+                    <p className="text-sm text-gray-400">Failed to load image</p>
+                    <button 
+                      onClick={() => viewDocument(vendor.nid_back)}
+                      className="btn btn-xs btn-primary mt-2"
+                    >
+                      <FiExternalLink className="mr-1" /> Open in New Tab
+                    </button>
+                  </div>
+                `;
+              }}
+            />
+            <button
+              onClick={() => viewDocument(vendor.nid_back)}
+              className="absolute top-2 right-2 btn btn-xs btn-primary opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <FiExternalLink className="mr-1" /> Full Screen
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600 min-h-[150px]">
+            <FiImage className="text-4xl text-gray-500 mb-2" />
+            <p className="text-sm text-gray-400">No NID Back uploaded</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Trade License & CV */}
+    <div className="grid grid-cols-1 2xs:grid-cols-2 gap-2 xs:gap-3 sm:gap-4 md:gap-6">
+      
+      {/* Trade License */}
+      <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
+        <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
+          <FiFile className="text-amber-400 text-xs sm:text-sm" /> Trade License
+        </h4>
+        {vendor.trade_license ? (
+          <div className="relative group">
+            <img
+              src={normalizeUrl(vendor.trade_license)}
+              alt="Trade License"
+              className="w-full h-auto max-h-[300px] object-contain rounded-lg border border-gray-600 bg-gray-800"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = `
+                  <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600">
+                    <FiFile className="text-4xl text-gray-500 mb-2" />
+                    <p className="text-sm text-gray-400">Failed to load image</p>
+                    <button 
+                      onClick={() => viewDocument(vendor.trade_license)}
+                      className="btn btn-xs btn-primary mt-2"
+                    >
+                      <FiExternalLink className="mr-1" /> Open in New Tab
+                    </button>
+                  </div>
+                `;
+              }}
+            />
+            <button
+              onClick={() => viewDocument(vendor.trade_license)}
+              className="absolute top-2 right-2 btn btn-xs btn-primary opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <FiExternalLink className="mr-1" /> Full Screen
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600 min-h-[150px]">
+            <FiFile className="text-4xl text-gray-500 mb-2" />
+            <p className="text-sm text-gray-400">No Trade License uploaded</p>
+          </div>
+        )}
+      </div>
+
+      {/* CV / Resume */}
+      <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
+        <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
+          <FiFile className="text-cyan-400 text-xs sm:text-sm" /> CV / Resume
+        </h4>
+        {vendor.cv ? (
+          <div className="relative group">
+            <img
+              src={normalizeUrl(vendor.cv)}
+              alt="CV / Resume"
+              className="w-full h-auto max-h-[300px] object-contain rounded-lg border border-gray-600 bg-gray-800"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = `
+                  <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600">
+                    <FiFile className="text-4xl text-gray-500 mb-2" />
+                    <p className="text-sm text-gray-400">Failed to load file</p>
+                    <button 
+                      onClick={() => viewDocument(vendor.cv)}
+                      className="btn btn-xs btn-primary mt-2"
+                    >
+                      <FiExternalLink className="mr-1" /> Open in New Tab
+                    </button>
+                  </div>
+                `;
+              }}
+            />
+            <button
+              onClick={() => viewDocument(vendor.cv)}
+              className="absolute top-2 right-2 btn btn-xs btn-primary opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <FiExternalLink className="mr-1" /> Full Screen
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-lg border border-gray-600 min-h-[150px]">
+            <FiFile className="text-4xl text-gray-500 mb-2" />
+            <p className="text-sm text-gray-400">No CV uploaded</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Profile Image */}
+    {(vendor.profile_image || vendor.photo) && (
+      <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
+        <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
+          <FiImage className="text-blue-400 text-xs sm:text-sm" /> Profile Image
+        </h4>
+        <div className="relative group max-w-[300px]">
+          <img
+            src={normalizeUrl(vendor.profile_image || vendor.photo)}
+            alt="Profile"
+            className="w-full h-auto max-h-[300px] object-contain rounded-lg border border-gray-600 bg-gray-800"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
+          <button
+            onClick={() => viewDocument(vendor.profile_image || vendor.photo)}
+            className="absolute top-2 right-2 btn btn-xs btn-primary opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <FiExternalLink className="mr-1" /> Full Screen
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* All Documents List (ছোট ডিভাইসের জন্য) */}
+    {documents.length > 0 && (
+      <div className="card bg-gray-700/30 p-2 xs:p-3 sm:p-4">
+        <h4 className="font-semibold text-xs xs:text-sm sm:text-base mb-1.5 sm:mb-3 flex items-center gap-1 sm:gap-2">
+          <FiFile className="text-gray-400 text-xs sm:text-sm" /> All Documents ({documents.length})
+        </h4>
+        <div className="grid grid-cols-1 2xs:grid-cols-2 gap-1.5 xs:gap-2 sm:gap-3">
+          {documents.map((doc, idx) => (
+            <div key={idx} className="flex items-center justify-between p-1.5 xs:p-2 sm:p-3 bg-gray-800 rounded-lg hover:bg-gray-700/50 transition-colors">
+              <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-3 min-w-0">
+                <div className="p-1 xs:p-1.5 sm:p-2 bg-gray-700 rounded flex-shrink-0">
+                  {doc.icon}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-medium text-[10px] xs:text-xs sm:text-sm truncate max-w-[70px] xs:max-w-[90px] sm:max-w-[150px]">{doc.label}</p>
+                  <p className="text-[8px] xs:text-[10px] text-gray-400 truncate">Click to view</p>
+                </div>
+              </div>
+              <button
+                onClick={() => viewDocument(doc.url)}
+                className="btn btn-xs btn-primary flex-shrink-0 ml-1 xs:ml-2"
+              >
+                <FiEye className="text-[10px] xs:text-xs mr-1" /> View
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    {/* No Documents Message */}
+    {!documents.length && !vendor.nid_front && !vendor.nid_back && 
+     !vendor.trade_license && !vendor.cv && !vendor.profile_image && 
+     !vendor.photo && (
+      <div className="card bg-gray-700/30 p-6 text-center">
+        <FiFile className="text-5xl text-gray-500 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-gray-300 mb-2">No Documents Available</h3>
+        <p className="text-gray-400 text-sm">
+          This vendor hasn't uploaded any documents yet.
+        </p>
+        <div className="mt-4 flex flex-wrap justify-center gap-2">
+          <span className="badge badge-outline">📁 NID Required</span>
+          <span className="badge badge-outline">📄 Trade License Required</span>
+          <span className="badge badge-outline">📋 CV Required</span>
+        </div>
+      </div>
+    )}
+  </div>
+)}
       </div>
 
       <div className="flex flex-wrap gap-1.5 xs:gap-2 justify-end pt-3 sm:pt-4 md:pt-6 border-t border-gray-700">
