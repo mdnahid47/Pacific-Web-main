@@ -19322,12 +19322,10 @@ app.post("/api/forgot-password", async (req, res) => {
 });
 
 // ---------- ADMIN VENDORS LIST (DETAILED) ----------
+// ---------- ADMIN VENDORS LIST (FIXED) ----------
 app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, res) => {
   try {
-    const { include_details = 'false', include_documents = 'false', include_address = 'false' } = req.query;
-
-    // বেসিক কুয়েরি
-    let query = `
+    const [vendors] = await db.query(`
       SELECT 
         id,
         name,
@@ -19335,9 +19333,19 @@ app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, 
         phone_number as phone,
         vendor_photo as photo,
         nid_number,
+        nid_front,
+        nid_back,
+        cv,
+        trade_license,
+        dob,
+        permanent_address,
+        present_address,
+        business_address,
+        company_name,
+        service_areas,
+        services,
         technician_quantity,
         status,
-        is_verified,
         total_orders,
         completed_orders,
         pending_orders,
@@ -19348,48 +19356,9 @@ app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, 
         success_rate,
         wallet_balance,
         created_at as join_date
-    `;
-
-    // ডিটেইল ফিল্ড (যখন প্রয়োজন)
-    if (include_details === 'true') {
-      query += `,
-        dob,
-        gender,
-        company_name,
-        business_type,
-        business_phone,
-        registration_date
-      `;
-    }
-
-    // ডকুমেন্ট ফিল্ড (যখন প্রয়োজন)
-    if (include_documents === 'true') {
-      query += `,
-        nid_front,
-        nid_back,
-        cv,
-        trade_license
-      `;
-    }
-
-    // ঠিকানা ফিল্ড (যখন প্রয়োজন)
-    if (include_address === 'true') {
-      query += `,
-        permanent_address,
-        present_address,
-        business_address
-      `;
-    }
-
-    // সার্ভিস এবং সার্ভিস এলাকা (সর্বদা যোগ করুন)
-    query += `,
-        service_areas,
-        services
-    `;
-
-    query += ` FROM vendors ORDER BY created_at DESC`;
-
-    const [vendors] = await db.query(query);
+      FROM vendors
+      ORDER BY created_at DESC
+    `);
 
     // JSON ফিল্ড পার্স করুন
     const parsedVendors = vendors.map(vendor => {
