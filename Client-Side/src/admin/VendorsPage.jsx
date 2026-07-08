@@ -24,16 +24,29 @@ const API_BASE_URL = 'https://pacific-web-main-production.up.railway.app';
 // ✅ URL নরমালাইজ ফাংশন
 const normalizeUrl = (url) => {
   if (!url) return null;
+  
+  const pathMatch = url.match(/(\/uploads\/[^\s"']+)/);
+  if (pathMatch) {
+    return `https://pacific-web-main-production.up.railway.app${pathMatch[1]}`;
+  }
+  
   if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (url.includes('localhost') || url.includes('127.0.0.1') || url.includes('192.168.')) {
+      const cleanPath = url.replace(/https?:\/\/[^\/]+/, '');
+      return `https://pacific-web-main-production.up.railway.app${cleanPath}`;
+    }
     return url;
   }
+  
   if (url.startsWith('/')) {
-    return `${API_BASE_URL}${url}`;
+    return `https://pacific-web-main-production.up.railway.app${url}`;
   }
+  
   if (url.startsWith('uploads/')) {
-    return `${API_BASE_URL}/${url}`;
+    return `https://pacific-web-main-production.up.railway.app/${url}`;
   }
-  return `${API_BASE_URL}/uploads/${url}`;
+  
+  return `https://pacific-web-main-production.up.railway.app/uploads/${url}`;
 };
 
 const VendorsList = () => {
