@@ -8371,14 +8371,15 @@ app.post("/api/vendor/register", uploadVendorDocs.fields([
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const getFileUrl = (fieldName, subfolder) => {
-      if (req.files[fieldName] && req.files[fieldName][0]) {
-        const filename = req.files[fieldName][0].filename;
-        // ✅ সম্পূর্ণ URL সংরক্ষণ করুন
-        return `${BASE_URL}/uploads/${subfolder}/${filename}`;
-      }
-      return null;
-    };
+   const getFileUrl = (fieldName, subfolder) => {
+  if (req.files[fieldName] && req.files[fieldName][0]) {
+    const filename = req.files[fieldName][0].filename;
+    // ✅ Aiven ডাটাবেসে সম্পূর্ণ URL সংরক্ষণ করুন
+    return `https://pacific-web-main-production.up.railway.app/uploads/${subfolder}/${filename}`;
+  }
+  return null;
+};
+
 
     const nidFront = getFileUrl('nid_front', 'nids');
     const nidBack = getFileUrl('nid_back', 'nids');
