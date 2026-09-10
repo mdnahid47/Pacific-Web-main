@@ -26,16 +26,10 @@ class SearchableDropdown extends StatefulWidget {
     this.isMultiSelect = false,
     this.contentPadding,
     this.showSelectedChips = true,
-  }) : assert(
-         !isMultiSelect || onMultiChanged != null,
-         'onMultiChanged is required for multi-select mode',
-       ),
-       // Remove or modify the assertion for single-select mode to be more flexible
-       // We'll handle the case where onChanged might be null gracefully
-       super();
+  });
 
   @override
-  _SearchableDropdownState createState() => _SearchableDropdownState();
+  State<SearchableDropdown> createState() => _SearchableDropdownState();
 }
 
 class _SearchableDropdownState extends State<SearchableDropdown> {
@@ -46,56 +40,70 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
   List<String> _selectedMultiItems = [];
   bool _isDropdownOpen = false;
   final LayerLink _layerLink = LayerLink();
+  bool _isOverlayShown = false;
 
   @override
   void initState() {
     super.initState();
-
-    if (widget.isMultiSelect) {
-      _selectedMultiItems = List.from(widget.selectedValues);
-      _controller.text = _selectedMultiItems.isNotEmpty
-          ? '${_selectedMultiItems.length} selected'
-          : '';
-    } else {
-      _controller.text = widget.value ?? '';
-    }
-
-    _filteredItems = widget.items;
+    _selectedMultiItems = List.from(widget.selectedValues);
+    _controller.text = widget.value ?? '';
+    _filteredItems = List.from(widget.items);
 
     _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
+      if (_focusNode.hasFocus && widget.enabled) {
         _showOverlay();
       } else {
-        Future.delayed(Duration(milliseconds: 150), _removeOverlay);
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (!_focusNode.hasFocus) {
+            _removeOverlay();
+          }
+        });
       }
     });
 
-    _controller.addListener(_onSearchChanged);
+    _controller.addListener(_filterItems);
   }
 
   @override
   void didUpdateWidget(SearchableDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    if (widget.isMultiSelect) {
-      if (widget.selectedValues != oldWidget.selectedValues) {
-        _selectedMultiItems = List.from(widget.selectedValues);
-        _updateControllerText();
+    
+    // ✅ CRITICAL FIX: Update items when they change
+    if (widget.items != oldWidget.items) {
+      print('🔄 SearchableDropdown items updated: ${widget.hintText}');
+      print('   New items count: ${widget.items.length}');
+      print('   First 3 items: ${widget.items.take(3).toList()}');
+      
+      _filteredItems = List.from(widget.items);
+      if (_controller.text.isNotEmpty) {
+        final query = _controller.text.toLowerCase();
+        _filteredItems = widget.items
+            .where((item) => item.toLowerCase().contains(query))
+            .toList();
       }
-    } else {
-      if (widget.value != oldWidget.value) {
-        _controller.text = widget.value ?? '';
+      
+      // If dropdown is open, refresh it
+      if (_isDropdownOpen) {
+        _refreshOverlay();
+      }
+      
+      setState(() {});
+    }
+    
+    if (widget.value != oldWidget.value && !widget.isMultiSelect) {
+      _controller.text = widget.value ?? '';
+      // Update filtered items if there's a search query
+      if (_controller.text.isNotEmpty) {
+        final query = _controller.text.toLowerCase();
+        _filteredItems = widget.items
+            .where((item) => item.toLowerCase().contains(query))
+            .toList();
       }
     }
-  }
-
-  void _updateControllerText() {
-    if (_selectedMultiItems.isEmpty) {
-      _controller.text = '';
-    } else if (_selectedMultiItems.length == 1) {
-      _controller.text = _selectedMultiItems.first;
-    } else {
-      _controller.text = '${_selectedMultiItems.length} selected';
+    
+    if (widget.selectedValues != oldWidget.selectedValues && widget.isMultiSelect) {
+      _selectedMultiItems = List.from(widget.selectedValues);
+      _updateMultiControllerText();
     }
   }
 
@@ -107,7 +115,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
     super.dispose();
   }
 
-  void _onSearchChanged() {
+  void _filterItems() {
     if (_focusNode.hasFocus) {
       final query = _controller.text.toLowerCase();
       setState(() {
@@ -115,15 +123,45 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
             .where((item) => item.toLowerCase().contains(query))
             .toList();
       });
+      if (_isDropdownOpen) {
+        _refreshOverlay();
+      }
+    }
+  }
+
+  void _updateMultiControllerText() {
+    if (_selectedMultiItems.isEmpty) {
+      _controller.text = '';
+    } else if (_selectedMultiItems.length == 1) {
+      _controller.text = _selectedMultiItems.first;
+    } else {
+      _controller.text = '${_selectedMultiItems.length} selected';
+    }
+  }
+
+  void _refreshOverlay() {
+    _removeOverlay();
+    if (_focusNode.hasFocus) {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        if (_focusNode.hasFocus) {
+          _showOverlay();
+        }
+      });
     }
   }
 
   void _showOverlay() {
-    if (_overlayEntry != null || !widget.enabled) return;
+    if (_overlayEntry != null || _isOverlayShown) return;
 
-    final renderBox = context.findRenderObject() as RenderBox;
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    
     final size = renderBox.size;
+    print('📂 Opening dropdown: ${widget.hintText}');
+    print('   Filtered items count: ${_filteredItems.length}');
 
+    _isOverlayShown = true;
+    
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         width: size.width,
@@ -132,9 +170,10 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
           showWhenUnlinked: false,
           offset: Offset(0, size.height + 4),
           child: Material(
-            elevation: 4,
+            elevation: 8,
+            borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: BoxConstraints(maxHeight: 300),
+              constraints: const BoxConstraints(maxHeight: 250),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
@@ -147,7 +186,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
       ),
     );
 
-    Overlay.of(context)?.insert(_overlayEntry!);
+    Overlay.of(context).insert(_overlayEntry!);
     setState(() => _isDropdownOpen = true);
   }
 
@@ -156,26 +195,30 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
       _overlayEntry?.remove();
       _overlayEntry = null;
     }
+    _isOverlayShown = false;
     setState(() => _isDropdownOpen = false);
-    if (widget.isMultiSelect) {
-      _updateControllerText();
-    }
   }
 
   Widget _buildDropdownList() {
     if (_filteredItems.isEmpty) {
       return Container(
-        padding: EdgeInsets.all(16),
-        child: Text('No results found', style: TextStyle(color: Colors.grey)),
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Text(
+            'No results found',
+            style: TextStyle(color: Colors.grey[600]),
+          ),
+        ),
       );
     }
 
     return ListView.builder(
       shrinkWrap: true,
       itemCount: _filteredItems.length,
+      padding: const EdgeInsets.symmetric(vertical: 4),
       itemBuilder: (context, index) {
         final item = _filteredItems[index];
-
+        
         if (widget.isMultiSelect) {
           final isSelected = _selectedMultiItems.contains(item);
           return _buildMultiSelectItem(item, isSelected);
@@ -189,26 +232,39 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
 
   Widget _buildMultiSelectItem(String item, bool isSelected) {
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      visualDensity: VisualDensity.compact,
       leading: Checkbox(
         value: isSelected,
-        onChanged: (value) {
-          _toggleMultiItem(item);
-        },
+        onChanged: (value) => _toggleMultiItem(item),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
-      title: Text(item),
-      onTap: () {
-        _toggleMultiItem(item);
-      },
+      title: Text(
+        item,
+        style: const TextStyle(fontSize: 14),
+      ),
+      onTap: () => _toggleMultiItem(item),
     );
   }
 
   Widget _buildSingleSelectItem(String item, bool isSelected) {
     return ListTile(
-      title: Text(item),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      visualDensity: VisualDensity.compact,
+      title: Text(
+        item,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+        ),
+      ),
       tileColor: isSelected ? Colors.blue.shade50 : null,
-      selected: isSelected,
       onTap: () {
-        _selectSingleItem(item);
+        _controller.text = item;
+        if (widget.onChanged != null) {
+          widget.onChanged!(item);
+        }
+        _focusNode.unfocus();
       },
     );
   }
@@ -220,41 +276,25 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
       } else {
         _selectedMultiItems.add(item);
       }
+      _updateMultiControllerText();
     });
-
-    // Only call onMultiChanged if it's provided
+    
     if (widget.onMultiChanged != null) {
       widget.onMultiChanged!(List.from(_selectedMultiItems));
     }
-  }
-
-  void _selectSingleItem(String item) {
-    _controller.text = item;
-
-    // Only call onChanged if it's provided
-    if (widget.onChanged != null) {
-      widget.onChanged!(item);
-    }
-
-    _focusNode.unfocus();
   }
 
   void _clearSelection() {
     if (widget.isMultiSelect) {
       setState(() {
         _selectedMultiItems.clear();
+        _controller.clear();
       });
-
-      // Only call onMultiChanged if it's provided
       if (widget.onMultiChanged != null) {
         widget.onMultiChanged!([]);
       }
-
-      _controller.clear();
     } else {
       _controller.clear();
-
-      // Only call onChanged if it's provided
       if (widget.onChanged != null) {
         widget.onChanged!(null);
       }
@@ -267,10 +307,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Selected Chips for Multi-Select
-        if (widget.isMultiSelect &&
-            _selectedMultiItems.isNotEmpty &&
-            widget.showSelectedChips)
+        if (widget.isMultiSelect && _selectedMultiItems.isNotEmpty && widget.showSelectedChips)
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Wrap(
@@ -278,17 +315,19 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
               runSpacing: 8,
               children: _selectedMultiItems.map((item) {
                 return Chip(
-                  label: Text(item),
-                  deleteIcon: Icon(Icons.close, size: 16),
-                  onDeleted: () {
-                    _toggleMultiItem(item);
-                  },
+                  label: Text(
+                    item,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  deleteIcon: const Icon(Icons.close, size: 16),
+                  onDeleted: () => _toggleMultiItem(item),
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );
               }).toList(),
             ),
           ),
 
-        // Search Input with Dropdown
         CompositedTransformTarget(
           link: _layerLink,
           child: Container(
@@ -305,46 +344,43 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
               children: [
                 Expanded(
                   child: Padding(
-                    padding:
-                        widget.contentPadding ??
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
                       enabled: widget.enabled,
-                      readOnly:
-                          !widget.enabled ||
-                          (widget.isMultiSelect &&
-                              widget.onMultiChanged == null) ||
-                          (!widget.isMultiSelect && widget.onChanged == null),
                       decoration: InputDecoration(
                         hintText: widget.hintText,
                         border: InputBorder.none,
+                        isDense: true,
                         hintStyle: TextStyle(
-                          color: widget.enabled
-                              ? Colors.grey
-                              : Colors.grey.shade400,
+                          fontSize: 14,
+                          color: widget.enabled ? Colors.grey : Colors.grey.shade400,
                         ),
                       ),
                       style: TextStyle(
+                        fontSize: 14,
                         color: widget.enabled ? Colors.black : Colors.grey,
                       ),
                     ),
                   ),
                 ),
-                if (widget.showClearButton &&
+                if (widget.showClearButton && 
                     ((widget.isMultiSelect && _selectedMultiItems.isNotEmpty) ||
-                        (!widget.isMultiSelect && widget.value != null)) &&
+                     (!widget.isMultiSelect && widget.value != null && widget.value!.isNotEmpty)) &&
                     widget.enabled)
                   IconButton(
-                    icon: Icon(Icons.clear, size: 18),
+                    icon: const Icon(Icons.clear, size: 18),
                     onPressed: _clearSelection,
                     splashRadius: 20,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                 IconButton(
                   icon: Icon(
                     _isDropdownOpen ? Icons.expand_less : Icons.expand_more,
                     color: widget.enabled ? Colors.grey : Colors.grey.shade400,
+                    size: 24,
                   ),
                   onPressed: widget.enabled
                       ? () {
@@ -356,7 +392,10 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                         }
                       : null,
                   splashRadius: 20,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
+                const SizedBox(width: 8),
               ],
             ),
           ),

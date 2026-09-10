@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/api_service.dart';
 
 class NewOrdersScreen extends StatefulWidget {
   const NewOrdersScreen({super.key});
@@ -9,27 +11,72 @@ class NewOrdersScreen extends StatefulWidget {
 }
 
 class _NewOrdersScreenState extends State<NewOrdersScreen> {
-  List<Map<String, dynamic>> orders = [
-    {
-      'id': 'ORD-001',
-      'service': 'AC Repair',
-      'customer': 'John Doe',
-      'address': 'Mirpur, Dhaka',
-      'amount': '৳1500',
-      'time': '10 min ago',
-      'priority': 'High',
-    },
-    {
-      'id': 'ORD-002',
-      'service': 'Refrigerator Service',
-      'customer': 'Sarah Smith',
-      'address': 'Uttara, Dhaka',
-      'amount': '৳1200',
-      'time': '25 min ago',
-      'priority': 'Medium',
-    },
-    // Add more orders...
-  ];
+  final ApiService _apiService = ApiService();
+  List<dynamic> _orders = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    setState(() => _loading = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token == null) throw Exception('No token');
+
+      final response = await _apiService.getVendorOrders(token);
+      final allOrders = response['orders'] ?? [];
+
+      // ✅ Filter NEW (Pending) orders
+      setState(() {
+        _orders = allOrders.where((o) => o['status'] == 'Pending').toList();
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _updateStatus(String orderId, String newStatus) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token == null) return;
+
+      await _apiService.updateOrderStatus(
+        token: token,
+        orderId: orderId,
+        status: newStatus,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Order updated to $newStatus'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadOrders();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,104 +84,102 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
       appBar: AppBar(
         title: const Text('New Orders'),
         actions: [
-          IconButton(
-            icon: const Icon(Iconsax.filter),
-            onPressed: () {
-              // Show filter options
-            },
-          ),
+          IconButton(icon: const Icon(Iconsax.refresh), onPressed: _loadOrders),
         ],
       ),
-      body: orders.isEmpty
-          ? const Center(child: Text('No new orders'))
-          : ListView.builder(
-              padding: const EdgeInsets.all(20),
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                final order = orders[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 15),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              order['id'],
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(child: Text('Error: $_error'))
+              : _orders.isEmpty
+                  ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Iconsax.box, size: 60, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text('No new orders 🎉'),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadOrders,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: _orders.length,
+                        itemBuilder: (context, index) {
+                          final order = _orders[index];
+                          final orderId = (order['order_id'] ?? 'N/A')
+                              .toString()
+                              .replaceAll('#', '');
+                          final customerName =
+                              order['customer_name'] ?? 'Unknown';
+                          final customerPhone = order['customer_phone'] ?? '';
+                          final total = order['total'] ?? '0';
+                          final date = order['order_date'] ?? 'N/A';
+                          final address = order['address'];
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 15),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '#$orderId',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Chip(
+                                        label: const Text('Pending'),
+                                        backgroundColor: Colors.orange[100],
+                                        labelStyle: const TextStyle(
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    customerName,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  _buildInfoRow('Phone:', customerPhone),
+                                  _buildInfoRow('Amount:', '৳$total'),
+                                  _buildInfoRow('Date:', date),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      OutlinedButton.icon(
+                                        icon: const Icon(
+                                          Iconsax.play_circle,
+                                          size: 16,
+                                        ),
+                                        label: const Text('Start'),
+                                        onPressed: () =>
+                                            _updateStatus(orderId, 'Active'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            Chip(
-                              label: Text(order['priority']),
-                              backgroundColor: order['priority'] == 'High'
-                                  ? Colors.red[100]
-                                  : Colors.orange[100],
-                              labelStyle: TextStyle(
-                                color: order['priority'] == 'High'
-                                    ? Colors.red
-                                    : Colors.orange,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          order['service'],
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _buildInfoRow('Customer:', order['customer']),
-                        _buildInfoRow('Address:', order['address']),
-                        _buildInfoRow('Amount:', order['amount']),
-                        const SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              order['time'],
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            Row(
-                              children: [
-                                OutlinedButton.icon(
-                                  icon: const Icon(
-                                    Iconsax.close_circle,
-                                    size: 16,
-                                  ),
-                                  label: const Text('Cancel'),
-                                  onPressed: () {
-                                    _cancelOrder(order['id']);
-                                  },
-                                  style: OutlinedButton.styleFrom(
-                                    foregroundColor: Colors.red,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                ElevatedButton.icon(
-                                  icon: const Icon(Iconsax.user, size: 16),
-                                  label: const Text('Assign Tech'),
-                                  onPressed: () {
-                                    _assignTechnician(order['id']);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
     );
   }
 
@@ -148,91 +193,6 @@ class _NewOrdersScreenState extends State<NewOrdersScreen> {
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
-    );
-  }
-
-  void _cancelOrder(String orderId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cancel Order'),
-        content: const Text('Are you sure you want to cancel this order?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('No'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // API call to cancel order
-              setState(() {
-                orders.removeWhere((order) => order['id'] == orderId);
-              });
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Yes, Cancel'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _assignTechnician(String orderId) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7,
-          maxChildSize: 0.9,
-          minChildSize: 0.5,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const Text(
-                    'Assign Technician',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: const CircleAvatar(
-                            child: Icon(Icons.person),
-                          ),
-                          title: Text('Technician ${index + 1}'),
-                          subtitle: const Text('AC Specialist | 4.5 ⭐'),
-                          trailing: ElevatedButton(
-                            onPressed: () {
-                              // Assign technician
-                              Navigator.pop(context);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Technician assigned successfully',
-                                  ),
-                                ),
-                              );
-                            },
-                            child: const Text('Assign'),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }

@@ -252,7 +252,7 @@ const LeftSide = () => {
         }
 
         // Make an API call to fetch user details from MySQL
-        const response = await api.get("/api/user-profile", {
+        const response = await api.get("/user-profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

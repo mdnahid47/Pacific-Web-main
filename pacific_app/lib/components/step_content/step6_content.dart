@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'package:pacific_app/models/file_model.dart';
+import 'package:pacific_app/config/env_config.dart';
 
 class Step6Content extends StatefulWidget {
   final String name;
@@ -61,34 +62,27 @@ class Step6Content extends StatefulWidget {
     required this.nidNumber,
     required this.password,
     required this.companyName,
-
     required this.presentAddress,
     required this.presentDivision,
     required this.presentDistrict,
     required this.presentThana,
-
     required this.permanentAddress,
     required this.permanentDivision,
     required this.permanentDistrict,
     required this.permanentThana,
     required this.sameAsPresentAddress,
-
     required this.businessAddress,
     required this.businessDivision,
     required this.businessDistrict,
     required this.businessThana,
-
     required this.serviceDivision,
     required this.serviceDistrict,
     required this.selectedServiceThanas,
-
     required this.cvFile,
     required this.tradeLicenseFile,
-
     required this.selfieImage,
     required this.nidFrontImage,
     required this.nidBackImage,
-
     required this.isLoading,
     required this.onEdit,
     required this.currentStep,
@@ -100,21 +94,25 @@ class Step6Content extends StatefulWidget {
 }
 
 class _Step6ContentState extends State<Step6Content> {
-  // ✅ FIXED: CORRECT URL CONFIGURATION
-  static const String baseUrl = 'http://localhost:5001';
-  static const String registerEndpoint = '/api/vendor/register';
-  static const String healthEndpoint = '/api/vendor/health';
-
-  // ✅ Get full URLs
-  String get registerUrl => '$baseUrl$registerEndpoint';
-  String get healthUrl => '$baseUrl$healthEndpoint';
+  // ✅ CORRECT URLs from config
+  String get registerUrl => EnvConfig.registerUrl;      // https://.../api/vendor/register
+  String get healthUrl => EnvConfig.healthUrl;          // https://.../api/vendor/health
 
   bool _isSubmitting = false;
   String? _errorMessage;
   String? _successMessage;
   bool _showValidationErrors = false;
-  List<String> _validationErrors = [];
+  final List<String> _validationErrors = [];
   Map<String, dynamic>? _lastApiResponse;
+
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('🌐 Environment: ${kReleaseMode ? "Production" : "Development"}');
+    debugPrint('🌐 API Base URL: ${EnvConfig.baseUrl}');
+    debugPrint('📡 Register URL: $registerUrl');
+    debugPrint('🏥 Health URL: $healthUrl');
+  }
 
   Future<void> _submitRegistration() async {
     if (_isSubmitting) return;
@@ -136,31 +134,26 @@ class _Step6ContentState extends State<Step6Content> {
     });
 
     try {
-      // সার্ভার কানেকশন চেক করুন
+      // Check server connection
       final isServerReachable = await _checkServerConnection();
       if (!isServerReachable) {
         _showServerUnavailableDialog();
         return;
       }
 
-      // ফর্ম ডাটা তৈরি করুন
+      // Build form data
       final formData = await _buildFormData();
 
-      // ডিবাগিং: ফর্ম ডাটা দেখুন
-      debugPrint(
-        '📋 FormData keys: ${formData.fields.map((e) => e.key).toList()}',
-      );
-      debugPrint(
-        '📁 FormData files: ${formData.files.map((e) => e.key).toList()}',
-      );
+      // Debug: Show form data
+      debugPrint('📋 FormData keys: ${formData.fields.map((e) => e.key).toList()}');
+      debugPrint('📁 FormData files: ${formData.files.map((e) => e.key).toList()}');
 
-      // ✅ FIXED: Use Dio WITHOUT baseUrl
       final dio = Dio();
 
-      // Set timeouts
-      dio.options.connectTimeout = const Duration(seconds: 30);
-      dio.options.sendTimeout = const Duration(seconds: 30);
-      dio.options.receiveTimeout = const Duration(seconds: 30);
+      // Set timeouts from config
+      dio.options.connectTimeout = Duration(seconds: EnvConfig.connectionTimeout);
+      dio.options.sendTimeout = Duration(seconds: EnvConfig.sendTimeout);
+      dio.options.receiveTimeout = Duration(seconds: EnvConfig.receiveTimeout);
 
       debugPrint('✅ Making API request to: $registerUrl');
 
@@ -175,12 +168,13 @@ class _Step6ContentState extends State<Step6Content> {
           },
           onResponse: (response, handler) {
             debugPrint('✅ API Response Status: ${response.statusCode}');
-            debugPrint('📨 Response Headers: ${response.headers}');
             return handler.next(response);
           },
           onError: (error, handler) {
-            debugPrint('❌ API Error Type: ${error.type}');
-            debugPrint('❌ API Error Message: ${error.message}');
+            debugPrint('❌ API Error: ${error.message}');
+            if (error.response != null) {
+              debugPrint('❌ Response Data: ${error.response?.data}');
+            }
             return handler.next(error);
           },
         ),
@@ -188,14 +182,15 @@ class _Step6ContentState extends State<Step6Content> {
 
       // Make the POST request
       final response = await dio.post(
-        registerUrl, // ✅ সরাসরি full URL
+        registerUrl,
         data: formData,
         options: Options(
           headers: {
             'Content-Type': 'multipart/form-data',
             'Accept': 'application/json',
             'X-App-Source': 'vendor_registration',
-            'X-App-Version': '1.0.0',
+            'X-App-Version': EnvConfig.appVersion,
+            'X-Device-Type': EnvConfig.deviceType,
             'X-Request-ID': DateTime.now().millisecondsSinceEpoch.toString(),
           },
           validateStatus: (status) => status! < 500,
@@ -208,73 +203,12 @@ class _Step6ContentState extends State<Step6Content> {
         },
       );
 
-      // রেসপন্স হ্যান্ডেল করুন
+      // Handle response
       await _handleApiResponse(response);
     } on DioException catch (e) {
       await _handleDioException(e);
     } catch (e, stackTrace) {
       await _handleGeneralException(e, stackTrace);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-      }
-    }
-  }
-
-  // Alternative: Use this simpler method
-  Future<void> _submitRegistrationSimple() async {
-    if (_isSubmitting) return;
-
-    if (!_validateForm()) {
-      setState(() {
-        _showValidationErrors = true;
-        _errorMessage = 'দয়া করে নিচের সমস্যাগুলো সমাধান করুন:';
-      });
-      return;
-    }
-
-    setState(() {
-      _isSubmitting = true;
-      _errorMessage = null;
-      _successMessage = null;
-      _showValidationErrors = false;
-      _lastApiResponse = null;
-    });
-
-    try {
-      // সার্ভার কানেকশন চেক করুন
-      final isServerReachable = await _checkServerConnection();
-      if (!isServerReachable) {
-        _showServerUnavailableDialog();
-        return;
-      }
-
-      // ফর্ম ডাটা তৈরি করুন
-      final formData = await _buildFormData();
-
-      debugPrint('✅ Making API request to: $registerUrl');
-
-      // Simple Dio instance
-      final dio = Dio();
-
-      // Make the request
-      final response = await dio.post(
-        registerUrl,
-        data: formData,
-        options: Options(
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Accept': 'application/json',
-          },
-        ),
-      );
-
-      await _handleApiResponse(response);
-    } catch (e) {
-      debugPrint('❌ Error: $e');
-      _handleError('রেজিস্ট্রেশন ব্যর্থ: $e', true, null);
     } finally {
       if (mounted) {
         setState(() {
@@ -365,7 +299,6 @@ class _Step6ContentState extends State<Step6Content> {
       'confirmPassword': widget.password,
       'nid_number': widget.nidNumber,
       'company_name': widget.companyName,
-
       'permanent_address': _buildFullAddress(
         widget.permanentAddress,
         widget.permanentThana,
@@ -384,25 +317,19 @@ class _Step6ContentState extends State<Step6Content> {
         widget.businessDistrict,
         widget.businessDivision,
       ),
-
       'service_areas': jsonEncode(_buildServiceAreasForAPI()),
       'services': jsonEncode([]),
       'technician_quantity': 0,
-
       'registration_timestamp': DateTime.now().toIso8601String(),
-      'app_version': '1.0.0',
-      'device_type': 'web',
+      'app_version': EnvConfig.appVersion,
+      'device_type': EnvConfig.deviceType,
     });
 
     await _addFileToFormData(formData, 'profile_image', widget.selfieImage);
     await _addFileToFormData(formData, 'nid_front', widget.nidFrontImage);
     await _addFileToFormData(formData, 'nid_back', widget.nidBackImage);
     await _addFileToFormData(formData, 'cv', widget.cvFile);
-    await _addFileToFormData(
-      formData,
-      'trade_license',
-      widget.tradeLicenseFile,
-    );
+    await _addFileToFormData(formData, 'trade_license', widget.tradeLicenseFile);
 
     return formData;
   }
@@ -410,8 +337,8 @@ class _Step6ContentState extends State<Step6Content> {
   Future<bool> _checkServerConnection() async {
     try {
       final dio = Dio();
-      dio.options.connectTimeout = const Duration(seconds: 5);
-      dio.options.receiveTimeout = const Duration(seconds: 5);
+      dio.options.connectTimeout = Duration(seconds: EnvConfig.connectionTimeout);
+      dio.options.receiveTimeout = Duration(seconds: EnvConfig.receiveTimeout);
 
       debugPrint('🔍 Checking server health at: $healthUrl');
 
@@ -516,43 +443,37 @@ class _Step6ContentState extends State<Step6Content> {
     debugPrint('📊 API Response: ${jsonEncode(_lastApiResponse)}');
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      if (responseMap != null) {
-        final bool isSuccess =
-            responseMap['success'] == true ||
-            responseMap['status'] == 'success' ||
-            (responseMap['error'] == null && responseMap['message'] != null);
+      final bool isSuccess = (responseMap?['success'] == true) ||
+          (responseMap?['status'] == 'success') ||
+          (responseMap?['error'] == null && responseMap?['message'] != null);
 
-        if (isSuccess) {
-          final successMsg =
-              responseMap['message'] ??
-              responseMap['success_message'] ??
-              'রেজিস্ট্রেশন সফল!';
+      if (isSuccess) {
+        final successMsg = (responseMap?['message'] as String?) ??
+            (responseMap?['success_message'] as String?) ??
+            'রেজিস্ট্রেশন সফল!';
 
-          final registrationId =
-              responseMap['registration_id'] ??
-              responseMap['id'] ??
-              responseMap['vendor_id'];
+        final registrationId = responseMap?['registration_id'] ??
+            responseMap?['id'] ??
+            responseMap?['vendor_id'];
 
-          if (mounted) {
-            setState(() {
-              _successMessage = successMsg;
-              _errorMessage = null;
-            });
-          }
-
-          widget.onSubmissionComplete(true, successMsg);
-          _showSuccessDialog(successMsg, registrationId, responseMap);
-        } else {
-          final errorMsg =
-              responseMap['message'] ??
-              responseMap['error'] ??
-              'রেজিস্ট্রেশন ব্যর্থ';
-          _handleError(errorMsg, false, responseMap);
+        if (mounted) {
+          setState(() {
+            _successMessage = successMsg;
+            _errorMessage = null;
+          });
         }
+
+        widget.onSubmissionComplete(true, successMsg);
+        _showSuccessDialog(successMsg, registrationId, responseMap);
+      } else {
+        final errorMsg = (responseMap?['message'] as String?) ??
+            (responseMap?['error'] as String?) ??
+            'রেজিস্ট্রেশন ব্যর্থ';
+        _handleError(errorMsg, false, responseMap);
       }
     } else {
       final errorMsg = 'সার্ভার এরর: ${response.statusCode}';
-      _handleError(errorMsg, false, response.data);
+      _handleError(errorMsg, false, responseMap);
     }
   }
 
@@ -564,9 +485,8 @@ class _Step6ContentState extends State<Step6Content> {
       final statusCode = e.response!.statusCode;
 
       if (responseData is Map) {
-        errorMsg =
-            responseData['message'] ??
-            responseData['error'] ??
+        errorMsg = (responseData['message'] as String?) ??
+            (responseData['error'] as String?) ??
             'সার্ভার এরর: $statusCode';
       }
 
@@ -637,7 +557,18 @@ class _Step6ContentState extends State<Step6Content> {
             Text('সার্ভার unavailable'),
           ],
         ),
-        content: const Text('সার্ভারে connect করা যাচ্ছে না।'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('সার্ভারে connect করা যাচ্ছে না।'),
+            const SizedBox(height: 8),
+            Text(
+              'URL: ${EnvConfig.baseUrl}',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () {
@@ -673,7 +604,18 @@ class _Step6ContentState extends State<Step6Content> {
             Text('রেজিস্ট্রেশন ব্যর্থ'),
           ],
         ),
-        content: Text(message),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(message),
+            const SizedBox(height: 8),
+            Text(
+              'API URL: ${EnvConfig.baseUrl}',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -687,7 +629,7 @@ class _Step6ContentState extends State<Step6Content> {
   void _showSuccessDialog(
     String message,
     dynamic registrationId,
-    Map<String, dynamic> responseData,
+    Map<String, dynamic>? responseData,
   ) {
     if (!mounted) return;
 
@@ -715,6 +657,11 @@ class _Step6ContentState extends State<Step6Content> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
+            const SizedBox(height: 8),
+            Text(
+              'API URL: ${EnvConfig.baseUrl}',
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         ),
         actions: [
@@ -769,8 +716,7 @@ class _Step6ContentState extends State<Step6Content> {
           const SizedBox(height: 24),
 
           if (_errorMessage != null) _buildMessageCard(_errorMessage!, true),
-          if (_successMessage != null)
-            _buildMessageCard(_successMessage!, false),
+          if (_successMessage != null) _buildMessageCard(_successMessage!, false),
 
           if (_showValidationErrors && _validationErrors.isNotEmpty)
             _buildValidationErrorsCard(),
@@ -827,12 +773,20 @@ class _Step6ContentState extends State<Step6Content> {
             ],
           ),
           const SizedBox(height: 8),
-          Text('API URL: $registerUrl', style: const TextStyle(fontSize: 12)),
+          Text('Environment: ${kReleaseMode ? "Production" : "Development"}', 
+              style: const TextStyle(fontSize: 12)),
+          Text('API Base URL: ${EnvConfig.baseUrl}', 
+              style: const TextStyle(fontSize: 12)),
+          Text('Register URL: $registerUrl', 
+              style: const TextStyle(fontSize: 12)),
+          Text('Health URL: $healthUrl', 
+              style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
   }
 
+  // Rest of the widget methods remain the same...
   Widget _buildValidationErrorsCard() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -855,24 +809,22 @@ class _Step6ContentState extends State<Step6Content> {
             ],
           ),
           const SizedBox(height: 8),
-          ..._validationErrors
-              .map(
-                (error) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.circle,
-                        size: 8,
-                        color: Color(0xFFf97316),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(error)),
-                    ],
+          ..._validationErrors.map(
+            (error) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.circle,
+                    size: 8,
+                    color: Color(0xFFf97316),
                   ),
-                ),
-              )
-              .toList(),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(error)),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 8),
           TextButton(
             onPressed: widget.onEdit,
@@ -991,7 +943,7 @@ class _Step6ContentState extends State<Step6Content> {
                 Icon(Icons.info, size: 14, color: Colors.blue[700]),
                 const SizedBox(width: 4),
                 Text(
-                  'API URL: $registerUrl',
+                  'API: ${EnvConfig.baseUrl}',
                   style: TextStyle(fontSize: 12, color: Colors.blue[700]),
                 ),
               ],
@@ -1047,14 +999,8 @@ class _Step6ContentState extends State<Step6Content> {
       title: 'স্থায়ী ঠিকানা',
       children: [
         _buildSummaryItem('ঠিকানা', widget.permanentAddress),
-        _buildSummaryItem(
-          'বিভাগ',
-          widget.permanentDivision ?? 'নির্বাচন করেননি',
-        ),
-        _buildSummaryItem(
-          'জেলা',
-          widget.permanentDistrict ?? 'নির্বাচন করেননি',
-        ),
+        _buildSummaryItem('বিভাগ', widget.permanentDivision ?? 'নির্বাচন করেননি'),
+        _buildSummaryItem('জেলা', widget.permanentDistrict ?? 'নির্বাচন করেননি'),
         _buildSummaryItem('থানা', widget.permanentThana ?? 'নির্বাচন করেননি'),
       ],
     );
@@ -1066,10 +1012,7 @@ class _Step6ContentState extends State<Step6Content> {
       title: 'ব্যবসায়িক ঠিকানা',
       children: [
         _buildSummaryItem('ঠিকানা', widget.businessAddress),
-        _buildSummaryItem(
-          'বিভাগ',
-          widget.businessDivision ?? 'নির্বাচন করেননি',
-        ),
+        _buildSummaryItem('বিভাগ', widget.businessDivision ?? 'নির্বাচন করেননি'),
         _buildSummaryItem('জেলা', widget.businessDistrict ?? 'নির্বাচন করেননি'),
         _buildSummaryItem('থানা', widget.businessThana ?? 'নির্বাচন করেননি'),
       ],
@@ -1084,10 +1027,7 @@ class _Step6ContentState extends State<Step6Content> {
         _buildSummaryItem('বিভাগ', widget.serviceDivision ?? 'নির্বাচন করেননি'),
         _buildSummaryItem('জেলা', widget.serviceDistrict ?? 'নির্বাচন করেননি'),
         _buildSummaryItem('থানা', widget.selectedServiceThanas.join(', ')),
-        _buildSummaryItem(
-          'মোট থানা',
-          widget.selectedServiceThanas.length.toString(),
-        ),
+        _buildSummaryItem('মোট থানা', widget.selectedServiceThanas.length.toString()),
       ],
     );
   }
@@ -1155,7 +1095,7 @@ class _Step6ContentState extends State<Step6Content> {
         ),
         const SizedBox(height: 16),
         Text(
-          'API URL: $registerUrl',
+          'API URL: ${EnvConfig.baseUrl}',
           style: const TextStyle(fontSize: 12, color: Colors.grey),
         ),
       ],

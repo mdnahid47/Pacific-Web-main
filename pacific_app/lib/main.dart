@@ -17,11 +17,21 @@ import 'screens/login_screen.dart';
 import 'screens/vendor/vendor_dashboard_screen.dart';
 import 'screens/technician/technician_dashboard_screen.dart';
 import 'screens/registration_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'config/env_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  
+  // ✅ Initialize environment
+  await EnvConfig.init();
+  
+  // Debug: Print loaded environment
+  print('✅ Environment initialized');
+  print('🌐 API Base URL: ${EnvConfig.baseUrl}');
+  print('🌐 Environment: ${EnvConfig.getEnvironment()}');
+  print('🔍 Debug Mode: ${EnvConfig.isDebugEnabled()}');
+  print('📝 Logging: ${EnvConfig.isLoggingEnabled()}');
+  
   runApp(const MyApp());
 }
 
@@ -31,25 +41,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, child) {
-          print('🔄 MyApp rebuild - Auth state:');
-          print('   Loading: ${authProvider.loading}');
-          print('   Authenticated: ${authProvider.isAuthenticated}');
-          print('   User Role: ${authProvider.userRole}');
-          print('   Token: ${authProvider.token != null ? "Exists" : "Null"}');
-
           return MaterialApp(
             title: 'Pacific Service Hub',
             theme: ThemeData(
-              primaryColor: const Color(0xFF7C3AED),
+              primaryColor: const Color(0xFF3B82F6),
               scaffoldBackgroundColor: Colors.white,
               colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF7C3AED),
+                seedColor: const Color(0xFF3B82F6),
                 brightness: Brightness.light,
-                primary: const Color(0xFF7C3AED),
-                secondary: const Color(0xFF8B5CF6),
+                primary: const Color(0xFF3B82F6),
+                secondary: const Color(0xFF3B82F6),
               ),
               fontFamily: GoogleFonts.inter().fontFamily,
               textTheme: GoogleFonts.interTextTheme(),
@@ -64,7 +70,6 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             home: _buildHome(authProvider),
             routes: _buildRoutes(),
-            // Remove onUnknownRoute temporarily for debugging
           );
         },
       ),
@@ -72,77 +77,54 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _buildHome(AuthProvider authProvider) {
-    print('🏠 _buildHome called');
-    print('   Loading: ${authProvider.loading}');
-    print('   IsAuthenticated: ${authProvider.isAuthenticated}');
-    print('   UserRole: ${authProvider.userRole}');
-
     // Show splash screen only during initial token loading
     if (authProvider.loading) {
-      print('🔄 Showing SplashScreen (loading...)');
       return const SplashScreen();
     }
 
     // Check authentication status
     if (authProvider.isAuthenticated) {
       final userRole = authProvider.userRole;
-      print('✅ User is authenticated. Role: $userRole');
 
       // Navigate based on user role
       switch (userRole) {
         case 'technician':
-          print('🔧 Redirecting to TechnicianDashboardScreen');
           return const TechnicianDashboardScreen();
         case 'vendor':
-          print('🏢 Redirecting to VendorDashboardScreen');
           return const VendorDashboardScreen();
         case 'admin':
         case 'superadmin':
-          print('👑 Redirecting to Admin Dashboard');
           return Scaffold(
             appBar: AppBar(title: const Text('Admin Dashboard')),
             body: const Center(child: Text('Admin Dashboard')),
           );
         case 'user':
-          print('👤 Redirecting to User Dashboard');
           return Scaffold(
             appBar: AppBar(title: const Text('User Dashboard')),
             body: const Center(child: Text('User Dashboard')),
           );
         default:
-          print('⚠️ Unknown role: $userRole, redirecting to login');
           return const LoginScreen();
       }
     }
 
-    print('🚪 User not authenticated, showing LoginScreen');
     return const LoginScreen();
   }
 
   Map<String, WidgetBuilder> _buildRoutes() {
     return {
-      // 🔐 Authentication
       '/login': (context) => const LoginScreen(),
       '/splash': (context) => const SplashScreen(),
-
-      // 👤 Registration (Only Vendor)
       '/register': (context) => const RegistrationScreen(),
-
       '/vendor/dashboard': (context) => const VendorDashboardScreen(),
-
-      // Business Overview রাউট
       '/vendor/total-orders': (context) => const TotalOrdersScreen(),
       '/vendor/active-techs': (context) => const ActiveTechsScreen(),
       '/vendor/pending-orders': (context) => const PendingOrdersScreen(),
       '/vendor/revenue-details': (context) => const RevenueDetailsScreen(),
-
-      // Quick Actions রাউট
       '/vendor/revenue': (context) => const RevenueScreen(),
       '/vendor/due-pay': (context) => const DuePayScreen(),
       '/vendor/add-service': (context) => const AddServiceScreen(),
       '/vendor/complete-orders': (context) => const CompleteOrdersScreen(),
-
-      // Notifications রাউট
       '/vendor/notification-details': (context) {
         final args = ModalRoute.of(context)!.settings.arguments as Map;
         return NotificationDetailsScreen(
@@ -153,8 +135,6 @@ class MyApp extends StatelessWidget {
         );
       },
       '/vendor/all-notifications': (context) => const AllNotificationsScreen(),
-
-      // 🔧 Technician Routes
       '/technician/dashboard': (context) => const TechnicianDashboardScreen(),
     };
   }

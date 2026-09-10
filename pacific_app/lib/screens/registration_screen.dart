@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:pacific_app/components/step_content/step6_content.dart';
 import 'package:pacific_app/models/file_model.dart';
-import 'package:pacific_app/services/image_picker_service.dart';
 import '../components/step_indicator.dart';
 import '../components/step_content/step1_content.dart';
 import '../components/step_content/step2_content.dart';
@@ -25,7 +22,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   int _currentStep = 0;
   bool _isLoading = false;
   bool _isSubmitted = false;
-  bool _isImageProcessing = false;
+  final bool _isImageProcessing = false;
 
   // Present Address Variables
   String _presentAddress = '';
@@ -49,12 +46,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   // Step 1 - Personal Information Variables
   String _name = '';
   String _email = '';
-  String _phone = ''; // Made final as suggested
+  String _phone = '';
   DateTime _dob = DateTime.now();
   String _nidNumber = '';
-  // Made final as unused
   String _companyName = '';
-  // Made final as unused
   String _businessDescription = '';
 
   // Step 4 - Password Variables
@@ -75,9 +70,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   AppFile? _nidFrontImage;
   AppFile? _nidBackImage;
 
-  // Image Picker instance
-  final ImagePicker _imagePicker = ImagePicker();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +85,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               padding: const EdgeInsets.only(right: 16),
               child: Center(
                 child: Text(
-                  'Step ${_currentStep + 1}/6', // 6 steps
+                  'Step ${_currentStep + 1}/6',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -147,7 +139,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   email: _email,
                   phone: _phone,
                   dob: _dob,
-                  nidNumber: _nidNumber, // নতুন যোগ করুন
+                  nidNumber: _nidNumber,
                   businessName: _companyName,
                   businessDescription: _businessDescription,
                   onNameChanged: (value) => setState(() => _name = value),
@@ -155,7 +147,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   onPhoneChanged: (value) => setState(() => _phone = value),
                   onDobChanged: (value) => setState(() => _dob = value),
                   onNidNumberChanged: (value) =>
-                      setState(() => _nidNumber = value), // নতুন যোগ করুন
+                      setState(() => _nidNumber = value),
                   onBusinessNameChanged: (value) =>
                       setState(() => _companyName = value),
                   onBusinessDescriptionChanged: (value) =>
@@ -342,19 +334,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   // Step 5 Content - KYC
-  // Widget _buildStep5Content() {
-  //   return Step5Content(
-  //     selfieImage: _selfieImage,
-  //     nidFrontImage: _nidFrontImage,
-  //     nidBackImage: _nidBackImage,
-  //     onTakeSelfie: _takeSelfieImage,
-  //     onTakeNidFront: _takeNidFrontImage,
-  //     onTakeNidBack: _takeNidBackImage,
-  //     isImageProcessing: _isImageProcessing,
-  //   );
-  // }
-
-  // Step 5 Content - KYC
   Widget _buildStep5Content() {
     return Step5Content(
       selfieImage: _selfieImage,
@@ -439,7 +418,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   void _goToNextStep() {
     if (_validateCurrentStep()) {
       if (_currentStep < 5) {
-        // 5 is the last step index (6 steps: 0-5)
         _pageController.nextPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -480,7 +458,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> _pickCvFile() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      // Use the static method directly without platform
+      // This is the correct way to use FilePicker
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'doc', 'docx'],
         allowMultiple: false,
@@ -495,7 +475,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         }
       }
     } catch (e) {
-      // Use debugPrint instead of print
       debugPrint('Error picking CV file: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -507,7 +486,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Future<void> _pickTradeLicenseFile() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      // Use the static method directly without platform
+      FilePickerResult? result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'],
         allowMultiple: false,
@@ -528,40 +508,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           SnackBar(content: Text('Failed to pick file: ${e.toString()}')),
         );
       }
-    }
-  }
-
-  // Image picker methods for KYC (Step 5)
-  Future<void> _pickSelfieImage(BuildContext context) async {
-    final image = await ImagePickerService.showImageSourceDialog(context);
-
-    if (image != null && mounted) {
-      setState(() {
-        _selfieImage = image;
-      });
-      _showSnackBar('Selfie captured successfully');
-    }
-  }
-
-  Future<void> _pickNidFrontImage(BuildContext context) async {
-    final image = await ImagePickerService.showImageSourceDialog(context);
-
-    if (image != null && mounted) {
-      setState(() {
-        _nidFrontImage = image;
-      });
-      _showSnackBar('NID front captured successfully');
-    }
-  }
-
-  Future<void> _pickNidBackImage(BuildContext context) async {
-    final image = await ImagePickerService.showImageSourceDialog(context);
-
-    if (image != null && mounted) {
-      setState(() {
-        _nidBackImage = image;
-      });
-      _showSnackBar('NID back captured successfully');
     }
   }
 
@@ -607,7 +553,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           return false;
         }
         if (_nidNumber.isEmpty || _nidNumber.length < 10) {
-          // NID validation
           _showSnackBar(
             'Please enter valid NID number (10-17 digits)',
             isError: true,
@@ -626,7 +571,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _showSnackBar('You must be at least 18 years old', isError: true);
           return false;
         }
-        break;
+        return true;
 
       case 1: // Step 2 - Address Information
         // Present Address validation
@@ -684,7 +629,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _showSnackBar('Please select business thana', isError: true);
           return false;
         }
-        break;
+        return true;
 
       case 2: // Step 3 - Service Areas and Documents
         if (_serviceDivision == null) {
@@ -716,7 +661,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _showSnackBar('Please upload Trade License', isError: true);
           return false;
         }
-        break;
+        return true;
 
       case 3: // Step 4 - Password
         if (_password.length < 6) {
@@ -730,7 +675,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _showSnackBar('Passwords do not match', isError: true);
           return false;
         }
-        break;
+        return true;
 
       case 4: // Step 5 - KYC Verification
         if (_selfieImage == null) {
@@ -745,14 +690,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           _showSnackBar('Please capture NID back side', isError: true);
           return false;
         }
-        break;
+        return true;
 
       case 5: // Step 6 - Summary
         // Summary step doesn't need validation, just check if all previous steps are valid
-        break;
-    }
+        return true;
 
-    return true;
+      default:
+        return true;
+    }
   }
 
   void _showSubmitConfirmation() {

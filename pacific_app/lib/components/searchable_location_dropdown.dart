@@ -1,233 +1,260 @@
 import 'package:flutter/material.dart';
-import '../services/location_service.dart';
 
-class SearchableLocationDropdown extends StatefulWidget {
-  // Single select এর জন্য
-  final String? selectedDivision;
-  final String? selectedDistrict;
-  final String? selectedThana;
+class SearchableDropdown extends StatefulWidget {
+  final String? value;
+  final List<String> selectedValues;
+  final List<String> items;
+  final String hintText;
+  final ValueChanged<String?>? onChanged;
+  final ValueChanged<List<String>>? onMultiChanged;
+  final bool enabled;
+  final bool showClearButton;
+  final bool isMultiSelect;
+  final EdgeInsets? contentPadding;
+  final bool showSelectedChips;
 
-  // Multi select service areas এর জন্য
-  final List<String> selectedServiceAreas;
-
-  final ValueChanged<String?> onDivisionChanged;
-  final ValueChanged<String?> onDistrictChanged;
-  final ValueChanged<String?> onThanaChanged;
-  final ValueChanged<List<String>>
-  onServiceAreasChanged; // Multi-select callback
-
-  final bool showLabels;
-  final bool showServiceAreas; // Service areas section show করবে কিনা
-
-  const SearchableLocationDropdown({
-    Key? key,
-    this.selectedDivision,
-    this.selectedDistrict,
-    this.selectedThana,
-    this.selectedServiceAreas = const [],
-    required this.onDivisionChanged,
-    required this.onDistrictChanged,
-    required this.onThanaChanged,
-    required this.onServiceAreasChanged,
-    this.showLabels = true,
-    this.showServiceAreas = true,
-  }) : super(key: key);
+  const SearchableDropdown({
+    super.key,
+    this.value,
+    this.selectedValues = const [],
+    required this.items,
+    required this.hintText,
+    this.onChanged,
+    this.onMultiChanged,
+    this.enabled = true,
+    this.showClearButton = true,
+    this.isMultiSelect = false,
+    this.contentPadding,
+    this.showSelectedChips = true,
+  });
 
   @override
-  _SearchableLocationDropdownState createState() =>
-      _SearchableLocationDropdownState();
+  State<SearchableDropdown> createState() => _SearchableDropdownState();
 }
 
-class _SearchableLocationDropdownState
-    extends State<SearchableLocationDropdown> {
-  // Service areas এর জন্য state variables
-  final TextEditingController _areaController = TextEditingController();
-  final FocusNode _areaFocusNode = FocusNode();
-  OverlayEntry? _areaOverlayEntry;
-  List<String> _filteredAreas = [];
-  List<String> _selectedAreas = [];
-  bool _isAreaDropdownOpen = false;
-  final LayerLink _areaLayerLink = LayerLink();
+class _SearchableDropdownState extends State<SearchableDropdown> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  OverlayEntry? _overlayEntry;
+  List<String> _filteredItems = [];
+  List<String> _selectedMultiItems = [];
+  bool _isDropdownOpen = false;
+  final LayerLink _layerLink = LayerLink();
 
   @override
   void initState() {
     super.initState();
-    _selectedAreas = List.from(widget.selectedServiceAreas);
+    _selectedMultiItems = List.from(widget.selectedValues);
+    _controller.text = widget.value ?? '';
+    _filteredItems = List.from(widget.items); // ✅ Copy the list
 
-    _areaFocusNode.addListener(_onAreaFocusChange);
-    _areaController.addListener(_onAreaSearchChanged);
-    _updateAreaControllerText();
+    print('🔍 SearchableDropdown init: ${widget.hintText}');
+    print('   Items count: ${widget.items.length}');
+    print('   Items: ${widget.items.take(3).toList()}...');
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && widget.enabled) {
+        _showOverlay();
+      } else {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (!_focusNode.hasFocus) {
+            _removeOverlay();
+          }
+        });
+      }
+    });
+
+    _controller.addListener(_filterItems);
   }
 
   @override
-  void didUpdateWidget(SearchableLocationDropdown oldWidget) {
+  void didUpdateWidget(SearchableDropdown oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selectedServiceAreas != oldWidget.selectedServiceAreas) {
-      _selectedAreas = List.from(widget.selectedServiceAreas);
-      _updateAreaControllerText();
+    
+    // ✅ CRITICAL FIX: Update items when they change
+    if (widget.items != oldWidget.items) {
+      print('🔄 SearchableDropdown items updated: ${widget.hintText}');
+      print('   New items count: ${widget.items.length}');
+      print('   New items: ${widget.items.take(3).toList()}...');
+      
+      _filteredItems = List.from(widget.items);
+      if (_controller.text.isNotEmpty) {
+        final query = _controller.text.toLowerCase();
+        _filteredItems = widget.items
+            .where((item) => item.toLowerCase().contains(query))
+            .toList();
+      }
+      setState(() {});
+    }
+    
+    if (widget.value != oldWidget.value && !widget.isMultiSelect) {
+      _controller.text = widget.value ?? '';
+    }
+    
+    if (widget.selectedValues != oldWidget.selectedValues && widget.isMultiSelect) {
+      _selectedMultiItems = List.from(widget.selectedValues);
+      _updateMultiControllerText();
     }
   }
 
   @override
   void dispose() {
-    _areaController.dispose();
-    _areaFocusNode.dispose();
-    _removeAreaOverlay();
+    _controller.dispose();
+    _focusNode.dispose();
+    _removeOverlay();
     super.dispose();
   }
 
-  void _updateAreaControllerText() {
-    if (_selectedAreas.isEmpty) {
-      _areaController.text = '';
-    } else if (_selectedAreas.length == 1) {
-      _areaController.text = _selectedAreas.first;
+  void _filterItems() {
+    final query = _controller.text.toLowerCase();
+    setState(() {
+      _filteredItems = widget.items
+          .where((item) => item.toLowerCase().contains(query))
+          .toList();
+    });
+  }
+
+  void _updateMultiControllerText() {
+    if (_selectedMultiItems.isEmpty) {
+      _controller.text = '';
+    } else if (_selectedMultiItems.length == 1) {
+      _controller.text = _selectedMultiItems.first;
     } else {
-      _areaController.text = '${_selectedAreas.length} areas selected';
+      _controller.text = '${_selectedMultiItems.length} selected';
     }
   }
 
-  void _onAreaFocusChange() {
-    if (_areaFocusNode.hasFocus) {
-      _showAreaOverlay();
-    } else {
-      Future.delayed(Duration(milliseconds: 150), _removeAreaOverlay);
-    }
-  }
+  void _showOverlay() {
+    if (_overlayEntry != null) return;
 
-  void _onAreaSearchChanged() {
-    if (_areaFocusNode.hasFocus) {
-      final query = _areaController.text.toLowerCase();
-      setState(() {
-        _filteredAreas = _getAvailableServiceAreas()
-            .where((area) => area.toLowerCase().contains(query))
-            .toList();
-      });
-    }
-  }
-
-  List<String> _getAvailableServiceAreas() {
-    if (widget.selectedDivision == null) {
-      return LocationService.getServiceAreaNames();
-    }
-
-    if (widget.selectedDistrict == null) {
-      return LocationService.getServiceAreasByDivision(
-        widget.selectedDivision!,
-      );
-    }
-
-    return LocationService.getServiceAreasByDivisionAndDistrict(
-      widget.selectedDivision!,
-      widget.selectedDistrict!,
-    );
-  }
-
-  void _showAreaOverlay() {
-    if (_areaOverlayEntry != null ||
-        !widget.showServiceAreas ||
-        widget.selectedDivision == null)
-      return;
-
-    _filteredAreas = _getAvailableServiceAreas();
+    print('📂 Opening dropdown: ${widget.hintText}');
+    print('   Filtered items count: ${_filteredItems.length}');
 
     final renderBox = context.findRenderObject() as RenderBox;
     final size = renderBox.size;
 
-    _areaOverlayEntry = OverlayEntry(
+    _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         width: size.width,
         child: CompositedTransformFollower(
-          link: _areaLayerLink,
+          link: _layerLink,
           showWhenUnlinked: false,
           offset: Offset(0, size.height + 4),
           child: Material(
-            elevation: 4,
+            elevation: 8,
             child: Container(
-              constraints: BoxConstraints(maxHeight: 300),
+              constraints: const BoxConstraints(maxHeight: 300),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade300),
               ),
-              child: _buildAreaDropdownList(),
+              child: _buildDropdownList(),
             ),
           ),
         ),
       ),
     );
 
-    Overlay.of(context)?.insert(_areaOverlayEntry!);
-    setState(() => _isAreaDropdownOpen = true);
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() => _isDropdownOpen = true);
   }
 
-  void _removeAreaOverlay() {
-    if (_areaOverlayEntry != null) {
-      _areaOverlayEntry?.remove();
-      _areaOverlayEntry = null;
+  void _removeOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
     }
-    setState(() => _isAreaDropdownOpen = false);
-    _updateAreaControllerText();
+    setState(() => _isDropdownOpen = false);
   }
 
-  Widget _buildAreaDropdownList() {
-    if (_filteredAreas.isEmpty) {
+  Widget _buildDropdownList() {
+    if (_filteredItems.isEmpty) {
       return Container(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'No service areas found',
-          style: TextStyle(color: Colors.grey),
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: Text(
+            'No results found',
+            style: TextStyle(color: Colors.grey[600]),
+          ),
         ),
       );
     }
 
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: _filteredAreas.length,
+      itemCount: _filteredItems.length,
       itemBuilder: (context, index) {
-        final area = _filteredAreas[index];
-        final isSelected = _selectedAreas.contains(area);
-
-        return ListTile(
-          leading: Checkbox(
-            value: isSelected,
-            onChanged: (value) {
-              _toggleAreaSelection(area);
-            },
-          ),
-          title: Text(area),
-          onTap: () {
-            _toggleAreaSelection(area);
-          },
-        );
+        final item = _filteredItems[index];
+        
+        if (widget.isMultiSelect) {
+          final isSelected = _selectedMultiItems.contains(item);
+          return _buildMultiSelectItem(item, isSelected);
+        } else {
+          final isSelected = item == widget.value;
+          return _buildSingleSelectItem(item, isSelected);
+        }
       },
     );
   }
 
-  void _toggleAreaSelection(String area) {
+  Widget _buildMultiSelectItem(String item, bool isSelected) {
+    return ListTile(
+      leading: Checkbox(
+        value: isSelected,
+        onChanged: (value) => _toggleMultiItem(item),
+      ),
+      title: Text(item),
+      selected: isSelected,
+      onTap: () => _toggleMultiItem(item),
+    );
+  }
+
+  Widget _buildSingleSelectItem(String item, bool isSelected) {
+    return ListTile(
+      title: Text(item),
+      tileColor: isSelected ? Colors.blue.shade50 : null,
+      selected: isSelected,
+      onTap: () {
+        _controller.text = item;
+        if (widget.onChanged != null) {
+          widget.onChanged!(item);
+        }
+        _focusNode.unfocus();
+      },
+    );
+  }
+
+  void _toggleMultiItem(String item) {
     setState(() {
-      if (_selectedAreas.contains(area)) {
-        _selectedAreas.remove(area);
+      if (_selectedMultiItems.contains(item)) {
+        _selectedMultiItems.remove(item);
       } else {
-        _selectedAreas.add(area);
+        _selectedMultiItems.add(item);
       }
+      _updateMultiControllerText();
     });
-    widget.onServiceAreasChanged(List.from(_selectedAreas));
+    
+    if (widget.onMultiChanged != null) {
+      widget.onMultiChanged!(List.from(_selectedMultiItems));
+    }
   }
 
-  void _removeArea(String area) {
-    setState(() {
-      _selectedAreas.remove(area);
-    });
-    widget.onServiceAreasChanged(List.from(_selectedAreas));
-    _updateAreaControllerText();
-  }
-
-  void _clearAllAreas() {
-    setState(() {
-      _selectedAreas.clear();
-    });
-    widget.onServiceAreasChanged([]);
-    _areaController.clear();
+  void _clearSelection() {
+    if (widget.isMultiSelect) {
+      setState(() {
+        _selectedMultiItems.clear();
+        _controller.clear();
+      });
+      if (widget.onMultiChanged != null) {
+        widget.onMultiChanged!([]);
+      }
+    } else {
+      _controller.clear();
+      if (widget.onChanged != null) {
+        widget.onChanged!(null);
+      }
+    }
   }
 
   @override
@@ -235,151 +262,31 @@ class _SearchableLocationDropdownState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Selected Service Areas Chips
-        if (widget.showServiceAreas && _selectedAreas.isNotEmpty)
+        if (widget.isMultiSelect && _selectedMultiItems.isNotEmpty && widget.showSelectedChips)
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _selectedAreas.map((area) {
+              children: _selectedMultiItems.map((item) {
                 return Chip(
-                  label: Text(area),
-                  deleteIcon: Icon(Icons.close, size: 16),
-                  onDeleted: () => _removeArea(area),
+                  label: Text(item),
+                  deleteIcon: const Icon(Icons.close, size: 16),
+                  onDeleted: () => _toggleMultiItem(item),
                 );
               }).toList(),
             ),
           ),
 
-        // Service Areas Multi-Select Dropdown
-        if (widget.showServiceAreas) _buildServiceAreaDropdown(),
-
-        SizedBox(height: 20),
-
-        // Division Dropdown
-        if (widget.showLabels)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'Division',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-              ),
-            ),
-          ),
-        _buildSingleSelectDropdown(
-          value: widget.selectedDivision,
-          items: LocationService.getDivisionNames(),
-          hintText: 'Search division...',
-          onChanged: (value) {
-            widget.onDivisionChanged(value);
-            widget.onDistrictChanged(null);
-            widget.onThanaChanged(null);
-            widget.onServiceAreasChanged([]); // Clear service areas
-          },
-          enabled: true,
-        ),
-        SizedBox(height: 20),
-
-        // District Dropdown
-        if (widget.showLabels)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'District',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-              ),
-            ),
-          ),
-        _buildSingleSelectDropdown(
-          value: widget.selectedDistrict,
-          items: widget.selectedDivision != null
-              ? LocationService.getDistrictNames(widget.selectedDivision!)
-              : [],
-          hintText: widget.selectedDivision != null
-              ? 'Search district...'
-              : 'Select division first',
-          onChanged: widget.selectedDivision != null
-              ? (value) {
-                  widget.onDistrictChanged(value);
-                  widget.onThanaChanged(null);
-                  widget.onServiceAreasChanged([]); // Clear service areas
-                }
-              : (_) {},
-          enabled: widget.selectedDivision != null,
-        ),
-        SizedBox(height: 20),
-
-        // Thana Dropdown
-        if (widget.showLabels)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'Thana/Police Station',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-              ),
-            ),
-          ),
-        _buildSingleSelectDropdown(
-          value: widget.selectedThana,
-          items:
-              widget.selectedDivision != null && widget.selectedDistrict != null
-              ? LocationService.getStationNames(
-                  widget.selectedDivision!,
-                  widget.selectedDistrict!,
-                )
-              : [],
-          hintText:
-              widget.selectedDivision != null && widget.selectedDistrict != null
-              ? 'Search thana...'
-              : 'Select district first',
-          onChanged:
-              widget.selectedDivision != null && widget.selectedDistrict != null
-              ? widget.onThanaChanged
-              : (_) {},
-          enabled:
-              widget.selectedDivision != null &&
-              widget.selectedDistrict != null,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildServiceAreaDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.showLabels)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'Service Areas',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[700],
-              ),
-            ),
-          ),
-
         CompositedTransformTarget(
-          link: _areaLayerLink,
+          link: _layerLink,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: _isAreaDropdownOpen
+                color: _isDropdownOpen
                     ? Theme.of(context).primaryColor
                     : Colors.grey.shade300,
-                width: _isAreaDropdownOpen ? 2 : 1,
+                width: _isDropdownOpen ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -387,49 +294,44 @@ class _SearchableLocationDropdownState
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: TextField(
-                      controller: _areaController,
-                      focusNode: _areaFocusNode,
-                      enabled: widget.selectedDivision != null,
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      enabled: widget.enabled,
                       decoration: InputDecoration(
-                        hintText: widget.selectedDivision != null
-                            ? 'Search and select service areas...'
-                            : 'Select division first',
+                        hintText: widget.hintText,
                         border: InputBorder.none,
                         hintStyle: TextStyle(
-                          color: widget.selectedDivision != null
-                              ? Colors.grey
-                              : Colors.grey.shade400,
+                          color: widget.enabled ? Colors.grey : Colors.grey.shade400,
                         ),
                       ),
                       style: TextStyle(
-                        color: widget.selectedDivision != null
-                            ? Colors.black
-                            : Colors.grey,
+                        color: widget.enabled ? Colors.black : Colors.grey,
                       ),
                     ),
                   ),
                 ),
-                if (_selectedAreas.isNotEmpty)
+                if (widget.showClearButton && 
+                    ((widget.isMultiSelect && _selectedMultiItems.isNotEmpty) ||
+                     (!widget.isMultiSelect && widget.value != null && widget.value!.isNotEmpty)) &&
+                    widget.enabled)
                   IconButton(
-                    icon: Icon(Icons.clear_all, size: 18),
-                    onPressed: _clearAllAreas,
+                    icon: const Icon(Icons.clear, size: 18),
+                    onPressed: _clearSelection,
                     splashRadius: 20,
                   ),
                 IconButton(
                   icon: Icon(
-                    _isAreaDropdownOpen ? Icons.expand_less : Icons.expand_more,
-                    color: widget.selectedDivision != null
-                        ? Colors.grey
-                        : Colors.grey.shade400,
+                    _isDropdownOpen ? Icons.expand_less : Icons.expand_more,
+                    color: widget.enabled ? Colors.grey : Colors.grey.shade400,
                   ),
-                  onPressed: widget.selectedDivision != null
+                  onPressed: widget.enabled
                       ? () {
-                          if (_isAreaDropdownOpen) {
-                            _areaFocusNode.unfocus();
+                          if (_isDropdownOpen) {
+                            _focusNode.unfocus();
                           } else {
-                            _areaFocusNode.requestFocus();
+                            _focusNode.requestFocus();
                           }
                         }
                       : null,
@@ -439,95 +341,7 @@ class _SearchableLocationDropdownState
             ),
           ),
         ),
-
-        if (_selectedAreas.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 4.0),
-            child: Text(
-              'Selected: ${_selectedAreas.length} area(s)',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-            ),
-          ),
       ],
-    );
-  }
-
-  Widget _buildSingleSelectDropdown({
-    required String? value,
-    required List<String> items,
-    required String hintText,
-    required ValueChanged<String?> onChanged,
-    required bool enabled,
-  }) {
-    final controller = TextEditingController(text: value ?? '');
-    final focusNode = FocusNode();
-    OverlayEntry? overlayEntry;
-    bool isDropdownOpen = false;
-    final layerLink = LayerLink();
-
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return CompositedTransformTarget(
-          link: layerLink,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: isDropdownOpen
-                    ? Theme.of(context).primaryColor
-                    : Colors.grey.shade300,
-                width: isDropdownOpen ? 2 : 1,
-              ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    child: TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      enabled: enabled,
-                      decoration: InputDecoration(
-                        hintText: hintText,
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(
-                          color: enabled ? Colors.grey : Colors.grey.shade400,
-                        ),
-                      ),
-                      style: TextStyle(
-                        color: enabled ? Colors.black : Colors.grey,
-                      ),
-                      onTap: () {
-                        if (enabled && !isDropdownOpen) {
-                          // Show dropdown
-                        }
-                      },
-                    ),
-                  ),
-                ),
-                if (value != null && enabled)
-                  IconButton(
-                    icon: Icon(Icons.clear, size: 18),
-                    onPressed: () {
-                      controller.clear();
-                      onChanged(null);
-                    },
-                    splashRadius: 20,
-                  ),
-                IconButton(
-                  icon: Icon(
-                    Icons.expand_more,
-                    color: enabled ? Colors.grey : Colors.grey.shade400,
-                  ),
-                  onPressed: null,
-                  splashRadius: 20,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

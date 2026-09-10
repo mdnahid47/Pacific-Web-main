@@ -109,7 +109,7 @@ const CheckoutPage = () => {
           return;
         }
 
-        const res = await axios.get(`${API_URL}/api/user-profile`, {
+        const res = await axios.get(`${API_URL}/user-profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -267,7 +267,7 @@ const CheckoutPage = () => {
     console.log("Order data being sent:", orderData);
 
     try {
-      const res = await axios.post(`${API_URL}/api/place-order`, orderData, {
+      const res = await axios.post(`${API_URL}/place-order`, orderData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -350,7 +350,7 @@ const CheckoutPage = () => {
       console.log("Saving address data:", updateData);
 
       const response = await axios.put(
-        `${API_URL}/api/user-profile`,
+        `${API_URL}/user-profile`,
         updateData,
         {
           headers: {

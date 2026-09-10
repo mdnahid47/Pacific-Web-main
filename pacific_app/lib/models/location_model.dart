@@ -6,8 +6,8 @@ class Division {
 
   factory Division.fromJson(Map<String, dynamic> json) {
     return Division(
-      name: json['division'],
-      districts: (json['districts'] as List)
+      name: json['division'] ?? '',
+      districts: (json['districts'] as List? ?? [])
           .map((district) => District.fromJson(district))
           .toList(),
     );
@@ -22,8 +22,8 @@ class District {
 
   factory District.fromJson(Map<String, dynamic> json) {
     return District(
-      name: json['district'],
-      stations: (json['stations'] as List)
+      name: json['district'] ?? '',
+      stations: (json['stations'] as List? ?? [])
           .map((station) => Station.fromJson(station))
           .toList(),
     );
@@ -37,7 +37,10 @@ class Station {
   Station({required this.value, required this.label});
 
   factory Station.fromJson(Map<String, dynamic> json) {
-    return Station(value: json['value'], label: json['label']);
+    return Station(
+      value: json['value'] ?? '',
+      label: json['label'] ?? '',
+    );
   }
 
   @override

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../services/api_service.dart';
 
 class ActiveOrdersScreen extends StatefulWidget {
   const ActiveOrdersScreen({super.key});
@@ -9,31 +11,71 @@ class ActiveOrdersScreen extends StatefulWidget {
 }
 
 class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
-  List<Map<String, dynamic>> activeOrders = [
-    {
-      'id': 'ORD-101',
-      'service': 'AC Installation',
-      'technician': 'Rahim Khan',
-      'customer': 'Ali Ahmed',
-      'address': 'Gulshan, Dhaka',
-      'scheduledTime': '09:00 AM',
-      'actualStartTime': '09:05 AM',
-      'status': 'Late Start',
-      'fine': '৳100',
-    },
-    {
-      'id': 'ORD-102',
-      'service': 'Washing Machine Repair',
-      'technician': 'Karim Uddin',
-      'customer': 'Fatima Begum',
-      'address': 'Banani, Dhaka',
-      'scheduledTime': '10:30 AM',
-      'actualStartTime': '10:28 AM',
-      'status': 'On Time',
-      'fine': '৳0',
-    },
-    // Add more orders...
-  ];
+  final ApiService _apiService = ApiService();
+  List<dynamic> _orders = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    setState(() => _loading = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token == null) throw Exception('No token');
+
+      final response = await _apiService.getVendorOrders(token);
+      final allOrders = response['orders'] ?? [];
+
+      setState(() {
+        _orders = allOrders.where((o) {
+          final s = o['status']?.toString().toLowerCase();
+          return s == 'active' || s == 'processing' || s == 'started';
+        }).toList();
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _completeOrder(String orderId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      if (token == null) return;
+
+      await _apiService.updateOrderStatus(
+        token: token,
+        orderId: orderId,
+        status: 'Completed',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Order completed successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        _loadOrders();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,157 +83,100 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
       appBar: AppBar(
         title: const Text('Active Orders'),
         actions: [
-          IconButton(
-            icon: const Icon(Iconsax.timer),
-            onPressed: () {
-              // Show timer summary
-            },
-          ),
+          IconButton(icon: const Icon(Iconsax.refresh), onPressed: _loadOrders),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(20),
-        itemCount: activeOrders.length,
-        itemBuilder: (context, index) {
-          final order = activeOrders[index];
-          final isLate = order['status'] == 'Late Start';
-
-          return Card(
-            margin: const EdgeInsets.only(bottom: 15),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        order['id'],
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Chip(
-                        label: Text(order['status']),
-                        backgroundColor: isLate
-                            ? Colors.red[100]
-                            : Colors.green[100],
-                        labelStyle: TextStyle(
-                          color: isLate ? Colors.red : Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    order['service'],
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Time Information
-                  Card(
-                    color: Colors.grey[50],
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(child: Text('Error: $_error'))
+              : _orders.isEmpty
+                  ? const Center(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Scheduled:'),
-                              Text(
-                                order['scheduledTime'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Actual Start:',
-                                style: TextStyle(
-                                  color: isLate ? Colors.red : Colors.green,
-                                ),
-                              ),
-                              Text(
-                                order['actualStartTime'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: isLate ? Colors.red : Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (isLate)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          Icon(Iconsax.activity, size: 60, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text('No active orders'),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadOrders,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: _orders.length,
+                        itemBuilder: (context, index) {
+                          final order = _orders[index];
+                          final orderId = (order['order_id'] ?? 'N/A')
+                              .toString()
+                              .replaceAll('#', '');
+                          final customerName =
+                              order['customer_name'] ?? 'Unknown';
+                          final customerPhone = order['customer_phone'] ?? '';
+                          final total = order['total'] ?? '0';
+                          final status = order['status'] ?? 'Active';
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 15),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text('Late Fine:'),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '#$orderId',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Chip(
+                                        label: Text(status),
+                                        backgroundColor: Colors.green[100],
+                                        labelStyle: const TextStyle(
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
                                   Text(
-                                    order['fine'],
+                                    customerName,
                                     style: const TextStyle(
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.red,
                                     ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  _buildInfoRow('Phone:', customerPhone),
+                                  _buildInfoRow('Amount:', '৳$total'),
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: ElevatedButton.icon(
+                                          icon: const Icon(
+                                            Iconsax.tick_circle,
+                                          ),
+                                          label: const Text('Complete'),
+                                          onPressed: () =>
+                                              _completeOrder(orderId),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
-                        ],
+                          );
+                        },
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 15),
-                  _buildInfoRow('Technician:', order['technician']),
-                  _buildInfoRow('Customer:', order['customer']),
-                  _buildInfoRow('Address:', order['address']),
-
-                  const SizedBox(height: 20),
-
-                  // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Iconsax.add_square),
-                          label: const Text('Add Service'),
-                          onPressed: () {
-                            _addAdditionalService(order['id']);
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Iconsax.tick_circle),
-                          label: const Text('Complete'),
-                          onPressed: () {
-                            _completeOrder(order['id']);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 
@@ -199,10 +184,9 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 100,
+            width: 80,
             child: Text(label, style: TextStyle(color: Colors.grey[600])),
           ),
           Expanded(
@@ -210,138 +194,6 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
               value,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _addAdditionalService(String orderId) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        String selectedService = '';
-        double serviceAmount = 0.0;
-
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Add Additional Service'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(
-                      labelText: 'Select Service',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Gas Refill',
-                        child: Text('Gas Refill'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Pipe Cleaning',
-                        child: Text('Pipe Cleaning'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Filter Change',
-                        child: Text('Filter Change'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedService = value!;
-                        // Set default amount based on service
-                        if (value == 'Gas Refill') serviceAmount = 800;
-                        if (value == 'Pipe Cleaning') serviceAmount = 500;
-                        if (value == 'Filter Change') serviceAmount = 300;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: 'Amount (৳)',
-                      border: OutlineInputBorder(),
-                      prefixText: '৳',
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      setState(() {
-                        serviceAmount = double.tryParse(value) ?? 0.0;
-                      });
-                    },
-                    initialValue: serviceAmount.toString(),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: selectedService.isEmpty
-                      ? null
-                      : () {
-                          // Add service to order
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '$selectedService added (৳$serviceAmount)',
-                              ),
-                            ),
-                          );
-                        },
-                  child: const Text('Add Service'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _completeOrder(String orderId) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Complete Order'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Generate receipt for customer?'),
-            const SizedBox(height: 20),
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: 'Final Amount (৳)',
-                border: OutlineInputBorder(),
-                prefixText: '৳',
-              ),
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Complete order and generate receipt
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Order completed. Receipt generated.'),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            },
-            child: const Text('Complete & Generate Receipt'),
           ),
         ],
       ),

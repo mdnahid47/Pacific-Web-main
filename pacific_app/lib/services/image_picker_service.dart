@@ -1,5 +1,4 @@
 // services/image_picker_service.dart
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -52,7 +51,8 @@ class ImagePickerService {
     FileType fileType = FileType.any,
   }) async {
     try {
-      final result = await FilePicker.platform.pickFiles(
+      // Use the static method directly without platform
+      final result = await FilePicker.pickFiles(
         type: fileType,
         allowedExtensions: allowedExtensions,
         allowMultiple: false,
