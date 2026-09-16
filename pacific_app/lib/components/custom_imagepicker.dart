@@ -11,7 +11,7 @@ class CustomImagePicker extends StatelessWidget {
   final bool isLoading;
 
   const CustomImagePicker({
-    Key? key,
+    super.key,
     required this.label,
     this.description = '',
     this.image,
@@ -19,7 +19,7 @@ class CustomImagePicker extends StatelessWidget {
     this.icon = Icons.camera_alt,
     this.isRequired = false,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -121,7 +121,7 @@ class CustomImagePicker extends StatelessWidget {
                           child: Container(
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.6),
+                              color: Colors.black.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(

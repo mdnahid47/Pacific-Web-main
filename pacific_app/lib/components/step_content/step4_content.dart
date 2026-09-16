@@ -100,7 +100,7 @@ class Step4Content extends StatefulWidget {
   final VoidCallback onToggleConfirmPassword;
 
   const Step4Content({
-    Key? key,
+    super.key,
     required this.password,
     required this.confirmPassword,
     required this.showPassword,
@@ -109,7 +109,7 @@ class Step4Content extends StatefulWidget {
     required this.onConfirmPasswordChanged,
     required this.onTogglePassword,
     required this.onToggleConfirmPassword,
-  }) : super(key: key);
+  });
 
   @override
   State<Step4Content> createState() => _Step4ContentState();

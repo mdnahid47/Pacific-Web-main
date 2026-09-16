@@ -536,12 +536,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 import 'package:pacific_app/models/file_model.dart';
 import 'package:pacific_app/services/image_picker_service.dart';
 import '../form_card.dart';
-import '../../models/file_model.dart'; // Import AppFile
-import '../../services/image_picker_service.dart'; // Import the service
+// Import AppFile
+// Import the service
 
 class Step5Content extends StatefulWidget {
   final AppFile? selfieImage;

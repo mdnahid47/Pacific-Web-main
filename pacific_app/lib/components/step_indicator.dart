@@ -12,7 +12,7 @@ class StepIndicator extends StatelessWidget {
   final double lineHeight;
 
   const StepIndicator({
-    Key? key,
+    super.key,
     required this.currentStep,
     required this.steps,
     this.onStepTap,
@@ -22,7 +22,7 @@ class StepIndicator extends StatelessWidget {
     this.textColor = const Color(0xFF6b7280),
     this.stepSize = 36.0,
     this.lineHeight = 2.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class StepIndicator extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: Offset(0, 2),
           ),
@@ -76,7 +76,7 @@ class StepIndicator extends StatelessWidget {
                           boxShadow: isActive
                               ? [
                                   BoxShadow(
-                                    color: activeColor.withOpacity(0.3),
+                                    color: activeColor.withValues(alpha: 0.3),
                                     blurRadius: 8,
                                     spreadRadius: 2,
                                   ),
@@ -84,7 +84,7 @@ class StepIndicator extends StatelessWidget {
                               : isCompleted
                               ? [
                                   BoxShadow(
-                                    color: completedColor.withOpacity(0.2),
+                                    color: completedColor.withValues(alpha: 0.2),
                                     blurRadius: 4,
                                   ),
                                 ]
@@ -109,7 +109,7 @@ class StepIndicator extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isActive
-                          ? activeColor.withOpacity(0.1)
+                          ? activeColor.withValues(alpha: 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -210,11 +210,11 @@ class AnimatedStepIndicator extends StatefulWidget {
   final ValueChanged<int>? onStepTap;
 
   const AnimatedStepIndicator({
-    Key? key,
+    super.key,
     required this.currentStep,
     required this.steps,
     this.onStepTap,
-  }) : super(key: key);
+  });
 
   @override
   _AnimatedStepIndicatorState createState() => _AnimatedStepIndicatorState();
@@ -272,11 +272,11 @@ class CompactStepIndicator extends StatelessWidget {
   final int totalSteps;
 
   const CompactStepIndicator({
-    Key? key,
+    super.key,
     required this.currentStep,
     required this.totalSteps,
     required List<String> steps,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +344,7 @@ class CompactStepIndicator extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: [
                             Color(0xFF3c8ce7),
-                            Color(0xFF3c8ce7).withOpacity(0.8),
+                            Color(0xFF3c8ce7).withValues(alpha: 0.8),
                           ],
                         ),
                       ),

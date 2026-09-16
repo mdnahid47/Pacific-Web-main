@@ -184,38 +184,38 @@ class EnvConfig {
   // ============================================================
   // ✅ FULL URLs
   // ============================================================
-  static String get loginUrl => '${baseUrl}$loginEndpoint';
-  static String get registerUrl => '${baseUrl}$registerEndpoint';
-  static String get forgotPasswordUrl => '${baseUrl}$forgotPasswordEndpoint';
-  static String get resetPasswordUrl => '${baseUrl}$resetPasswordEndpoint';
-  static String get verifyResetTokenUrl => '${baseUrl}$verifyResetTokenEndpoint';
+  static String get loginUrl => '$baseUrl$loginEndpoint';
+  static String get registerUrl => '$baseUrl$registerEndpoint';
+  static String get forgotPasswordUrl => '$baseUrl$forgotPasswordEndpoint';
+  static String get resetPasswordUrl => '$baseUrl$resetPasswordEndpoint';
+  static String get verifyResetTokenUrl => '$baseUrl$verifyResetTokenEndpoint';
   
-  static String get userProfileUrl => '${baseUrl}$userProfileEndpoint';
-  static String get placeOrderUrl => '${baseUrl}$placeOrderEndpoint';
-  static String get userOrdersUrl => '${baseUrl}$userOrdersEndpoint';
+  static String get userProfileUrl => '$baseUrl$userProfileEndpoint';
+  static String get placeOrderUrl => '$baseUrl$placeOrderEndpoint';
+  static String get userOrdersUrl => '$baseUrl$userOrdersEndpoint';
   
-  static String get vendorRegisterUrl => '${baseUrl}$vendorRegisterEndpoint';
-  static String get vendorHealthUrl => '${baseUrl}$vendorHealthEndpoint';
-  static String get vendorProfileUrl => '${baseUrl}$vendorProfileEndpoint';
-  static String get vendorDashboardUrl => '${baseUrl}$vendorDashboardEndpoint';
-  static String get vendorOrdersUrl => '${baseUrl}$vendorOrdersEndpoint';
-  static String get vendorReviewsUrl => '${baseUrl}$vendorReviewsEndpoint';
-  static String get vendorTechniciansUrl => '${baseUrl}$vendorTechniciansEndpoint';
+  static String get vendorRegisterUrl => '$baseUrl$vendorRegisterEndpoint';
+  static String get vendorHealthUrl => '$baseUrl$vendorHealthEndpoint';
+  static String get vendorProfileUrl => '$baseUrl$vendorProfileEndpoint';
+  static String get vendorDashboardUrl => '$baseUrl$vendorDashboardEndpoint';
+  static String get vendorOrdersUrl => '$baseUrl$vendorOrdersEndpoint';
+  static String get vendorReviewsUrl => '$baseUrl$vendorReviewsEndpoint';
+  static String get vendorTechniciansUrl => '$baseUrl$vendorTechniciansEndpoint';
   
-  static String get adminDashboardUrl => '${baseUrl}$adminDashboardEndpoint';
-  static String get adminAllOrdersUrl => '${baseUrl}$adminAllOrdersEndpoint';
-  static String get adminAllUsersUrl => '${baseUrl}$adminAllUsersEndpoint';
-  static String get adminVendorsUrl => '${baseUrl}$adminVendorsEndpoint';
+  static String get adminDashboardUrl => '$baseUrl$adminDashboardEndpoint';
+  static String get adminAllOrdersUrl => '$baseUrl$adminAllOrdersEndpoint';
+  static String get adminAllUsersUrl => '$baseUrl$adminAllUsersEndpoint';
+  static String get adminVendorsUrl => '$baseUrl$adminVendorsEndpoint';
   
-  static String get technicianRegisterUrl => '${baseUrl}$technicianRegisterEndpoint';
-  static String get technicianProfileUrl => '${baseUrl}$technicianProfileEndpoint';
+  static String get technicianRegisterUrl => '$baseUrl$technicianRegisterEndpoint';
+  static String get technicianProfileUrl => '$baseUrl$technicianProfileEndpoint';
   
-  static String get notificationsUrl => '${baseUrl}$notificationsEndpoint';
-  static String get unreadCountUrl => '${baseUrl}$unreadCountEndpoint';
-  static String get markAllReadUrl => '${baseUrl}$markAllReadEndpoint';
+  static String get notificationsUrl => '$baseUrl$notificationsEndpoint';
+  static String get unreadCountUrl => '$baseUrl$unreadCountEndpoint';
+  static String get markAllReadUrl => '$baseUrl$markAllReadEndpoint';
   
-  static String get servicesUrl => '${baseUrl}$servicesEndpoint';
-  static String get healthUrl => '${baseUrl}$healthEndpoint';
+  static String get servicesUrl => '$baseUrl$servicesEndpoint';
+  static String get healthUrl => '$baseUrl$healthEndpoint';
   
   // ============================================================
   // ✅ DYNAMIC URL BUILDERS (with parameters)
@@ -223,79 +223,79 @@ class EnvConfig {
   
   // Order URLs
   static String orderStatusUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/status';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/status';
   
   static String orderCancelUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/cancel';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/cancel';
   
   static String orderHoldUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/hold';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/hold';
   
   static String orderScheduleUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/schedule';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/schedule';
   
   static String scheduleHistoryUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/schedule-history';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/schedule-history';
   
   static String canChangeScheduleUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/can-change-schedule';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/can-change-schedule';
   
   static String orderCompleteUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/complete';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/complete';
   
   static String orderConfirmUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/confirm';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/confirm';
   
   static String orderAssignUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/assign';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/assign';
   
   static String orderTrackingUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/tracking';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/tracking';
   
   static String orderReviewUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/review';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/review';
   
   static String orderReviewsUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/reviews';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/reviews';
   
   static String orderReportUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/report';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/report';
   
   static String orderCancelCheckUrl(String orderId) => 
-      '${baseUrl}/api/orders/${_cleanOrderId(orderId)}/cancel-check';
+      '$baseUrl/api/orders/${_cleanOrderId(orderId)}/cancel-check';
   
   static String vendorOrderDetailsUrl(String orderId) => 
-      '${baseUrl}/api/vendor/orders/${_cleanOrderId(orderId)}';
+      '$baseUrl/api/vendor/orders/${_cleanOrderId(orderId)}';
   
   // Admin URLs
   static String adminVendorDetailsUrl(String vendorId) => 
-      '${baseUrl}/api/admin/vendors/$vendorId';
+      '$baseUrl/api/admin/vendors/$vendorId';
   
   static String adminVendorStatusUrl(String vendorId) => 
-      '${baseUrl}/api/admin/vendors/$vendorId/status';
+      '$baseUrl/api/admin/vendors/$vendorId/status';
   
   static String adminVendorVerifyUrl(String vendorId) => 
-      '${baseUrl}/api/admin/vendors/$vendorId/verify';
+      '$baseUrl/api/admin/vendors/$vendorId/verify';
   
   static String adminUserOrdersUrl(String userId) => 
-      '${baseUrl}/api/admin/user-orders/$userId';
+      '$baseUrl/api/admin/user-orders/$userId';
   
   static String adminUserUrl(String userId) => 
-      '${baseUrl}/api/admin/user/$userId';
+      '$baseUrl/api/admin/user/$userId';
   
   static String adminTechnicianStatusUrl(String technicianId) => 
-      '${baseUrl}/api/admin/technicians/$technicianId/status';
+      '$baseUrl/api/admin/technicians/$technicianId/status';
   
   // Notification URLs
   static String notificationReadUrl(String notificationId) => 
-      '${baseUrl}/api/notifications/$notificationId/read';
+      '$baseUrl/api/notifications/$notificationId/read';
   
   static String notificationDeleteUrl(String notificationId) => 
-      '${baseUrl}/api/notifications/$notificationId';
+      '$baseUrl/api/notifications/$notificationId';
   
   // Service URLs
   static String servicesByCategoryUrl(String category) => 
-      '${baseUrl}/api/services/$category';
+      '$baseUrl/api/services/$category';
   
   // ============================================================
   // ✅ HELPER - Clean order ID (remove # prefix)

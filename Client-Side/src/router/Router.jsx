@@ -20,12 +20,7 @@ import AdminAddService from "../admin/AdminAddService";
 import RefrigeratorCategory from "../pages/Shop/RefrigeratorCategory";
 import WashingMachine from "../components/WashingMachine";
 import ResetPassword from "../components/ResetPassword";
-
-
-
-
-
-
+import MasterServicesPage from "../admin/MasterServicesPage";
 
 const router = createBrowserRouter([
   {
@@ -52,70 +47,65 @@ const router = createBrowserRouter([
         path: '/refrigerator-service',
         element: <RefrigeratorCategory />
       },
-       {
+      {
         path: '/washing-machine-service',
-        element: <WashingMachine/>
+        element: <WashingMachine />
       },
       {
-        path:'/profile',
-        element:<UserProfile/>
+        path: '/profile',
+        element: <UserProfile />
       },
       {
-        path:'/update-profile',
-        element: <UpdateProfile/>
+        path: '/update-profile',
+        element: <UpdateProfile />
       },
       {
-        path:'/forgot-password',
-        element:<ForgotPassword/>
+        path: '/forgot-password',
+        element: <ForgotPassword />
       },
       {
-        path:"/reset-password",
-         element: <ResetPassword /> 
+        path: "/reset-password",
+        element: <ResetPassword />
       },
-    
       {
-    path:'/orders',
-    element:
-      <OrdersPage/>
-   
-  },
-   {
-    path:'/signup',
-    element:<SignUp/>
-  },
-  {
-    path:'/checkout',
-    element:
-      <CheckoutPage/>
-   
-  }
-      
-
+        path: '/orders',
+        element: <OrdersPage />
+      },
+      {
+        path: '/signup',
+        element: <SignUp />
+      },
+      {
+        path: '/checkout',
+        element: <CheckoutPage />
+      }
     ]
   },
- 
- {
-  path: '/admin/dashboard',
-  element: <ProtectedRoute role="admin"><Dashboard /></ProtectedRoute>,
- },
- {
-  path: '/admin/orders',
-  element: <ProtectedRoute role={["admin", "superadmin"]}><OrdersList /></ProtectedRoute>,
- },
- {
-  path: '/admin/users',
-  element: <ProtectedRoute role={["admin", "superadmin"]}><UsersList/></ProtectedRoute>,
- },
- {
-  path: '/admin/vendors',
-  element: <ProtectedRoute role={["admin", "superadmin"]}><VendorsPage/></ProtectedRoute>,
- },
- {
-  path: '/admin/Services',
-  element: <ProtectedRoute role={["admin", "superadmin"]}><AdminAddService/></ProtectedRoute>,
- }
-   
-]);
+  {
+    path: '/admin/dashboard',
+    element: <ProtectedRoute role="admin"><Dashboard /></ProtectedRoute>
+  },
+  {
+    path: '/admin/orders',
+    element: <ProtectedRoute role={["admin", "superadmin"]}><OrdersList /></ProtectedRoute>
+  },
+  {
+    path: '/admin/users',
+    element: <ProtectedRoute role={["admin", "superadmin"]}><UsersList /></ProtectedRoute>
+  },
+  {
+    path: '/admin/vendors',
+    element: <ProtectedRoute role={["admin", "superadmin"]}><VendorsPage /></ProtectedRoute>
+  },
+  {
+    path: '/admin/Services',
+    element: <ProtectedRoute role={["admin", "superadmin"]}><AdminAddService /></ProtectedRoute>
+  },
+  {
+    path: '/admin/master-services',
+    element: <MasterServicesPage />
+  }
 
+]);
 
 export default router;

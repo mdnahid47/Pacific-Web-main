@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pacific_app/screens/vendor/vendor_profile_screen.dart';
@@ -6,6 +7,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/api_service.dart';
+import '../../services/socket_service.dart';
+import '../../services/notification_service.dart';
+import 'incoming_order_screen.dart';
 import './new_orders_screen.dart';
 import './active_orders_screen.dart';
 import '../technician_management_screen.dart';
@@ -13,7 +17,6 @@ import '../technician_management_screen.dart';
 // Business Overview screens
 import './buisness_overview/total_orders_screen.dart';
 import './buisness_overview/pending_orders_screen.dart';
-import './buisness_overview/revenue_details_screen.dart';
 
 // Quick Actions screens
 import './quick_actions/revenue_screen.dart';
@@ -35,6 +38,7 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
   int _selectedIndex = 0;
   int _unreadNotifications = 0;
   final ApiService _apiService = ApiService();
+  bool _isIncomingScreenOpen = false;
 
   final List<Widget> _screens = [
     const DashboardHomeScreen(),
@@ -47,6 +51,101 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
   void initState() {
     super.initState();
     _loadNotificationCount();
+    _setupRealtimeListeners();
+  }
+
+  @override
+  void dispose() {
+    SocketService.disconnect();
+    NotificationService.stopRing();
+    super.dispose();
+  }
+
+  // ✅ Setup Socket + Notification listeners
+  Future<void> _setupRealtimeListeners() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final vendorId = prefs.getString('vendorId') ?? '1';
+
+      if (token == null) {
+        debugPrint('❌ No token for socket');
+        return;
+      }
+
+      // ✅ Initialize notification service
+      await NotificationService.initialize();
+      debugPrint('✅ Notification service ready');
+
+      // ✅ Connect socket
+      SocketService.connect(vendorId: vendorId, token: token);
+      debugPrint('✅ Socket connected for vendor $vendorId');
+
+      // ✅ Listen for new orders
+      SocketService.onNewOrder = (data) {
+        debugPrint('🔔 New order from socket: $data');
+        if (mounted) _showIncomingOrder(data);
+      };
+
+      // ✅ Check for pending assignments (in case app was closed)
+      _checkPendingAssignments(token);
+    } catch (e) {
+      debugPrint('❌ Realtime setup error: $e');
+    }
+  }
+
+  Future<void> _checkPendingAssignments(String token) async {
+    try {
+      final response = await _apiService.getPendingAssignments(token);
+      final orders = response['orders'] as List? ?? [];
+
+      if (orders.isNotEmpty && mounted) {
+        final firstOrder = orders.first;
+        debugPrint('🔔 Pending assignment found: ${firstOrder['order_id']}');
+        _showIncomingOrder({
+          'orderId': firstOrder['order_id'],
+          'timeLimit': firstOrder['seconds_left'] ?? 60,
+          'vendorId': firstOrder['assigned_to_vendor_id'],
+        });
+      }
+    } catch (e) {
+      debugPrint('❌ Pending check error: $e');
+    }
+  }
+
+  // ✅ Show incoming order screen
+  void _showIncomingOrder(Map<String, dynamic> orderData) {
+    if (_isIncomingScreenOpen) {
+      debugPrint('⚠️ Incoming screen already open');
+      return;
+    }
+
+    _isIncomingScreenOpen = true;
+
+    // Show notification + ring
+    NotificationService.showIncomingOrder(
+      orderId: orderData['orderId'] ?? '',
+      secondsLeft: orderData['timeLimit'] ?? 60,
+    );
+
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (context) => IncomingOrderScreen(
+              orderData: orderData,
+              onDismiss: () {
+                _isIncomingScreenOpen = false;
+                _loadNotificationCount();
+                NotificationService.stopRing();
+              },
+            ),
+          ),
+        )
+        .then((_) {
+          _isIncomingScreenOpen = false;
+          NotificationService.stopRing();
+        });
   }
 
   Future<void> _loadNotificationCount() async {
@@ -145,9 +244,12 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                       color: Colors.red,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                    constraints:
+                        const BoxConstraints(minWidth: 18, minHeight: 18),
                     child: Text(
-                      _unreadNotifications > 99 ? '99+' : '$_unreadNotifications',
+                      _unreadNotifications > 99
+                          ? '99+'
+                          : '$_unreadNotifications',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -436,6 +538,8 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
     );
 
     if (result == true) {
+      SocketService.disconnect();
+      NotificationService.stopRing();
       await authProvider.logout();
       if (context.mounted) {
         Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
@@ -503,8 +607,6 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
 
   Future<void> _refresh() async => await _loadDashboard();
 
-  // ============ Helpers ============
-
   String _formatNumber(dynamic value) {
     if (value == null) return '0';
     final num = double.tryParse(value.toString()) ?? 0;
@@ -528,7 +630,10 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading dashboard...', style: TextStyle(color: Colors.grey, fontSize: 13)),
+            Text(
+              'Loading dashboard...',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
           ],
         ),
       );
@@ -575,8 +680,6 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
           children: [
             _buildWelcomeCard(),
             const SizedBox(height: 20),
-
-            // ============ Business Overview - FIXED ============
             _buildSectionHeader('Business Overview'),
             const SizedBox(height: 12),
             GridView.count(
@@ -590,7 +693,7 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                 _buildBusinessCard(
                   context: context,
                   title: 'Total Orders',
-                  value: '${_stats['total_orders'] ?? 0}',
+                  value: _formatNumber(_stats['total_orders'] ?? 0),
                   icon: Iconsax.shopping_bag,
                   color: Colors.blue,
                   screen: const TotalOrdersScreen(),
@@ -598,15 +701,15 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                 _buildBusinessCard(
                   context: context,
                   title: 'Active Orders',
-                  value: '${_stats['active_orders'] ?? 0}',
+                  value: _formatNumber(_stats['active_orders'] ?? 0),
                   icon: Iconsax.activity,
                   color: Colors.green,
-                  screen: const ActiveOrdersScreen(),   // ✅ FIXED
+                  screen: const ActiveOrdersScreen(),
                 ),
                 _buildBusinessCard(
                   context: context,
                   title: 'Pending Orders',
-                  value: '${_stats['pending_orders'] ?? 0}',
+                  value: _formatNumber(_stats['pending_orders'] ?? 0),
                   icon: Iconsax.clock,
                   color: Colors.orange,
                   screen: const PendingOrdersScreen(),
@@ -614,17 +717,14 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                 _buildBusinessCard(
                   context: context,
                   title: 'Completed',
-                  value: '${_stats['completed_orders'] ?? 0}',
+                  value: _formatNumber(_stats['completed_orders'] ?? 0),
                   icon: Iconsax.tick_circle,
                   color: Colors.purple,
                   screen: const TotalOrdersScreen(),
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
-
-            // ============ Quick Actions ============
             _buildSectionHeader('Quick Actions'),
             const SizedBox(height: 12),
             GridView.count(
@@ -641,7 +741,9 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                   color: Colors.blue,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RevenueScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const RevenueScreen(),
+                    ),
                   ),
                 ),
                 _buildQuickAction(
@@ -650,7 +752,9 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                   color: Colors.red,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const DuePayScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const DuePayScreen(),
+                    ),
                   ),
                 ),
                 _buildQuickAction(
@@ -659,7 +763,9 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                   color: Colors.green,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AddServiceScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const AddServiceScreen(),
+                    ),
                   ),
                 ),
                 _buildQuickAction(
@@ -668,15 +774,14 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                   color: Colors.purple,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const CompleteOrdersScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const CompleteOrdersScreen(),
+                    ),
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
-
-            // ============ Recent Orders ============
             _buildSectionHeader(
               'Recent Orders',
               onViewAll: () {
@@ -697,10 +802,7 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
               )
             else
               ..._recentOrders.take(5).map(_buildRecentOrderCard),
-
             const SizedBox(height: 24),
-
-            // ============ Performance ============
             _buildSectionHeader('Performance'),
             const SizedBox(height: 12),
             Row(
@@ -708,7 +810,7 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
                 Expanded(
                   child: _buildStatCard(
                     title: 'Completed',
-                    value: '${_stats['completed_orders'] ?? 0}',
+                    value: _formatNumber(_stats['completed_orders'] ?? 0),
                     icon: Iconsax.tick_circle,
                     color: Colors.green,
                   ),
@@ -752,8 +854,6 @@ class _DashboardHomeScreenState extends State<DashboardHomeScreen> {
       ),
     );
   }
-
-  // ============ WIDGETS ============
 
   Widget _buildWelcomeCard() {
     final pendingCount = _stats['pending_orders'] ?? 0;

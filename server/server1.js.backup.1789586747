@@ -3506,127 +3506,86 @@ app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, 
   try {
     const [vendors] = await db.query(`
       SELECT 
-        v.id,
-        v.name,
-        v.email,
-        v.phone_number as phone,
-        v.vendor_photo as photo,
-        v.vendor_photo as profile_image,
-        v.nid_number,
-        v.nid_front,
-        v.nid_back,
-        v.cv,
-        v.trade_license,
-        v.dob,
-        v.permanent_address,
-        v.present_address,
-        v.business_address,
-        v.company_name,
-        v.service_areas,
-        v.services,
-        v.technician_quantity,
-        v.status,
-        v.is_verified,
-        v.total_orders,
-        v.completed_orders,
-        v.pending_orders,
-        v.canceled_orders,
-        v.active_orders,
-        v.hold_orders,
-        v.average_rating,
-        v.rating,
-        v.success_rate,
-        v.wallet_balance,
-        v.courtesy_points,
-        v.total_timeouts,
-        v.total_received,
-        v.created_at as join_date,
-        COALESCE((
-          SELECT SUM(
-            (SELECT SUM(
-              CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * 
-              CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED)
-            )
-            FROM JSON_TABLE(
-              o.cart_items, 
-              '$[*]' COLUMNS(item JSON PATH '$')
-            ) AS jt)
-          )
-          FROM orders o
-          WHERE o.vendor_id = v.id 
-          AND o.status = 'Completed'
-        ), 0) as total_revenue,
-        COALESCE((
-          SELECT COUNT(*)
-          FROM order_reviews r
-          JOIN orders o ON r.order_id = o.order_id
-          WHERE o.vendor_id = v.id
-        ), 0) as total_reviews,
-        COALESCE((
-          SELECT SUM(
-            (SELECT SUM(
-              CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * 
-              CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED)
-            )
-            FROM JSON_TABLE(
-              o.cart_items, 
-              '$[*]' COLUMNS(item JSON PATH '$')
-            ) AS jt)
-          )
-          FROM orders o
-          WHERE o.vendor_id = v.id 
-          AND o.status = 'Completed'
-          AND MONTH(o.completed_date) = MONTH(CURRENT_DATE())
-          AND YEAR(o.completed_date) = YEAR(CURRENT_DATE())
-        ), 0) as monthly_revenue,
-        COALESCE((
-          SELECT SUM(
-            (SELECT SUM(
-              CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * 
-              CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED)
-            )
-            FROM JSON_TABLE(
-              o.cart_items, 
-              '$[*]' COLUMNS(item JSON PATH '$')
-            ) AS jt)
-          )
-          FROM orders o
-          WHERE o.vendor_id = v.id 
-          AND o.status = 'Completed'
-          AND MONTH(o.completed_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH)
-          AND YEAR(o.completed_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH)
-        ), 0) as last_month_revenue
-      FROM vendors v
-      ORDER BY v.created_at DESC
+        id,
+        name,
+        email,
+        phone_number as phone,
+        vendor_photo as photo,
+        nid_number,
+        nid_front,
+        nid_back,
+        cv,
+        trade_license,
+        dob,
+        permanent_address,
+        present_address,
+        business_address,
+        company_name,
+        service_areas,
+        services,
+        technician_quantity,
+        status,
+        is_verified,
+        total_orders,
+        completed_orders,
+        pending_orders,
+        canceled_orders,
+        active_orders,
+        hold_orders,
+        average_rating,
+        success_rate,
+        wallet_balance,
+        created_at as join_date
+      FROM vendors
+      ORDER BY created_at DESC
     `);
 
+    // JSON ফিল্ড পার্স করুন এবং URL নরমালাইজ করুন
     const parsedVendors = vendors.map(vendor => {
       const parsed = { ...vendor };
       
-      if (parsed.nid_front) parsed.nid_front = getFullFileUrl(parsed.nid_front);
-      if (parsed.nid_back) parsed.nid_back = getFullFileUrl(parsed.nid_back);
-      if (parsed.cv) parsed.cv = getFullFileUrl(parsed.cv);
-      if (parsed.trade_license) parsed.trade_license = getFullFileUrl(parsed.trade_license);
-      if (parsed.photo) parsed.photo = getFullFileUrl(parsed.photo);
-      if (parsed.profile_image) parsed.profile_image = getFullFileUrl(parsed.profile_image);
+      // ডকুমেন্ট URL গুলো নরমালাইজ করুন
+      if (parsed.nid_front) {
+        parsed.nid_front = getFullFileUrl(parsed.nid_front);
+      }
+      if (parsed.nid_back) {
+        parsed.nid_back = getFullFileUrl(parsed.nid_back);
+      }
+      if (parsed.cv) {
+        parsed.cv = getFullFileUrl(parsed.cv);
+      }
+      if (parsed.trade_license) {
+        parsed.trade_license = getFullFileUrl(parsed.trade_license);
+      }
+      if (parsed.photo) {
+        parsed.photo = getFullFileUrl(parsed.photo);
+      }
       
-      try {
-        if (parsed.service_areas && typeof parsed.service_areas === 'string') {
-          parsed.service_areas = JSON.parse(parsed.service_areas);
-        } else if (!parsed.service_areas) {
+      // service_areas পার্স
+      if (parsed.service_areas) {
+        try {
+          parsed.service_areas = typeof parsed.service_areas === 'string' 
+            ? JSON.parse(parsed.service_areas) 
+            : parsed.service_areas;
+        } catch (e) {
           parsed.service_areas = [];
         }
-      } catch (e) { parsed.service_areas = []; }
+      } else {
+        parsed.service_areas = [];
+      }
       
-      try {
-        if (parsed.services && typeof parsed.services === 'string') {
-          parsed.services = JSON.parse(parsed.services);
-        } else if (!parsed.services) {
+      // services পার্স
+      if (parsed.services) {
+        try {
+          parsed.services = typeof parsed.services === 'string' 
+            ? JSON.parse(parsed.services) 
+            : parsed.services;
+        } catch (e) {
           parsed.services = [];
         }
-      } catch (e) { parsed.services = []; }
-      
-      parsed.average_rating = parseFloat(parsed.average_rating) || parseFloat(parsed.rating) || 0;
+      } else {
+        parsed.services = [];
+      }
       
       return parsed;
     });
@@ -6368,434 +6327,6 @@ setInterval(async () => {
 }, 10000); // Every 10 seconds
 
 console.log('⏰ Auto-reassign cron started (every 10s)');
-
-// ============================================================
-// PAYMENT METHODS (Admin manages)
-// ============================================================
-
-// GET payment methods (Public/Vendor)
-app.get('/api/payment-methods', authenticateJWT, async (req, res) => {
-  try {
-    const [methods] = await db.query(
-      'SELECT * FROM payment_methods WHERE is_active = TRUE ORDER BY id ASC'
-    );
-    res.json({ success: true, methods });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch' });
-  }
-});
-
-// ADMIN: Update payment method
-app.put('/api/admin/payment-methods/:id', verifyToken(['admin', 'superadmin']), async (req, res) => {
-  const { id } = req.params;
-  const { account_number, account_name, bank_name, branch, instructions, is_active } = req.body;
-
-  try {
-    await db.query(
-      `UPDATE payment_methods 
-       SET account_number = ?, account_name = ?, bank_name = ?, 
-           branch = ?, instructions = ?, is_active = ?, updated_at = NOW()
-       WHERE id = ?`,
-      [account_number, account_name, bank_name, branch, instructions, is_active, id]
-    );
-    res.json({ success: true, message: 'Payment method updated' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update' });
-  }
-});
-
-// ============================================================
-// VENDOR PAYMENTS
-// ============================================================
-
-// VENDOR: Get due amount (30% of total earnings)
-app.get('/api/vendor/due-amount', authenticateVendor, async (req, res) => {
-  const vendorId = req.vendor.vendorId;
-
-  try {
-    // Total completed orders amount
-    const [completedOrders] = await db.query(
-      `SELECT COALESCE(SUM(
-        (SELECT SUM(CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED))
-         FROM JSON_TABLE(o.cart_items, '$[*]' COLUMNS(item JSON PATH '$')) AS jt)
-      ), 0) as total_cart_amount
-       FROM orders o
-       WHERE o.vendor_id = ? AND o.status = 'Completed'`,
-      [vendorId]
-    );
-
-    // ✅ Simpler approach: Get orders & calculate
-    const [orders] = await db.query(
-      `SELECT * FROM orders WHERE vendor_id = ? AND status = 'Completed'`,
-      [vendorId]
-    );
-
-    let totalEarnings = 0;
-    let serviceEarnings = 0;
-
-    for (const order of orders) {
-      // Cart items
-      let cartItems = [];
-      try {
-        cartItems = typeof order.cart_items === 'string' 
-          ? JSON.parse(order.cart_items) 
-          : order.cart_items || [];
-      } catch (e) { cartItems = []; }
-
-      const cartTotal = cartItems.reduce((sum, item) =>
-        sum + ((parseFloat(item?.price) || 0) * (parseInt(item?.quantity) || 0)), 0
-      );
-      totalEarnings += cartTotal;
-
-      // Additional services
-      const [services] = await db.query(
-        `SELECT * FROM order_additional_services WHERE order_id = ?`,
-        [order.order_id]
-      );
-      const serviceTotal = services.reduce((sum, s) =>
-        sum + (parseFloat(s.price) * (s.quantity || 1)), 0
-      );
-      serviceEarnings += serviceTotal;
-    }
-
-    const total = totalEarnings + serviceEarnings;
-
-    // Get already paid amount
-    const [paidResult] = await db.query(
-      `SELECT COALESCE(SUM(amount), 0) as total_paid 
-       FROM vendor_payments 
-       WHERE vendor_id = ? AND status = 'approved'`,
-      [vendorId]
-    );
-
-    const totalPaid = parseFloat(paidResult[0].total_paid) || 0;
-
-    // ✅ Due = 30% of total earnings
-    const platformDue = total * 0.30;
-    const remainingDue = Math.max(0, platformDue - totalPaid);
-
-    // Get pending payments
-    const [pendingResult] = await db.query(
-      `SELECT COALESCE(SUM(amount), 0) as total_pending 
-       FROM vendor_payments 
-       WHERE vendor_id = ? AND status = 'pending'`,
-      [vendorId]
-    );
-
-    const totalPending = parseFloat(pendingResult[0].total_pending) || 0;
-
-    res.json({
-      success: true,
-      totalEarnings: total.toFixed(2),
-      platformDue: platformDue.toFixed(2),
-      totalPaid: totalPaid.toFixed(2),
-      totalPending: totalPending.toFixed(2),
-      remainingDue: remainingDue.toFixed(2),
-      completedOrdersCount: orders.length
-    });
-
-  } catch (error) {
-    console.error('❌ Due amount error:', error);
-    res.status(500).json({ success: false, message: 'Failed to calculate' });
-  }
-});
-
-// VENDOR: Submit payment
-app.post('/api/vendor/payments', authenticateVendor, async (req, res) => {
-  const vendorId = req.vendor.vendorId;
-  const { 
-    amount, 
-    payment_method, 
-    sender_number, 
-    transaction_id,
-    bank_name,
-    account_holder,
-    notes 
-  } = req.body;
-
-  if (!amount || !payment_method || !sender_number || !transaction_id) {
-    return res.status(400).json({
-      success: false,
-      message: 'All fields are required'
-    });
-  }
-
-  // Validate method
-  const validMethods = ['bkash', 'nagad', 'rocket', 'bank'];
-  if (!validMethods.includes(payment_method)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid payment method'
-    });
-  }
-
-  try {
-    // Check duplicate transaction
-    const [existing] = await db.query(
-      'SELECT id FROM vendor_payments WHERE transaction_id = ?',
-      [transaction_id]
-    );
-
-    if (existing.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Transaction ID already used'
-      });
-    }
-
-    // Get current due
-    const [paidResult] = await db.query(
-      `SELECT COALESCE(SUM(amount), 0) as total_paid 
-       FROM vendor_payments 
-       WHERE vendor_id = ? AND status = 'approved'`,
-      [vendorId]
-    );
-
-    const [pendingResult] = await db.query(
-      `SELECT COALESCE(SUM(amount), 0) as total_pending 
-       FROM vendor_payments 
-       WHERE vendor_id = ? AND status = 'pending'`,
-      [vendorId]
-    );
-
-    const totalPaid = parseFloat(paidResult[0].total_paid) || 0;
-    const totalPending = parseFloat(pendingResult[0].total_pending) || 0;
-
-    // Insert payment
-    const [result] = await db.query(
-      `INSERT INTO vendor_payments 
-       (vendor_id, amount, payment_method, sender_number, transaction_id, 
-        bank_name, account_holder, notes, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-      [vendorId, amount, payment_method, sender_number, transaction_id,
-       bank_name || null, account_holder || null, notes || null]
-    );
-
-    // Notify admin
-    await db.query(
-      `INSERT INTO notifications 
-       (user_id, user_type, title, message, type, related_id, created_at)
-       VALUES (1, 'admin', ?, ?, 'payment_submitted', ?, NOW())`,
-      [
-        '💰 New Payment',
-        `Vendor submitted ৳${amount} via ${payment_method.toUpperCase()}`,
-        result.insertId.toString()
-      ]
-    );
-
-    console.log(`✅ Payment submitted: ৳${amount} by vendor ${vendorId}`);
-
-    // Socket emit
-    if (global.io) {
-      global.io.to('admin_room').emit('payment_submitted', {
-        paymentId: result.insertId,
-        vendorId: vendorId,
-        amount: amount,
-        method: payment_method
-      });
-    }
-
-    res.json({
-      success: true,
-      message: 'Payment submitted. Waiting for admin approval.',
-      paymentId: result.insertId
-    });
-
-  } catch (error) {
-    console.error('❌ Payment error:', error);
-    res.status(500).json({ success: false, message: 'Failed to submit' });
-  }
-});
-
-// VENDOR: Get payment history
-app.get('/api/vendor/payments', authenticateVendor, async (req, res) => {
-  const vendorId = req.vendor.vendorId;
-
-  try {
-    const [payments] = await db.query(
-      `SELECT * FROM vendor_payments 
-       WHERE vendor_id = ?
-       ORDER BY created_at DESC
-       LIMIT 50`,
-      [vendorId]
-    );
-
-    res.json({ success: true, payments });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch' });
-  }
-});
-
-// ============================================================
-// ADMIN: PAYMENT APPROVALS
-// ============================================================
-
-// GET all payments (Admin)
-app.get('/api/admin/payments', verifyToken(['admin', 'superadmin']), async (req, res) => {
-  try {
-    const [payments] = await db.query(`
-      SELECT 
-        p.*,
-        v.name as vendor_name,
-        v.email as vendor_email,
-        v.phone_number as vendor_phone
-      FROM vendor_payments p
-      LEFT JOIN vendors v ON p.vendor_id = v.id
-      ORDER BY 
-        CASE p.status
-          WHEN 'pending' THEN 1
-          WHEN 'approved' THEN 2
-          WHEN 'rejected' THEN 3
-          ELSE 4
-        END,
-        p.created_at DESC
-    `);
-
-    const stats = {
-      total: payments.length,
-      pending: payments.filter(p => p.status === 'pending').length,
-      approved: payments.filter(p => p.status === 'approved').length,
-      rejected: payments.filter(p => p.status === 'rejected').length,
-      totalPendingAmount: payments
-        .filter(p => p.status === 'pending')
-        .reduce((sum, p) => sum + parseFloat(p.amount), 0)
-        .toFixed(2),
-      totalApprovedAmount: payments
-        .filter(p => p.status === 'approved')
-        .reduce((sum, p) => sum + parseFloat(p.amount), 0)
-        .toFixed(2)
-    };
-
-    res.json({ success: true, payments, stats });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch' });
-  }
-});
-
-// APPROVE payment (Admin)
-app.patch('/api/admin/payments/:id/approve', verifyToken(['admin', 'superadmin']), async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const [paymentRows] = await db.query(
-      'SELECT * FROM vendor_payments WHERE id = ?',
-      [id]
-    );
-
-    if (paymentRows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Payment not found' });
-    }
-
-    const payment = paymentRows[0];
-
-    if (payment.status !== 'pending') {
-      return res.status(400).json({
-        success: false,
-        message: `Already ${payment.status}`
-      });
-    }
-
-    // Update payment
-    await db.query(
-      `UPDATE vendor_payments 
-       SET status = 'approved', approved_by = ?, approved_at = NOW(), updated_at = NOW()
-       WHERE id = ?`,
-      [req.user.id, id]
-    );
-
-    // Add to vendor wallet
-    await db.query(
-      `UPDATE vendors 
-       SET wallet_balance = COALESCE(wallet_balance, 0) + ?,
-           updated_at = NOW()
-       WHERE id = ?`,
-      [payment.amount, payment.vendor_id]
-    );
-
-    // Notify vendor
-    await db.query(
-      `INSERT INTO notifications 
-       (user_id, user_type, title, message, type, related_id, created_at)
-       VALUES (?, 'vendor', ?, ?, 'payment_approved', ?, NOW())`,
-      [
-        payment.vendor_id,
-        '✅ Payment Approved',
-        `Your payment of ৳${payment.amount} has been approved`,
-        id
-      ]
-    );
-
-    console.log(`✅ Payment ${id} approved`);
-
-    if (global.io) {
-      global.io.to(`vendor_${payment.vendor_id}`).emit('payment_approved', {
-        paymentId: id,
-        amount: payment.amount
-      });
-    }
-
-    res.json({ success: true, message: 'Payment approved' });
-  } catch (error) {
-    console.error('❌ Approve error:', error);
-    res.status(500).json({ success: false, message: 'Failed to approve' });
-  }
-});
-
-// REJECT payment (Admin)
-app.patch('/api/admin/payments/:id/reject', verifyToken(['admin', 'superadmin']), async (req, res) => {
-  const { id } = req.params;
-  const { reason } = req.body;
-
-  try {
-    const [paymentRows] = await db.query(
-      'SELECT * FROM vendor_payments WHERE id = ?',
-      [id]
-    );
-
-    if (paymentRows.length === 0) {
-      return res.status(404).json({ success: false, message: 'Payment not found' });
-    }
-
-    const payment = paymentRows[0];
-
-    await db.query(
-      `UPDATE vendor_payments 
-       SET status = 'rejected', rejection_reason = ?, 
-           approved_by = ?, approved_at = NOW(), updated_at = NOW()
-       WHERE id = ?`,
-      [reason || 'Rejected by admin', req.user.id, id]
-    );
-
-    // Notify vendor
-    await db.query(
-      `INSERT INTO notifications 
-       (user_id, user_type, title, message, type, related_id, created_at)
-       VALUES (?, 'vendor', ?, ?, 'payment_rejected', ?, NOW())`,
-      [
-        payment.vendor_id,
-        '❌ Payment Rejected',
-        `Your payment of ৳${payment.amount} was rejected. Reason: ${reason || 'N/A'}`,
-        id
-      ]
-    );
-
-    console.log(`❌ Payment ${id} rejected`);
-
-    if (global.io) {
-      global.io.to(`vendor_${payment.vendor_id}`).emit('payment_rejected', {
-        paymentId: id,
-        reason: reason
-      });
-    }
-
-    res.json({ success: true, message: 'Payment rejected' });
-  } catch (error) {
-    console.error('❌ Reject error:', error);
-    res.status(500).json({ success: false, message: 'Failed to reject' });
-  }
-});
-
-console.log('✅ Payment routes registered');
 
 // ---------- ERROR HANDLING MIDDLEWARE ----------
 app.use((err, req, res, next) => {

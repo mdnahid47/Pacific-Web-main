@@ -3506,127 +3506,86 @@ app.get('/api/admin/vendors', verifyToken(['admin', 'superadmin']), async (req, 
   try {
     const [vendors] = await db.query(`
       SELECT 
-        v.id,
-        v.name,
-        v.email,
-        v.phone_number as phone,
-        v.vendor_photo as photo,
-        v.vendor_photo as profile_image,
-        v.nid_number,
-        v.nid_front,
-        v.nid_back,
-        v.cv,
-        v.trade_license,
-        v.dob,
-        v.permanent_address,
-        v.present_address,
-        v.business_address,
-        v.company_name,
-        v.service_areas,
-        v.services,
-        v.technician_quantity,
-        v.status,
-        v.is_verified,
-        v.total_orders,
-        v.completed_orders,
-        v.pending_orders,
-        v.canceled_orders,
-        v.active_orders,
-        v.hold_orders,
-        v.average_rating,
-        v.rating,
-        v.success_rate,
-        v.wallet_balance,
-        v.courtesy_points,
-        v.total_timeouts,
-        v.total_received,
-        v.created_at as join_date,
-        COALESCE((
-          SELECT SUM(
-            (SELECT SUM(
-              CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * 
-              CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED)
-            )
-            FROM JSON_TABLE(
-              o.cart_items, 
-              '$[*]' COLUMNS(item JSON PATH '$')
-            ) AS jt)
-          )
-          FROM orders o
-          WHERE o.vendor_id = v.id 
-          AND o.status = 'Completed'
-        ), 0) as total_revenue,
-        COALESCE((
-          SELECT COUNT(*)
-          FROM order_reviews r
-          JOIN orders o ON r.order_id = o.order_id
-          WHERE o.vendor_id = v.id
-        ), 0) as total_reviews,
-        COALESCE((
-          SELECT SUM(
-            (SELECT SUM(
-              CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * 
-              CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED)
-            )
-            FROM JSON_TABLE(
-              o.cart_items, 
-              '$[*]' COLUMNS(item JSON PATH '$')
-            ) AS jt)
-          )
-          FROM orders o
-          WHERE o.vendor_id = v.id 
-          AND o.status = 'Completed'
-          AND MONTH(o.completed_date) = MONTH(CURRENT_DATE())
-          AND YEAR(o.completed_date) = YEAR(CURRENT_DATE())
-        ), 0) as monthly_revenue,
-        COALESCE((
-          SELECT SUM(
-            (SELECT SUM(
-              CAST(JSON_EXTRACT(item, '$.price') AS DECIMAL(10,2)) * 
-              CAST(JSON_EXTRACT(item, '$.quantity') AS UNSIGNED)
-            )
-            FROM JSON_TABLE(
-              o.cart_items, 
-              '$[*]' COLUMNS(item JSON PATH '$')
-            ) AS jt)
-          )
-          FROM orders o
-          WHERE o.vendor_id = v.id 
-          AND o.status = 'Completed'
-          AND MONTH(o.completed_date) = MONTH(CURRENT_DATE() - INTERVAL 1 MONTH)
-          AND YEAR(o.completed_date) = YEAR(CURRENT_DATE() - INTERVAL 1 MONTH)
-        ), 0) as last_month_revenue
-      FROM vendors v
-      ORDER BY v.created_at DESC
+        id,
+        name,
+        email,
+        phone_number as phone,
+        vendor_photo as photo,
+        nid_number,
+        nid_front,
+        nid_back,
+        cv,
+        trade_license,
+        dob,
+        permanent_address,
+        present_address,
+        business_address,
+        company_name,
+        service_areas,
+        services,
+        technician_quantity,
+        status,
+        is_verified,
+        total_orders,
+        completed_orders,
+        pending_orders,
+        canceled_orders,
+        active_orders,
+        hold_orders,
+        average_rating,
+        success_rate,
+        wallet_balance,
+        created_at as join_date
+      FROM vendors
+      ORDER BY created_at DESC
     `);
 
+    // JSON ফিল্ড পার্স করুন এবং URL নরমালাইজ করুন
     const parsedVendors = vendors.map(vendor => {
       const parsed = { ...vendor };
       
-      if (parsed.nid_front) parsed.nid_front = getFullFileUrl(parsed.nid_front);
-      if (parsed.nid_back) parsed.nid_back = getFullFileUrl(parsed.nid_back);
-      if (parsed.cv) parsed.cv = getFullFileUrl(parsed.cv);
-      if (parsed.trade_license) parsed.trade_license = getFullFileUrl(parsed.trade_license);
-      if (parsed.photo) parsed.photo = getFullFileUrl(parsed.photo);
-      if (parsed.profile_image) parsed.profile_image = getFullFileUrl(parsed.profile_image);
+      // ডকুমেন্ট URL গুলো নরমালাইজ করুন
+      if (parsed.nid_front) {
+        parsed.nid_front = getFullFileUrl(parsed.nid_front);
+      }
+      if (parsed.nid_back) {
+        parsed.nid_back = getFullFileUrl(parsed.nid_back);
+      }
+      if (parsed.cv) {
+        parsed.cv = getFullFileUrl(parsed.cv);
+      }
+      if (parsed.trade_license) {
+        parsed.trade_license = getFullFileUrl(parsed.trade_license);
+      }
+      if (parsed.photo) {
+        parsed.photo = getFullFileUrl(parsed.photo);
+      }
       
-      try {
-        if (parsed.service_areas && typeof parsed.service_areas === 'string') {
-          parsed.service_areas = JSON.parse(parsed.service_areas);
-        } else if (!parsed.service_areas) {
+      // service_areas পার্স
+      if (parsed.service_areas) {
+        try {
+          parsed.service_areas = typeof parsed.service_areas === 'string' 
+            ? JSON.parse(parsed.service_areas) 
+            : parsed.service_areas;
+        } catch (e) {
           parsed.service_areas = [];
         }
-      } catch (e) { parsed.service_areas = []; }
+      } else {
+        parsed.service_areas = [];
+      }
       
-      try {
-        if (parsed.services && typeof parsed.services === 'string') {
-          parsed.services = JSON.parse(parsed.services);
-        } else if (!parsed.services) {
+      // services পার্স
+      if (parsed.services) {
+        try {
+          parsed.services = typeof parsed.services === 'string' 
+            ? JSON.parse(parsed.services) 
+            : parsed.services;
+        } catch (e) {
           parsed.services = [];
         }
-      } catch (e) { parsed.services = []; }
-      
-      parsed.average_rating = parseFloat(parsed.average_rating) || parseFloat(parsed.rating) || 0;
+      } else {
+        parsed.services = [];
+      }
       
       return parsed;
     });

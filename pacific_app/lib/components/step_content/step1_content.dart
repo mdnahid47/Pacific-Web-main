@@ -20,7 +20,7 @@ class Step1Content extends StatelessWidget {
   final ValueChanged<String> onBusinessDescriptionChanged;
 
   const Step1Content({
-    Key? key,
+    super.key,
     required this.name,
     required this.email,
     required this.phone,
@@ -35,7 +35,7 @@ class Step1Content extends StatelessWidget {
     required this.onNidNumberChanged,
     required this.onBusinessNameChanged,
     required this.onBusinessDescriptionChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

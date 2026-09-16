@@ -431,7 +431,7 @@ class _Step6ContentState extends State<Step6Content> {
       try {
         responseMap = Map<String, dynamic>.from(rawData);
       } catch (_) {
-        responseMap = (rawData as Map).cast<String, dynamic>();
+        responseMap = (rawData).cast<String, dynamic>();
       }
     }
 

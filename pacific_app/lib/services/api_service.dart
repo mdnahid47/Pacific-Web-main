@@ -57,8 +57,8 @@ class ApiService {
         body: json.encode({'email': email, 'password': password}),
       );
 
-      print('🔐 Login Response status: ${response.statusCode}');
-      print('🔐 Login Response body: ${response.body}');
+      debugPrint('🔐 Login Response status: ${response.statusCode}');
+      debugPrint('🔐 Login Response body: ${response.body}');
 
       final responseData = json.decode(response.body);
 
@@ -76,7 +76,7 @@ class ApiService {
         );
       }
     } catch (error) {
-      print('❌ Login API error: $error');
+      debugPrint('❌ Login API error: $error');
       rethrow;
     }
   }
@@ -224,10 +224,10 @@ class ApiService {
         headers: getHeaders(token: token),
       );
 
-      print('📱 Vendor Profile status: ${response.statusCode}');
+      debugPrint('📱 Vendor Profile status: ${response.statusCode}');
       return _handleResponse(response);
     } catch (error) {
-      print('❌ Get Vendor Profile error: $error');
+      debugPrint('❌ Get Vendor Profile error: $error');
       rethrow;
     }
   }
@@ -256,7 +256,7 @@ class ApiService {
         );
       }
     } catch (error) {
-      print('❌ Update Vendor Profile error: $error');
+      debugPrint('❌ Update Vendor Profile error: $error');
       rethrow;
     }
   }
@@ -375,7 +375,7 @@ class ApiService {
         );
       }
     } catch (error) {
-      print('❌ Get Admin Dashboard error: $error');
+      debugPrint('❌ Get Admin Dashboard error: $error');
       rethrow;
     }
   }
@@ -404,7 +404,7 @@ class ApiService {
         );
       }
     } catch (error) {
-      print('❌ Get Vendor Dashboard error: $error');
+      debugPrint('❌ Get Vendor Dashboard error: $error');
       rethrow;
     }
   }
@@ -451,7 +451,7 @@ class ApiService {
         );
       }
     } catch (error) {
-      print('❌ Get User Dashboard error: $error');
+      debugPrint('❌ Get User Dashboard error: $error');
       rethrow;
     }
   }
@@ -545,7 +545,7 @@ class ApiService {
       headers: getHeaders(token: token),
       body: json.encode({
         'status': status,
-        if (notes != null) 'notes': notes,
+        'notes': ?notes,
       }),
     );
 
@@ -860,7 +860,7 @@ class ApiService {
       }
       return 0;
     } catch (e) {
-      print('❌ Get unread count error: $e');
+      debugPrint('❌ Get unread count error: $e');
       return 0;
     }
   }
@@ -945,7 +945,350 @@ class ApiService {
       return {'success': false, 'message': 'API connection failed: $error'};
     }
   }
+  // ================ ORDER RECEIVE/REJECT ================
 
+  Future<Map<String, dynamic>> receiveOrder({
+    required String token,
+    required String orderId,
+  }) async {
+    final cleanId = _cleanOrderId(orderId);
+    final response = await http.patch(
+      Uri.parse('$baseUrl/orders/$cleanId/receive'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> rejectOrder({
+    required String token,
+    required String orderId,
+    required String reason,
+  }) async {
+    final cleanId = _cleanOrderId(orderId);
+    final response = await http.patch(
+      Uri.parse('$baseUrl/orders/$cleanId/reject'),
+      headers: getHeaders(token: token),
+      body: json.encode({'reason': reason}),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> getPendingAssignments(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vendor/pending-assignments'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> getVendorStats({
+    required String token,
+    required int vendorId,
+  }) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vendor/stats/$vendorId'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+    // ================================================================
+  // ADDITIONAL SERVICES
+  // ================================================================
+
+  Future<Map<String, dynamic>> addServiceToOrder({
+  required String token,
+  required String orderId,
+  required String serviceName,
+  required String description,
+  required double price,
+  int quantity = 1,
+  String source = 'custom',
+  int? masterServiceId,
+}) async {
+  try {
+    final cleanId = _cleanOrderId(orderId);
+    final response = await http.post(
+      Uri.parse('$baseUrl/orders/$cleanId/add-service'),
+      headers: getHeaders(token: token),
+      body: json.encode({
+        'service_name': serviceName,
+        'service_description': description,
+        'price': price,
+        'quantity': quantity,
+        'source': source,
+        'master_service_id': masterServiceId,
+      }),
+    );
+    return _handleResponse(response);
+  } catch (error) {
+    debugPrint('❌ Add service error: $error');
+    rethrow;
+  }
+}
+
+
+
+  Future<Map<String, dynamic>> getOrderServices({
+    required String token,
+    required String orderId,
+  }) async {
+    final cleanId = _cleanOrderId(orderId);
+    final response = await http.get(
+      Uri.parse('$baseUrl/orders/$cleanId/services'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+   // Delete order service
+  Future<Map<String, dynamic>> deleteOrderService({
+    required String token,
+    required int serviceId,
+  }) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/order-services/$serviceId'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+  // ================================================================
+  // COMPLETE ORDER WITH INVOICE
+  // ================================================================
+
+  Future<Map<String, dynamic>> completeOrderWithInvoice({
+    required String token,
+    required String orderId,
+    String? notes,
+    double discount = 0,
+  }) async {
+    try {
+      final cleanId = _cleanOrderId(orderId);
+      final response = await http.post(
+        Uri.parse('$baseUrl/orders/$cleanId/complete-with-invoice'),
+        headers: getHeaders(token: token),
+        body: json.encode({
+          'notes': notes,
+          'discount': discount,
+        }),
+      );
+      return _handleResponse(response);
+    } catch (error) {
+      debugPrint('❌ Complete order error: $error');
+      rethrow;
+    }
+  }
+
+  // ✅ Get Invoice
+  Future<Map<String, dynamic>> getInvoice({
+    required String token,
+    required String invoiceId,
+  }) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/invoices/$invoiceId'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  // ✅ Get Vendor Invoices
+  Future<Map<String, dynamic>> getVendorInvoices(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vendor/invoices'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+
+  Future<Map<String, dynamic>> getAvailableServices(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vendor/available-services'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+
+// ✅ Get master services (from admin panel)
+Future<Map<String, dynamic>> getMasterServices(String token) async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/master-services'),
+    headers: getHeaders(token: token),
+  );
+  return _handleResponse(response);
+}
+
+  Future<Map<String, dynamic>> approveService({
+    required String token,
+    required int serviceId,
+  }) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/services/$serviceId/approve'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> rejectService({
+    required String token,
+    required int serviceId,
+    required String reason,
+  }) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/services/$serviceId/reject'),
+      headers: getHeaders(token: token),
+      body: json.encode({'reason': reason}),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> updateServicePrice({
+    required String token,
+    required int serviceId,
+    required double price,
+  }) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/services/$serviceId/price'),
+      headers: getHeaders(token: token),
+      body: json.encode({'price': price}),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> deleteService({
+    required String token,
+    required int serviceId,
+  }) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/services/$serviceId'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+    // ================================================================
+  // MASTER SERVICES
+  // ================================================================
+
+  Future<Map<String, dynamic>> getAllMasterServices(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/master-services'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> addMasterService({
+    required String token,
+    required String name,
+    required double price,
+    String? category,
+    String? description,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/master-services'),
+      headers: getHeaders(token: token),
+      body: json.encode({
+        'name': name,
+        'price': price,
+        'category': category,
+        'description': description,
+      }),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> updateMasterService({
+    required String token,
+    required int id,
+    required String name,
+    required double price,
+    String? category,
+    String? description,
+  }) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/master-services/$id'),
+      headers: getHeaders(token: token),
+      body: json.encode({
+        'name': name,
+        'price': price,
+        'category': category,
+        'description': description,
+      }),
+    );
+    return _handleResponse(response);
+  }
+
+  Future<Map<String, dynamic>> deleteMasterService({
+    required String token,
+    required int id,
+  }) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/master-services/$id'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  // ================================================================
+  // PAYMENTS
+  // ================================================================
+
+  // ✅ Get payment methods (Bkash, Nagad, etc.)
+  Future<Map<String, dynamic>> getPaymentMethods(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/payment-methods'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  // ✅ Get vendor due amount
+  Future<Map<String, dynamic>> getDueAmount(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vendor/due-amount'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+
+  // ✅ Submit payment
+  Future<Map<String, dynamic>> submitPayment({
+    required String token,
+    required double amount,
+    required String paymentMethod,
+    required String senderNumber,
+    required String transactionId,
+    String? bankName,
+    String? accountHolder,
+    String? notes,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/vendor/payments'),
+      headers: getHeaders(token: token),
+      body: json.encode({
+        'amount': amount,
+        'payment_method': paymentMethod,
+        'sender_number': senderNumber,
+        'transaction_id': transactionId,
+        'bank_name': bankName,
+        'account_holder': accountHolder,
+        'notes': notes,
+      }),
+    );
+    return _handleResponse(response);
+  }
+
+  // ✅ Get payment history
+  Future<Map<String, dynamic>> getVendorPayments(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/vendor/payments'),
+      headers: getHeaders(token: token),
+    );
+    return _handleResponse(response);
+  }
+  
   // Clear Cache
   Future<void> clearCache() async {
     // Implement cache clearing logic if needed

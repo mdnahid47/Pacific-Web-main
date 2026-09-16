@@ -711,7 +711,7 @@ import {
   FiTrash2, FiEye, FiSearch, FiChevronLeft,
   FiChevronRight, FiMenu, FiX, FiUser,
   FiUserPlus, FiClock, FiCalendar,
-  FiPackage
+  FiPackage,FiDollarSign
 } from "react-icons/fi";
 import { NavLink, useNavigate } from "react-router-dom";
 
@@ -943,6 +943,12 @@ const UsersList = () => {
           <SidebarLink to="/admin/orders" icon={<FiShoppingBag />} text="Order List" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/vendors" icon={<FiTruck />} text="Vendor List" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/users" icon={<FiUsers />} text="User Management" onClick={() => setSidebarOpen(false)} active />
+          <SidebarLink 
+              to="/admin/master-services" 
+              icon={<FiDollarSign />} 
+              text="Additional Services" 
+              onClick={() => setSidebarOpen(false)} 
+            />
           <SidebarLink to="/admin/services" icon={<FiPackage />} text="Service Management" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/analytics" icon={<FiPieChart />} text="Analytics" onClick={() => setSidebarOpen(false)} />
           <SidebarLink to="/admin/settings" icon={<FiSettings />} text="Settings" onClick={() => setSidebarOpen(false)} />

@@ -9,14 +9,14 @@ class NavigationButtons extends StatelessWidget {
   final VoidCallback? onSubmit;
 
   const NavigationButtons({
-    Key? key,
+    super.key,
     required this.currentStep,
     this.totalSteps = 5,
     required this.isLoading,
     required this.onPrevious,
     required this.onNext,
     this.onSubmit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

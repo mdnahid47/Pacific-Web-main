@@ -97,7 +97,7 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (error) {
       print('❌ AuthProvider login error: $error');
-      throw error;
+      rethrow;
     } finally {
       _loading = false;
       notifyListeners();
@@ -126,7 +126,7 @@ class AuthProvider with ChangeNotifier {
       return response;
     } catch (error) {
       await logout();
-      throw error;
+      rethrow;
     }
   }
 
@@ -150,7 +150,7 @@ class AuthProvider with ChangeNotifier {
         throw Exception(response['message'] ?? 'Failed to get profile');
       }
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -174,7 +174,7 @@ class AuthProvider with ChangeNotifier {
         throw Exception(response['message'] ?? 'Failed to get vendor profile');
       }
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
