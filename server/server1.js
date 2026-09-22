@@ -76,17 +76,17 @@ function safeParseJSON(data, defaultValue = null) {
 function getFullFileUrl(filePath) {
   if (!filePath) return null;
   
-  // যদি ইতিমধ্যে সম্পূর্ণ URL হয়
+  // if filePath is already a full URL
   if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
     return filePath;
   }
   
-  // যদি স্ল্যাশ দিয়ে শুরু হয়
+  // if filePath starts with '/'
   if (filePath.startsWith('/')) {
     return `${BASE_URL}${filePath}`;
   }
   
-  // যদি 'uploads/' দিয়ে শুরু হয়
+  // if filePath starts with 'uploads/'
   if (filePath.startsWith('uploads/')) {
     return `${BASE_URL}/${filePath}`;
   }
@@ -161,23 +161,23 @@ function createUploadDirectories() {
 // ============================================================
 const app = express();
 
-// CORS - প্রথমে
+// CORS -
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-// বডি পার্সার
+// বডি 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
-// ✅ স্ট্যাটিক ফাইল সার্ভ - সব route এর আগে
+// static files
 const uploadsPath = path.join(__dirname, 'uploads');
 console.log('📁 Uploads directory path:', uploadsPath);
 
-// uploads ফোল্ডার তৈরি করুন
+// uploads folder creation
 createUploadDirectories();
 
-// ✅ স্ট্যাটিক মিডলওয়্যার
+// static serving for uploads with CORS headers
 app.use('/uploads', express.static(uploadsPath, {
   dotfiles: 'ignore',
   etag: true,
@@ -197,7 +197,7 @@ app.use('/uploads', express.static(uploadsPath, {
   }
 }));
 
-// ডিরেক্টরি লিস্টিং ডিজেবল করুন
+// directory listing prevention for /uploads
 app.use('/uploads', (req, res, next) => {
   if (req.url === '/' || req.url === '') {
     return res.status(403).json({
@@ -208,7 +208,7 @@ app.use('/uploads', (req, res, next) => {
   next();
 });
 
-// ফাইল না পাওয়া গেলে ডিবাগ লগ
+// if  missing file, log the request
 app.use('/uploads', (req, res, next) => {
   const filePath = path.join(uploadsPath, req.path);
   console.log(`🔍 Requested file: ${req.path}`);
@@ -217,7 +217,7 @@ app.use('/uploads', (req, res, next) => {
   next();
 });
 
-// CORS মিডলওয়্যার - উন্নত
+// CORS middleware for all routes
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   
@@ -1166,6 +1166,37 @@ If you didn't request this password reset, you can safely ignore this email.
     console.error("❌ Email sending failed:", error.message);
     throw new Error(`Failed to send reset email: ${error.message}`);
   }
+};
+
+// Email Otp transporter
+const sendOtpEmail = async (email, otp, name) => {
+  const mailOptions = {
+    from: `"Your App Name" <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "Your Password Reset OTP",
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #3c8ce7;">Password Reset Request</h2>
+        <p>Hi ${name || "User"},</p>
+        <p>Your OTP for password reset is:</p>
+        <div style="background: #f0f7ff; border: 2px dashed #3c8ce7; 
+                    padding: 20px; text-align: center; 
+                    font-size: 32px; font-weight: bold; 
+                    letter-spacing: 8px; color: #3c8ce7; 
+                    margin: 20px 0;">
+          ${otp}
+        </div>
+        <p style="color: #666; font-size: 14px;">
+          This OTP will expire in <b>10 minutes</b>.
+        </p>
+        <p style="color: #666; font-size: 14px;">
+          If you didn't request this, please ignore this email.
+        </p>
+      </div>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
 };
 
 // ============================================================
@@ -4300,6 +4331,292 @@ app.post("/api/forgot-password", async (req, res) => {
     });
   }
 });
+// ---------Forgot Password with Otp--------
+app.post('/api/forgot-password-otp', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email is required'
+    });
+  }
+
+  try {
+    // 1. Check user exists
+    const [users] = await db.query(
+      "SELECT custom_id, name, email FROM users WHERE email = ?",
+      [email]
+    );
+    const [vendors] = await db.query(
+      "SELECT id, name, email FROM vendors WHERE email = ?",
+      [email]
+    );
+
+    const user = users[0] || vendors[0];
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email'
+      });
+    }
+
+    // 2. Check existing OTP (not expired, not verified)
+    const [existing] = await db.query(
+      `SELECT * FROM password_reset_otps 
+       WHERE email = ? AND otp_expiry > NOW() AND verified = 0 
+       ORDER BY id DESC LIMIT 1`,
+      [email]
+    );
+
+    if (existing.length > 0) {
+      // Same OTP re-send (no new generation)
+      console.log(`📧 Re-sending existing OTP to ${email}`);
+      
+      try {
+        await sendOtpEmail(email, existing[0].otp, user.name);
+      } catch (err) {
+        console.error('Email re-send failed:', err);
+      }
+
+      return res.json({
+        success: true,
+        message: 'OTP was already sent to your email. Please check your inbox.',
+        alreadySent: true,
+        expiresAt: existing[0].otp_expiry
+      });
+    }
+
+    // 3. No valid OTP → generate new one
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Delete old OTPs for this email
+    await db.query("DELETE FROM password_reset_otps WHERE email = ?", [email]);
+
+    // Insert new OTP
+    await db.query(
+      `INSERT INTO password_reset_otps (email, otp, otp_expiry) 
+       VALUES (?, ?, ?)`,
+      [email, otp, otpExpiry]
+    );
+
+    console.log(`🔐 New OTP for ${email}: ${otp}`);
+
+    // 4. Send email
+    try {
+      await sendOtpEmail(email, otp, user.name);
+      console.log('✅ OTP email sent');
+    } catch (err) {
+      console.error('❌ OTP email failed:', err);
+      // Dev mode: return OTP in response
+      return res.json({
+        success: true,
+        message: 'OTP generated (email failed, dev mode)',
+        devOtp: otp
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'OTP sent to your email',
+      alreadySent: false,
+      expiresAt: otpExpiry
+    });
+
+  } catch (error) {
+    console.error('Forgot password OTP error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process request'
+    });
+  }
+});
+// -----------check otp status-------------
+app.get('/api/check-otp-status/:email', async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      `SELECT otp_expiry FROM password_reset_otps 
+       WHERE email = ? AND otp_expiry > NOW() AND verified = 0 
+       ORDER BY id DESC LIMIT 1`,
+      [email]
+    );
+
+    if (rows.length > 0) {
+      return res.json({
+        success: true,
+        hasActiveOtp: true,
+        expiresAt: rows[0].otp_expiry
+      });
+    }
+
+    res.json({
+      success: true,
+      hasActiveOtp: false
+    });
+
+  } catch (error) {
+    console.error('Check OTP status error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to check status'
+    });
+  }
+});
+
+// ----------Verify OTP----------
+app.post('/api/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  if (!email || !otp) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email and OTP are required'
+    });
+  }
+
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM password_reset_otps 
+       WHERE email = ? AND otp = ? AND otp_expiry > NOW() AND verified = 0 
+       ORDER BY id DESC LIMIT 1`,
+      [email, otp]
+    );
+
+    if (rows.length === 0) {
+      // Wrong OTP — increment attempts on latest row
+      await db.query(
+        `UPDATE password_reset_otps 
+         SET attempts = attempts + 1 
+         WHERE email = ? AND otp_expiry > NOW() AND verified = 0 
+         ORDER BY id DESC LIMIT 1`,
+        [email]
+      );
+
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired OTP'
+      });
+    }
+
+    // Check attempts limit
+    if (rows[0].attempts >= 5) {
+      await db.query(
+        "DELETE FROM password_reset_otps WHERE id = ?",
+        [rows[0].id]
+      );
+      return res.status(400).json({
+        success: false,
+        message: 'Too many attempts. Please request a new OTP.'
+      });
+    }
+
+    // Mark as verified
+    await db.query(
+      "UPDATE password_reset_otps SET verified = 1 WHERE id = ?",
+      [rows[0].id]
+    );
+
+    res.json({
+      success: true,
+      message: 'OTP verified successfully'
+    });
+
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'OTP verification failed'
+    });
+  }
+});
+// -----------Reset Password with OTP----------
+app.post('/api/reset-password-with-otp', async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'All fields are required'
+    });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({
+      success: false,
+      message: 'Password must be at least 6 characters'
+    });
+  }
+
+  try {
+    // Check OTP was verified (within last 15 min)
+    const [verified] = await db.query(
+      `SELECT * FROM password_reset_otps 
+       WHERE email = ? AND verified = 1 
+       AND otp_expiry > NOW()
+       ORDER BY id DESC LIMIT 1`,
+      [email]
+    );
+
+    if (verified.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'OTP verification required'
+      });
+    }
+
+    // Check user type
+    const [users] = await db.query(
+      "SELECT custom_id FROM users WHERE email = ?", [email]
+    );
+    const [vendors] = await db.query(
+      "SELECT id FROM vendors WHERE email = ?", [email]
+    );
+
+    if (users.length === 0 && vendors.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const bcrypt = require('bcrypt');
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    if (users.length > 0) {
+      await db.query(
+        "UPDATE users SET password = ? WHERE email = ?",
+        [hashedPassword, email]
+      );
+    } else {
+      await db.query(
+        "UPDATE vendors SET password = ? WHERE email = ?",
+        [hashedPassword, email]
+      );
+    }
+
+    // Delete used OTP
+    await db.query(
+      "DELETE FROM password_reset_otps WHERE email = ?",
+      [email]
+    );
+
+    res.json({
+      success: true,
+      message: 'Password reset successful'
+    });
+
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reset password'
+    });
+  }
+});
+
 
 // ---------- ORDER STATUS UPDATE ----------
 app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
