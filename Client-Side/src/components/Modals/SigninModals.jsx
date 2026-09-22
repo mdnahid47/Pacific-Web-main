@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../../contexts/AuthProvider";
 import api from "../../api";
 import SignUp from "../../components/SignUp";
@@ -12,19 +14,13 @@ const SigninModals = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  // 🔑 Single view state — 'signin' | 'signup' | 'forgot'
   const [view, setView] = useState("signin");
 
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
-
   const { handleLogin } = useContext(AuthContext);
 
-  // ============================================================
-  // Outside Click to Close
-  // ============================================================
   useEffect(() => {
     const handleOutsideClick = (e) => {
       const modal = document.getElementById("nav_modal");
@@ -37,16 +33,12 @@ const SigninModals = () => {
     };
   }, []);
 
-  // ============================================================
-  // Modal Open — Reset State + Check Persistence
-  // ============================================================
   useEffect(() => {
     const modal = document.getElementById("nav_modal");
     const handleModalOpen = () => {
       setError("");
       setShowPassword(false);
 
-      // 🔑 Persistence check: OTP pending থাকলে সরাসরি forgot view
       const savedEmail = localStorage.getItem("resetEmail");
       const savedStep = localStorage.getItem("resetStep");
 
@@ -86,9 +78,6 @@ const SigninModals = () => {
     }
   };
 
-  // ============================================================
-  // Sign In Submit
-  // ============================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -141,7 +130,6 @@ const SigninModals = () => {
 
   return (
     <dialog id="nav_modal" className="modal">
-      {/* Modal box — auto height + responsive + hidden scrollbar */}
       <div className="modal-box relative 
                       w-[92%] sm:w-[85%] md:w-full 
                       max-w-md sm:max-w-lg md:max-w-xl 
@@ -153,7 +141,24 @@ const SigninModals = () => {
                       hide-scrollbar
                       transition-all duration-300">
 
-        {/* Close Button */}
+        {/* ✅ ToastContainer — modal-box এর ভিতরে, absolute positioned */}
+        <ToastContainer
+          containerId="modal-toast-container"
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss={false}
+          draggable
+          pauseOnHover
+          theme="light"
+          limit={2}
+          className="modal-toast-container"
+          toastClassName="modal-toast-item"
+        />
+
         <button
           onClick={closeModal}
           className="btn btn-sm btn-circle btn-ghost absolute right-3 top-3 text-gray-500 z-30"
@@ -162,10 +167,7 @@ const SigninModals = () => {
           ✕
         </button>
 
-        {/* Dynamic View Render */}
-        <div className="relative overflow-hidden">
-
-          {/* ============ SIGN IN VIEW ============ */}
+        <div className="relative overflow-visible">
           {view === "signin" && (
             <div className="animate-slide-in-left">
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
@@ -180,52 +182,31 @@ const SigninModals = () => {
 
                 {error && (
                   <div className="alert alert-error text-sm">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="stroke-current shrink-0 h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{error}</span>
                   </div>
                 )}
 
-                {/* Email */}
                 <div className="form-control">
                   <label className="label py-1">
-                    <span className="label-text font-semibold text-gray-700 text-sm">
-                      Email
-                    </span>
+                    <span className="label-text font-semibold text-gray-700 text-sm">Email</span>
                   </label>
                   <input
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="input input-bordered w-full 
-                               h-12 
-                               px-4 rounded-xl 
-                               border-gray-300 
-                               focus:border-olympic focus:ring-2 focus:ring-blue-100 
-                               transition-all duration-200 text-base"
+                    className="input input-bordered w-full h-12 px-4 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-base"
                     required
                     disabled={isLoading}
                   />
                 </div>
 
-                {/* Password */}
                 <div className="form-control">
                   <label className="label py-1">
-                    <span className="label-text font-semibold text-gray-700 text-sm">
-                      Password
-                    </span>
+                    <span className="label-text font-semibold text-gray-700 text-sm">Password</span>
                   </label>
                   <div className="relative">
                     <input
@@ -233,12 +214,7 @@ const SigninModals = () => {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="input input-bordered w-full 
-                                 h-12 
-                                 px-4 pr-12 rounded-xl 
-                                 border-gray-300 
-                                 focus:border-olympic focus:ring-2 focus:ring-blue-100 
-                                 transition-all duration-200 text-base"
+                      className="input input-bordered w-full h-12 px-4 pr-12 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-base"
                       required
                       disabled={isLoading}
                     />
@@ -270,13 +246,9 @@ const SigninModals = () => {
                   </button>
                 </div>
 
-                {/* Submit */}
                 <button
                   type="submit"
-                  className={`btn w-full mt-2 
-                             h-12 
-                             rounded-xl font-bold text-base shadow-lg 
-                             transition-all duration-300 ${
+                  className={`btn w-full mt-2 h-12 rounded-xl font-bold text-base shadow-lg transition-all duration-300 ${
                     isLoading
                       ? "bg-gray-400 cursor-not-allowed text-white"
                       : "bg-olympic hover:bg-blue-700 text-white hover:shadow-blue-500/30 transform hover:-translate-y-0.5"
@@ -293,7 +265,6 @@ const SigninModals = () => {
                   )}
                 </button>
 
-                {/* Switch to SignUp */}
                 <div className="text-center pt-4 border-t border-gray-200">
                   <p className="text-gray-600 text-sm">
                     Don't have an account?{" "}
@@ -311,7 +282,6 @@ const SigninModals = () => {
             </div>
           )}
 
-          {/* ============ SIGN UP VIEW ============ */}
           {view === "signup" && (
             <div className="animate-slide-in-right">
               <SignUp
@@ -321,7 +291,6 @@ const SigninModals = () => {
             </div>
           )}
 
-          {/* ============ FORGOT PASSWORD VIEW ============ */}
           {view === "forgot" && (
             <div className="animate-slide-in-right">
               <ForgotPasswordModal
@@ -333,11 +302,8 @@ const SigninModals = () => {
         </div>
       </div>
 
-      {/* Backdrop */}
       <form method="dialog" className="modal-backdrop">
-        <button type="button" onClick={closeModal}>
-          close
-        </button>
+        <button type="button" onClick={closeModal}>close</button>
       </form>
     </dialog>
   );

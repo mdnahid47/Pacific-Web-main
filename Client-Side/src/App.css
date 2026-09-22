@@ -1,37 +1,90 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-body{
+body {
   font-family: "Inter", sans-serif;
 }
 
-header{
-  z-index: 10001 !important;
-}
-
-.modal {
-  /* Custom styles */
- z-index: 1;
-}
 /* ============================================
-   HIDE SCROLLBAR (but keep scroll functionality)
+   Z-INDEX HIERARCHY
    ============================================ */
+header { z-index: 9000 !important; }
+.modal { z-index: 8000 !important; }
+.modal-box { z-index: 8001 !important; }
 
-/* For Webkit browsers (Chrome, Safari, Edge) */
+/* ============================================
+   SWEETALERT — Top of everything
+   ============================================ */
+body .swal2-container,
+.swal2-container.swal2-container {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+body .swal2-backdrop-show,
+.swal2-backdrop-show.swal2-backdrop-show {
+  z-index: 999998 !important;
+}
+body .swal2-popup,
+.swal2-popup.swal2-popup {
+  z-index: 999999 !important;
+}
+
+/* ============================================
+   HIDE SCROLLBAR
+   ============================================ */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
-
-/* For Firefox */
 .hide-scrollbar {
   scrollbar-width: none;
-  -ms-overflow-style: none; /* IE/Edge */
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Optional: Smooth scrolling */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+/* ============================================
+   ✅ MODAL TOAST — Simple & Direct
+   ============================================ */
+
+/* Modal box এর ভিতরে absolute positioned container */
+.modal-toast-container.Toastify__toast-container {
+  position: absolute !important;
+  top: 8px !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  width: calc(100% - 40px) !important;
+  max-width: 360px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 50 !important;
+  pointer-events: none !important;
+}
+
+/* Individual toast item */
+.modal-toast-item {
+  border-radius: 10px !important;
+  font-family: "Inter", sans-serif !important;
+  font-size: 13px !important;
+  padding: 10px 14px !important;
+  min-height: auto !important;
+  margin-bottom: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  pointer-events: auto !important;
+}
+
+.modal-toast-item svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.modal-toast-item button {
+  opacity: 0.6 !important;
+  align-self: center !important;
+}
+
+/* Global toast (body তে) — top of everything */
+.Toastify__toast-container:not(.modal-toast-container) {
+  z-index: 999999 !important;
 }

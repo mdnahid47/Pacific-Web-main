@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
 import {
   FaEnvelope,
   FaArrowLeft,
@@ -9,10 +8,9 @@ import {
   FaEye,
   FaEyeSlash,
 } from "react-icons/fa";
-import api from "../api";
+import { toast } from "react-toastify";
 
 const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
-  // Steps: 'email' → 'otp' → 'newPassword' → 'success'
   const [step, setStep] = useState("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -23,9 +21,51 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
   const [otpExpiry, setOtpExpiry] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
 
-  // ============================================================
-  // 🔑 SESSION PERSISTENCE — component mount হলে check করি
-  // ============================================================
+  const TOAST_ID = "modal-toast-container";
+
+  const showToast = {
+    success: (msg) =>
+      toast.success(msg, {
+        containerId: TOAST_ID,
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      }),
+    error: (msg) =>
+      toast.error(msg, {
+        containerId: TOAST_ID,
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      }),
+    info: (msg) =>
+      toast.info(msg, {
+        containerId: TOAST_ID,
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      }),
+    warning: (msg) =>
+      toast.warning(msg, {
+        containerId: TOAST_ID,
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      }),
+  };
+
   useEffect(() => {
     const savedEmail = localStorage.getItem("resetEmail");
     const savedStep = localStorage.getItem("resetStep");
@@ -33,7 +73,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     if (savedEmail && savedStep === "otp") {
       checkOtpStatus(savedEmail);
     } else if (savedEmail && savedStep === "newPassword") {
-      // User OTP verify করে newPassword step এ ছিল, refresh করেছে
       setEmail(savedEmail);
       setStep("newPassword");
     }
@@ -47,15 +86,12 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
         setOtpExpiry(new Date(res.data.expiresAt));
         setStep("otp");
 
-        Swal.fire({
-          icon: "info",
-          title: "OTP Already Sent",
-          text: "We already sent an OTP to your email. Please check your inbox.",
-          timer: 3000,
-          showConfirmButton: false,
-        });
+        setTimeout(() => {
+          showToast.info(
+            "OTP was already sent to your email. Please check your inbox."
+          );
+        }, 400);
       } else {
-        // Expired → clear
         localStorage.removeItem("resetEmail");
         localStorage.removeItem("resetStep");
       }
@@ -64,9 +100,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     }
   };
 
-  // ============================================================
-  // ⏱️ Countdown Timer for OTP expiry
-  // ============================================================
   useEffect(() => {
     if (step !== "otp" || !otpExpiry) return;
 
@@ -78,13 +111,8 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
         clearInterval(interval);
         localStorage.removeItem("resetEmail");
         localStorage.removeItem("resetStep");
-        Swal.fire({
-          icon: "warning",
-          title: "OTP Expired",
-          text: "Please request a new OTP.",
-          timer: 2500,
-          showConfirmButton: false,
-        });
+
+        showToast.warning("OTP expired. Please request a new one.");
         setStep("email");
         setOtp("");
       }
@@ -93,9 +121,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     return () => clearInterval(interval);
   }, [step, otpExpiry]);
 
-  // ============================================================
-  // STEP 1: Email Submit → OTP Send
-  // ============================================================
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -111,32 +136,25 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
           setOtpExpiry(new Date(res.data.expiresAt));
         }
 
-        Swal.fire({
-          icon: "success",
-          title: res.data.alreadySent ? "OTP Already Sent" : "OTP Sent!",
-          text: res.data.alreadySent
-            ? "We already sent an OTP to your email. Please check your inbox."
-            : "Please check your email for the 6-digit OTP.",
-          timer: 2500,
-          showConfirmButton: false,
-        });
+        if (res.data.alreadySent) {
+          showToast.info(
+            "OTP was already sent to your email. Please check your inbox."
+          );
+        } else if (res.data.devOtp) {
+          showToast.warning(`Dev Mode OTP: ${res.data.devOtp}`);
+        } else {
+          showToast.success("OTP sent! Please check your email.");
+        }
 
         setStep("otp");
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text: error.response?.data?.message || "Something went wrong",
-      });
+      showToast.error(error.response?.data?.message || "Failed to send OTP");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ============================================================
-  // STEP 2: Verify OTP
-  // ============================================================
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -147,32 +165,28 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
       if (res.data.success) {
         localStorage.setItem("resetStep", "newPassword");
         setStep("newPassword");
+        showToast.success("OTP verified successfully!");
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Invalid OTP",
-        text: error.response?.data?.message || "Please try again",
-      });
+      showToast.error(
+        error.response?.data?.message || "Invalid OTP. Please try again."
+      );
       setOtp("");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ============================================================
-  // STEP 3: Reset Password
-  // ============================================================
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      Swal.fire("Error", "Passwords do not match", "error");
+      showToast.error("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      Swal.fire("Error", "Password must be at least 6 characters", "error");
+      showToast.error("Password must be at least 6 characters");
       return;
     }
 
@@ -185,15 +199,14 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
       });
 
       if (res.data.success) {
-        // ✅ Clear localStorage
         localStorage.removeItem("resetEmail");
         localStorage.removeItem("resetStep");
 
         setStep("success");
+        showToast.success("Password reset successfully!");
 
         setTimeout(() => {
           onSwitchToLogin();
-          // Reset form
           setEmail("");
           setOtp("");
           setPassword("");
@@ -202,11 +215,9 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
         }, 2500);
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Failed",
-        text: error.response?.data?.message || "Reset failed",
-      });
+      showToast.error(
+        error.response?.data?.message || "Reset failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -229,11 +240,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
-  // ============================================================
-  // RENDER
-  // ============================================================
-
-  // ---------- SUCCESS VIEW ----------
   if (step === "success") {
     return (
       <div className="text-center py-8 animate-fadeIn">
@@ -250,7 +256,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     );
   }
 
-  // ---------- STEP 1: EMAIL VIEW ----------
   if (step === "email") {
     return (
       <div className="w-full">
@@ -282,9 +287,7 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="input input-bordered w-full h-12 pl-10 pr-4 rounded-xl
-                           border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100
-                           transition-all duration-200 text-base"
+                className="input input-bordered w-full h-12 pl-10 pr-4 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-base"
                 required
                 disabled={isLoading}
               />
@@ -294,8 +297,7 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`btn w-full h-12 rounded-xl font-bold text-base shadow-lg
-                       transition-all duration-300 ${
+            className={`btn w-full h-12 rounded-xl font-bold text-base shadow-lg transition-all duration-300 ${
               isLoading
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-olympic hover:bg-blue-700 text-white"
@@ -327,7 +329,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     );
   }
 
-  // ---------- STEP 2: OTP VIEW ----------
   if (step === "otp") {
     return (
       <div className="w-full">
@@ -361,9 +362,7 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
               onChange={(e) => {
                 if (/^\d{0,6}$/.test(e.target.value)) setOtp(e.target.value);
               }}
-              className="input input-bordered w-full h-14 rounded-xl
-                         border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100
-                         text-center text-2xl font-bold tracking-[0.5em]"
+              className="input input-bordered w-full h-14 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 text-center text-2xl font-bold tracking-[0.5em]"
               required
               disabled={isLoading}
               autoFocus
@@ -373,8 +372,7 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
           <button
             type="submit"
             disabled={isLoading || otp.length !== 6}
-            className={`btn w-full h-12 rounded-xl font-bold text-base shadow-lg
-                       transition-all duration-300 ${
+            className={`btn w-full h-12 rounded-xl font-bold text-base shadow-lg transition-all duration-300 ${
               isLoading || otp.length !== 6
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-olympic hover:bg-blue-700 text-white"
@@ -399,7 +397,6 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
     );
   }
 
-  // ---------- STEP 3: NEW PASSWORD VIEW ----------
   if (step === "newPassword") {
     return (
       <div className="w-full">
@@ -431,9 +428,7 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
                 placeholder="Enter new password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input input-bordered w-full h-12 pl-10 pr-12 rounded-xl
-                           border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100
-                           transition-all duration-200"
+                className="input input-bordered w-full h-12 pl-10 pr-12 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200"
                 required
                 minLength={6}
                 disabled={isLoading}
@@ -465,8 +460,7 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
               placeholder="Confirm new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className={`input input-bordered w-full h-12 rounded-xl
-                         transition-all duration-200 ${
+              className={`input input-bordered w-full h-12 rounded-xl transition-all duration-200 ${
                 confirmPassword && confirmPassword !== password
                   ? "border-red-400 focus:border-red-500"
                   : "border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100"
@@ -485,9 +479,10 @@ const ForgotPasswordModal = ({ onSwitchToLogin, onClose }) => {
 
           <button
             type="submit"
-            disabled={isLoading || password !== confirmPassword || password.length < 6}
-            className={`btn w-full h-12 rounded-xl font-bold text-base shadow-lg
-                       transition-all duration-300 ${
+            disabled={
+              isLoading || password !== confirmPassword || password.length < 6
+            }
+            className={`btn w-full h-12 rounded-xl font-bold text-base shadow-lg transition-all duration-300 ${
               isLoading || password !== confirmPassword || password.length < 6
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-olympic hover:bg-blue-700 text-white"
