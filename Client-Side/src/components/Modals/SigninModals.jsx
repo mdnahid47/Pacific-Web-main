@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { AuthContext } from "../../contexts/AuthProvider";
 import api from "../../api";
 import SignUp from "../../components/SignUp";
+import ForgotPasswordModal from "../../components/ForgotPasswordModal";
 
 const SigninModals = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +12,9 @@ const SigninModals = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+
+  // 🔑 Single view state — 'signin' | 'signup' | 'forgot'
+  const [view, setView] = useState("signin");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,6 +22,9 @@ const SigninModals = () => {
 
   const { handleLogin } = useContext(AuthContext);
 
+  // ============================================================
+  // Outside Click to Close
+  // ============================================================
   useEffect(() => {
     const handleOutsideClick = (e) => {
       const modal = document.getElementById("nav_modal");
@@ -31,12 +37,26 @@ const SigninModals = () => {
     };
   }, []);
 
+  // ============================================================
+  // Modal Open — Reset State + Check Persistence
+  // ============================================================
   useEffect(() => {
     const modal = document.getElementById("nav_modal");
     const handleModalOpen = () => {
       setError("");
-      setShowSignUp(false);
+      setShowPassword(false);
+
+      // 🔑 Persistence check: OTP pending থাকলে সরাসরি forgot view
+      const savedEmail = localStorage.getItem("resetEmail");
+      const savedStep = localStorage.getItem("resetStep");
+
+      if (savedEmail && savedStep) {
+        setView("forgot");
+      } else {
+        setView("signin");
+      }
     };
+
     if (modal) modal.addEventListener("show", handleModalOpen);
     return () => {
       if (modal) modal.removeEventListener("show", handleModalOpen);
@@ -49,7 +69,7 @@ const SigninModals = () => {
       modal.close();
       setError("");
       setShowPassword(false);
-      setTimeout(() => setShowSignUp(false), 300);
+      setTimeout(() => setView("signin"), 300);
     }
   };
 
@@ -66,6 +86,9 @@ const SigninModals = () => {
     }
   };
 
+  // ============================================================
+  // Sign In Submit
+  // ============================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -118,17 +141,17 @@ const SigninModals = () => {
 
   return (
     <dialog id="nav_modal" className="modal">
-      {/* Modal box — no fixed height, auto adjusts to content */}
+      {/* Modal box — auto height + responsive + hidden scrollbar */}
       <div className="modal-box relative 
-                w-[92%] sm:w-[85%] md:w-full 
-                max-w-md sm:max-w-lg md:max-w-xl 
-                p-5 sm:p-7 md:p-8 
-                rounded-2xl 
-                max-h-[95vh] 
-                overflow-y-auto 
-                overflow-x-hidden 
-                hide-scrollbar
-                transition-all duration-300">
+                      w-[92%] sm:w-[85%] md:w-full 
+                      max-w-md sm:max-w-lg md:max-w-xl 
+                      p-5 sm:p-7 md:p-8 
+                      rounded-2xl 
+                      max-h-[95vh] 
+                      overflow-y-auto 
+                      overflow-x-hidden 
+                      hide-scrollbar
+                      transition-all duration-300">
 
         {/* Close Button */}
         <button
@@ -139,16 +162,11 @@ const SigninModals = () => {
           ✕
         </button>
 
-        {/* ✅ Dynamic render — only active view is mounted */}
+        {/* Dynamic View Render */}
         <div className="relative overflow-hidden">
-          {showSignUp ? (
-            <div className="animate-slide-in-right">
-              <SignUp
-                onSwitchToLogin={() => setShowSignUp(false)}
-                onClose={closeModal}
-              />
-            </div>
-          ) : (
+
+          {/* ============ SIGN IN VIEW ============ */}
+          {view === "signin" && (
             <div className="animate-slide-in-left">
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div className="text-center mb-5 sm:mb-6">
@@ -244,7 +262,7 @@ const SigninModals = () => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleNavigationClick("/forgot-password")}
+                    onClick={() => setView("forgot")}
                     className="label-text-alt link link-hover mt-2 block text-left text-olympic text-sm"
                     disabled={isLoading}
                   >
@@ -281,7 +299,7 @@ const SigninModals = () => {
                     Don't have an account?{" "}
                     <button
                       type="button"
-                      onClick={() => setShowSignUp(true)}
+                      onClick={() => setView("signup")}
                       className="text-olympic font-semibold hover:underline"
                       disabled={isLoading}
                     >
@@ -290,6 +308,26 @@ const SigninModals = () => {
                   </p>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* ============ SIGN UP VIEW ============ */}
+          {view === "signup" && (
+            <div className="animate-slide-in-right">
+              <SignUp
+                onSwitchToLogin={() => setView("signin")}
+                onClose={closeModal}
+              />
+            </div>
+          )}
+
+          {/* ============ FORGOT PASSWORD VIEW ============ */}
+          {view === "forgot" && (
+            <div className="animate-slide-in-right">
+              <ForgotPasswordModal
+                onSwitchToLogin={() => setView("signin")}
+                onClose={closeModal}
+              />
             </div>
           )}
         </div>

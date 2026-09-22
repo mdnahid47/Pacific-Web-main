@@ -4331,19 +4331,22 @@ app.post("/api/forgot-password", async (req, res) => {
     });
   }
 });
-// ---------Forgot Password with Otp--------
-app.post('/api/forgot-password-otp', async (req, res) => {
+// ============================================================
+// PASSWORD RESET WITH OTP
+// ============================================================
+
+// 1️⃣ FORGOT PASSWORD — Send/Resend OTP
+app.post("/api/forgot-password-otp", async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
     return res.status(400).json({
       success: false,
-      message: 'Email is required'
+      message: "Email is required",
     });
   }
 
   try {
-    // 1. Check user exists
     const [users] = await db.query(
       "SELECT custom_id, name, email FROM users WHERE email = ?",
       [email]
@@ -4357,11 +4360,11 @@ app.post('/api/forgot-password-otp', async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'No account found with this email'
+        message: "No account found with this email",
       });
     }
 
-    // 2. Check existing OTP (not expired, not verified)
+    // Check existing OTP
     const [existing] = await db.query(
       `SELECT * FROM password_reset_otps 
        WHERE email = ? AND otp_expiry > NOW() AND verified = 0 
@@ -4370,31 +4373,26 @@ app.post('/api/forgot-password-otp', async (req, res) => {
     );
 
     if (existing.length > 0) {
-      // Same OTP re-send (no new generation)
-      console.log(`📧 Re-sending existing OTP to ${email}`);
-      
       try {
         await sendOtpEmail(email, existing[0].otp, user.name);
       } catch (err) {
-        console.error('Email re-send failed:', err);
+        console.error("Email re-send failed:", err);
       }
 
       return res.json({
         success: true,
-        message: 'OTP was already sent to your email. Please check your inbox.',
+        message: "OTP was already sent to your email",
         alreadySent: true,
-        expiresAt: existing[0].otp_expiry
+        expiresAt: existing[0].otp_expiry,
       });
     }
 
-    // 3. No valid OTP → generate new one
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    // Generate new OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    // Delete old OTPs for this email
     await db.query("DELETE FROM password_reset_otps WHERE email = ?", [email]);
 
-    // Insert new OTP
     await db.query(
       `INSERT INTO password_reset_otps (email, otp, otp_expiry) 
        VALUES (?, ?, ?)`,
@@ -4403,37 +4401,34 @@ app.post('/api/forgot-password-otp', async (req, res) => {
 
     console.log(`🔐 New OTP for ${email}: ${otp}`);
 
-    // 4. Send email
     try {
       await sendOtpEmail(email, otp, user.name);
-      console.log('✅ OTP email sent');
     } catch (err) {
-      console.error('❌ OTP email failed:', err);
-      // Dev mode: return OTP in response
+      console.error("❌ OTP email failed:", err);
       return res.json({
         success: true,
-        message: 'OTP generated (email failed, dev mode)',
-        devOtp: otp
+        message: "OTP generated (email failed, dev mode)",
+        devOtp: otp,
       });
     }
 
     res.json({
       success: true,
-      message: 'OTP sent to your email',
+      message: "OTP sent to your email",
       alreadySent: false,
-      expiresAt: otpExpiry
+      expiresAt: otpExpiry,
     });
-
   } catch (error) {
-    console.error('Forgot password OTP error:', error);
+    console.error("Forgot password OTP error:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to process request'
+      message: "Failed to process request",
     });
   }
 });
-// -----------check otp status-------------
-app.get('/api/check-otp-status/:email', async (req, res) => {
+
+// 2️⃣ CHECK OTP STATUS
+app.get("/api/check-otp-status/:email", async (req, res) => {
   const { email } = req.params;
 
   try {
@@ -4448,32 +4443,25 @@ app.get('/api/check-otp-status/:email', async (req, res) => {
       return res.json({
         success: true,
         hasActiveOtp: true,
-        expiresAt: rows[0].otp_expiry
+        expiresAt: rows[0].otp_expiry,
       });
     }
 
-    res.json({
-      success: true,
-      hasActiveOtp: false
-    });
-
+    res.json({ success: true, hasActiveOtp: false });
   } catch (error) {
-    console.error('Check OTP status error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to check status'
-    });
+    console.error("Check OTP status error:", error);
+    res.status(500).json({ success: false, message: "Failed to check status" });
   }
 });
 
-// ----------Verify OTP----------
-app.post('/api/verify-otp', async (req, res) => {
+// 3️⃣ VERIFY OTP
+app.post("/api/verify-otp", async (req, res) => {
   const { email, otp } = req.body;
 
   if (!email || !otp) {
     return res.status(400).json({
       success: false,
-      message: 'Email and OTP are required'
+      message: "Email and OTP are required",
     });
   }
 
@@ -4486,76 +4474,54 @@ app.post('/api/verify-otp', async (req, res) => {
     );
 
     if (rows.length === 0) {
-      // Wrong OTP — increment attempts on latest row
-      await db.query(
-        `UPDATE password_reset_otps 
-         SET attempts = attempts + 1 
-         WHERE email = ? AND otp_expiry > NOW() AND verified = 0 
-         ORDER BY id DESC LIMIT 1`,
-        [email]
-      );
-
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired OTP'
+        message: "Invalid or expired OTP",
       });
     }
 
-    // Check attempts limit
     if (rows[0].attempts >= 5) {
-      await db.query(
-        "DELETE FROM password_reset_otps WHERE id = ?",
-        [rows[0].id]
-      );
+      await db.query("DELETE FROM password_reset_otps WHERE id = ?", [rows[0].id]);
       return res.status(400).json({
         success: false,
-        message: 'Too many attempts. Please request a new OTP.'
+        message: "Too many attempts. Please request a new OTP.",
       });
     }
 
-    // Mark as verified
     await db.query(
       "UPDATE password_reset_otps SET verified = 1 WHERE id = ?",
       [rows[0].id]
     );
 
-    res.json({
-      success: true,
-      message: 'OTP verified successfully'
-    });
-
+    res.json({ success: true, message: "OTP verified successfully" });
   } catch (error) {
-    console.error('Verify OTP error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'OTP verification failed'
-    });
+    console.error("Verify OTP error:", error);
+    res.status(500).json({ success: false, message: "OTP verification failed" });
   }
 });
-// -----------Reset Password with OTP----------
-app.post('/api/reset-password-with-otp', async (req, res) => {
+
+// 4️⃣ RESET PASSWORD WITH OTP
+app.post("/api/reset-password-with-otp", async (req, res) => {
   const { email, newPassword } = req.body;
 
   if (!email || !newPassword) {
     return res.status(400).json({
       success: false,
-      message: 'All fields are required'
+      message: "All fields are required",
     });
   }
 
   if (newPassword.length < 6) {
     return res.status(400).json({
       success: false,
-      message: 'Password must be at least 6 characters'
+      message: "Password must be at least 6 characters",
     });
   }
 
   try {
-    // Check OTP was verified (within last 15 min)
     const [verified] = await db.query(
       `SELECT * FROM password_reset_otps 
-       WHERE email = ? AND verified = 1 
-       AND otp_expiry > NOW()
+       WHERE email = ? AND verified = 1 AND otp_expiry > NOW() 
        ORDER BY id DESC LIMIT 1`,
       [email]
     );
@@ -4563,60 +4529,45 @@ app.post('/api/reset-password-with-otp', async (req, res) => {
     if (verified.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'OTP verification required'
+        message: "OTP verification required",
       });
     }
 
-    // Check user type
     const [users] = await db.query(
-      "SELECT custom_id FROM users WHERE email = ?", [email]
+      "SELECT custom_id FROM users WHERE email = ?",
+      [email]
     );
     const [vendors] = await db.query(
-      "SELECT id FROM vendors WHERE email = ?", [email]
-    );
-
-    if (users.length === 0 && vendors.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    const bcrypt = require('bcrypt');
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    if (users.length > 0) {
-      await db.query(
-        "UPDATE users SET password = ? WHERE email = ?",
-        [hashedPassword, email]
-      );
-    } else {
-      await db.query(
-        "UPDATE vendors SET password = ? WHERE email = ?",
-        [hashedPassword, email]
-      );
-    }
-
-    // Delete used OTP
-    await db.query(
-      "DELETE FROM password_reset_otps WHERE email = ?",
+      "SELECT id FROM vendors WHERE email = ?",
       [email]
     );
 
-    res.json({
-      success: true,
-      message: 'Password reset successful'
-    });
+    if (users.length === 0 && vendors.length === 0) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    if (users.length > 0) {
+      await db.query("UPDATE users SET password = ? WHERE email = ?", [
+        hashedPassword,
+        email,
+      ]);
+    } else {
+      await db.query("UPDATE vendors SET password = ? WHERE email = ?", [
+        hashedPassword,
+        email,
+      ]);
+    }
+
+    await db.query("DELETE FROM password_reset_otps WHERE email = ?", [email]);
+
+    res.json({ success: true, message: "Password reset successful" });
   } catch (error) {
-    console.error('Reset password error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to reset password'
-    });
+    console.error("Reset password error:", error);
+    res.status(500).json({ success: false, message: "Failed to reset password" });
   }
 });
-
 
 // ---------- ORDER STATUS UPDATE ----------
 app.patch('/api/orders/:orderId/status', authenticateJWT, async (req, res) => {
