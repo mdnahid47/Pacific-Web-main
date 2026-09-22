@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { AuthContext } from "../../contexts/AuthProvider";
 import api from "../../api";
 import SignUp from "../../components/SignUp";
-import ForgotPasswordModal from "../../components/ForgotPasswordModal";
+import ForgotPasswordModal from "./ForgotPasswordModal";
 
 const SigninModals = () => {
   const [email, setEmail] = useState("");
