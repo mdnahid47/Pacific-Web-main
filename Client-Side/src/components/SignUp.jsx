@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { FaUser, FaEnvelope, FaPhone, FaLock } from "react-icons/fa";
-import api from "../../api";
+import api from "../api";
 
 const SignUp = ({ onSwitchToLogin, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -14,7 +14,6 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validate Phone Number (11 digits)
     if (!/^\d{11}$/.test(phoneNumber)) {
       Swal.fire({
         icon: "error",
@@ -45,7 +44,6 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
           timer: 2000,
         });
 
-        // Reset form + switch back to login view inside modal
         setTimeout(() => {
           setFirstName("");
           setEmail("");
@@ -73,10 +71,10 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full flex flex-col">
       {/* Header */}
-      <div className="text-center mb-5">
-        <h2 className="text-2xl font-black text-black mb-1">
+      <div className="text-center mb-5 sm:mb-6">
+        <h2 className="text-2xl sm:text-3xl font-black text-black mb-1.5">
           Create Your <span className="text-olympic">Account</span>
         </h2>
         <p className="text-gray-500 text-sm">
@@ -84,7 +82,7 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 flex-1">
         {/* Name */}
         <div className="form-control">
           <label className="label py-1">
@@ -93,13 +91,18 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
             </span>
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
               <FaUser className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="text"
               placeholder="Enter your full name"
-              className="input input-bordered w-full pl-10 pr-4 py-2.5 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+              className="input input-bordered w-full 
+                         h-12 
+                         pl-10 pr-4 
+                         rounded-xl border-gray-300 
+                         focus:border-olympic focus:ring-2 focus:ring-blue-100 
+                         transition-all duration-200 text-base"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
@@ -116,13 +119,18 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
             </span>
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
               <FaEnvelope className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="email"
               placeholder="you@example.com"
-              className="input input-bordered w-full pl-10 pr-4 py-2.5 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+              className="input input-bordered w-full 
+                         h-12 
+                         pl-10 pr-4 
+                         rounded-xl border-gray-300 
+                         focus:border-olympic focus:ring-2 focus:ring-blue-100 
+                         transition-all duration-200 text-base"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -139,17 +147,23 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
             </span>
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
               <FaPhone className="h-4 w-4 text-gray-400" />
             </div>
-            <div className="flex items-center relative">
-              <span className="absolute left-9 font-semibold text-gray-600 text-sm z-10">
+            <div className="relative">
+              <span className="absolute left-10 top-1/2 -translate-y-1/2 
+                              font-semibold text-gray-600 text-base z-10">
                 +88
               </span>
               <input
                 type="text"
                 placeholder="Enter 11 digits"
-                className="input input-bordered w-full pl-16 pr-4 py-2.5 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+                className="input input-bordered w-full 
+                           h-12 
+                           pl-[72px] pr-4 
+                           rounded-xl border-gray-300 
+                           focus:border-olympic focus:ring-2 focus:ring-blue-100 
+                           transition-all duration-200 text-base"
                 value={phoneNumber}
                 onChange={(e) => {
                   if (/^\d{0,11}$/.test(e.target.value)) {
@@ -171,13 +185,18 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
             </span>
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none z-10">
               <FaLock className="h-4 w-4 text-gray-400" />
             </div>
             <input
               type="password"
               placeholder="Create a strong password"
-              className="input input-bordered w-full pl-10 pr-4 py-2.5 rounded-xl border-gray-300 focus:border-olympic focus:ring-2 focus:ring-blue-100 transition-all duration-200 text-sm"
+              className="input input-bordered w-full 
+                         h-12 
+                         pl-10 pr-4 
+                         rounded-xl border-gray-300 
+                         focus:border-olympic focus:ring-2 focus:ring-blue-100 
+                         transition-all duration-200 text-base"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -187,10 +206,13 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
         </div>
 
         {/* Submit */}
-        <div className="form-control mt-5">
+        <div className="form-control mt-4 sm:mt-5">
           <button
             type="submit"
-            className={`btn w-full rounded-xl font-bold text-base shadow-lg transition-all duration-300 ${
+            className={`btn w-full 
+                       h-12 
+                       rounded-xl font-bold text-base shadow-lg 
+                       transition-all duration-300 ${
               isLoading
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-olympic hover:bg-blue-700 text-white hover:shadow-blue-500/30 transform hover:-translate-y-0.5"
@@ -225,7 +247,7 @@ const SignUp = ({ onSwitchToLogin, onClose }) => {
 
       {/* Terms */}
       <div className="text-center mt-3">
-        <p className="text-gray-400 text-xs">
+        <p className="text-gray-400 text-xs leading-relaxed">
           By creating an account, you agree to our{" "}
           <a href="/terms" className="text-olympic hover:underline">
             Terms

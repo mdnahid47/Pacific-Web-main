@@ -24,6 +24,9 @@ export default {
         'fadeIn': 'fadeIn 0.5s ease-in-out',
         'slideUp': 'slideUp 0.3s ease-out',
         'pulse-gentle': 'pulse-gentle 2s ease-in-out infinite',
+        // ✅ নতুন animation যোগ করা হয়েছে
+        'slide-in-left': 'slideInLeft 0.4s ease-out',
+        'slide-in-right': 'slideInRight 0.4s ease-out',
       },
       keyframes: {
         move: {
@@ -41,14 +44,19 @@ export default {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.8' },
         },
+        
+        slideInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        slideInRight: {
+          '0%': { opacity: '0', transform: 'translateX(30px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
       },
       fontFamily: {
         "primary": ["Inter", "sans-serif"]
       },
-      daisyui: {
-        themes: [],
-      },
-
     },
   },
   plugins: [daisyui],
