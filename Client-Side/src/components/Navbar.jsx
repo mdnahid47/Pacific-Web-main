@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthProvider';
 import { FaRegUser, FaSignOutAlt, FaBell } from 'react-icons/fa';
 import {
@@ -13,10 +13,9 @@ import {
   CreditCard,
   MessageSquare,
   Package,
-  Filter
 } from 'lucide-react';
 import SigninModals from './Modals/SigninModals';
-import api from '../api'; // Import the configured axios instance
+import api from '../api';
 import { formatDistanceToNow } from 'date-fns';
 
 const Navbar = () => {
@@ -24,8 +23,11 @@ const Navbar = () => {
   const { user, handleLogout } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Notification states
+  // ============================================================
+  // 📬 NOTIFICATION STATES
+  // ============================================================
   const [notificationSidebarOpen, setNotificationSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -34,11 +36,13 @@ const Navbar = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const sidebarRef = useRef(null);
 
+  // ============================================================
   // Scroll effect
+  // ============================================================
   useEffect(() => {
     const handleScroll = () => setSticky(window.scrollY > 0);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Check auth state on initial load
@@ -49,21 +53,19 @@ const Navbar = () => {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Notification sidebar close
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         if (!event.target.closest('.notification-trigger')) {
           setNotificationSidebarOpen(false);
         }
       }
 
-      // Close all dropdowns
       const detailsElements = document.querySelectorAll('details');
-      detailsElements.forEach(detail => {
+      detailsElements.forEach((detail) => {
         detail.removeAttribute('open');
       });
 
       const dropdowns = document.querySelectorAll('.dropdown:not(.notification-sidebar)');
-      dropdowns.forEach(dropdown => {
+      dropdowns.forEach((dropdown) => {
         if (dropdown.hasAttribute('open')) {
           dropdown.removeAttribute('open');
         }
@@ -74,27 +76,42 @@ const Navbar = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Close all dropdowns function
+  // ============================================================
+  // 🎯 Close All Dropdowns
+  // ============================================================
   const closeAllDropdowns = () => {
     const detailsElements = document.querySelectorAll('details');
-    detailsElements.forEach(detail => {
-      detail.removeAttribute('open');
-    });
+    detailsElements.forEach((detail) => detail.removeAttribute('open'));
 
     const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach(dropdown => {
-      dropdown.removeAttribute('open');
-    });
+    dropdowns.forEach((dropdown) => dropdown.removeAttribute('open'));
     setNotificationSidebarOpen(false);
   };
 
-  // Fetch notifications - REMOVED /api prefix
+  // ============================================================
+  // 🎯 Handle Nav Click — Same page → scroll top
+  // ============================================================
+  const handleNavClick = (path) => {
+    closeAllDropdowns();
+
+    if (location.pathname === path) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  // ============================================================
+  // 📬 NOTIFICATION FUNCTIONS
+  // ============================================================
   const fetchNotifications = async (showLoading = true) => {
     try {
       if (showLoading) setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await api.get('/notifications', {  // ✅ Removed /api
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await api.get('/notifications', {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.success) {
@@ -111,12 +128,11 @@ const Navbar = () => {
     }
   };
 
-  // Fetch unread count only - REMOVED /api prefix
   const fetchUnreadCount = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await api.get('/notifications/unread-count', {  // ✅ Removed /api
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await api.get('/notifications/unread-count', {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.success) {
@@ -127,71 +143,73 @@ const Navbar = () => {
     }
   };
 
-  // Mark notification as read - REMOVED /api prefix
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await api.patch(`/notifications/${id}/read`, {}, {  // ✅ Removed /api
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.patch(
+        `/notifications/${id}/read`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      setNotifications(prev => prev.map(notif =>
-        notif.id === id ? { ...notif, is_read: true } : notif
-      ));
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === id ? { ...notif, is_read: true } : notif
+        )
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Error marking as read:', error);
     }
   };
 
-  // Mark all as read - REMOVED /api prefix
   const markAllAsRead = async () => {
     try {
       const token = localStorage.getItem('token');
-      await api.patch('/notifications/mark-all-read', {}, {  // ✅ Removed /api
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.patch(
+        '/notifications/mark-all-read',
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      setNotifications(prev => prev.map(notif => ({ ...notif, is_read: true })));
+      setNotifications((prev) =>
+        prev.map((notif) => ({ ...notif, is_read: true }))
+      );
       setUnreadCount(0);
     } catch (error) {
       console.error('Error marking all as read:', error);
     }
   };
 
-  // Delete notification - REMOVED /api prefix
   const deleteNotification = async (id, e) => {
     e.stopPropagation();
     try {
       const token = localStorage.getItem('token');
-      await api.delete(`/notifications/${id}`, {  // ✅ Removed /api
-        headers: { Authorization: `Bearer ${token}` }
+      await api.delete(`/notifications/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const deletedNotif = notifications.find(n => n.id === id);
-      setNotifications(prev => prev.filter(notif => notif.id !== id));
+      const deletedNotif = notifications.find((n) => n.id === id);
+      setNotifications((prev) => prev.filter((notif) => notif.id !== id));
       if (deletedNotif && !deletedNotif.is_read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (error) {
       console.error('Error deleting notification:', error);
     }
   };
 
-  // Refresh notifications
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchNotifications(false);
     setTimeout(() => setRefreshing(false), 1000);
   };
 
-  // Open notification sidebar
   const handleNotificationClick = () => {
     setNotificationSidebarOpen(true);
     fetchNotifications();
   };
 
-  // Format date
   const formatDate = (dateString) => {
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true });
@@ -200,7 +218,6 @@ const Navbar = () => {
     }
   };
 
-  // Get notification icon
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'order_cancelled':
@@ -220,7 +237,6 @@ const Navbar = () => {
     }
   };
 
-  // Get notification color class
   const getNotificationColor = (type) => {
     switch (type) {
       case 'order_cancelled':
@@ -238,19 +254,16 @@ const Navbar = () => {
     }
   };
 
-  // Filter notifications
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification) => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'unread') return !notification.is_read;
     if (activeFilter === 'read') return notification.is_read;
     return true;
   });
 
-  // Fetch unread count on user change
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      // Poll for new notifications every 30 seconds
       const interval = setInterval(fetchUnreadCount, 30000);
       return () => clearInterval(interval);
     } else {
@@ -259,7 +272,6 @@ const Navbar = () => {
     }
   }, [user]);
 
-  // Prevent body scroll when sidebar is open
   useEffect(() => {
     if (notificationSidebarOpen) {
       document.body.style.overflow = 'hidden';
@@ -271,17 +283,25 @@ const Navbar = () => {
     };
   }, [notificationSidebarOpen]);
 
-  // Complete navItems with all your menu structure
+  // ============================================================
+  // 🧭 NAV ITEMS
+  // ============================================================
   const navItems = (
     <>
-      <li className='text-md'>
-        <Link to='/' className='hover:text-olympic transition-colors' onClick={closeAllDropdowns}>Home</Link>
+      <li className="text-md">
+        <Link
+          to="/"
+          className="hover:text-olympic transition-colors"
+          onClick={() => handleNavClick('/')}
+        >
+          Home
+        </Link>
       </li>
 
       <li>
         <details>
           <summary
-            className='text-md hover:text-olympic transition-colors cursor-pointer'
+            className="text-md hover:text-olympic transition-colors cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >
             AC Repair Service
@@ -289,18 +309,18 @@ const Navbar = () => {
           <ul className="p-2 bg-white">
             <li>
               <Link
-                to='/ac-servicing'
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                to="/ac-servicing"
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/ac-servicing')}
               >
                 AC Servicing
               </Link>
             </li>
             <li>
               <Link
-                to='/ac-cooling-problem'
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                to="/ac-cooling-problem"
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/ac-cooling-problem')}
               >
                 AC Cooling Problem
               </Link>
@@ -308,8 +328,8 @@ const Navbar = () => {
             <li>
               <Link
                 to="/ac-installation"
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/ac-installation')}
               >
                 AC Installation & Uninstallation
               </Link>
@@ -318,21 +338,21 @@ const Navbar = () => {
         </details>
       </li>
 
-      <li className='text-md'>
+      <li className="text-md">
         <Link
-          to='/refrigerator-service'
-          className='hover:text-olympic transition-colors'
-          onClick={closeAllDropdowns}
+          to="/refrigerator-service"
+          className="hover:text-olympic transition-colors"
+          onClick={() => handleNavClick('/refrigerator-service')}
         >
           Refrigerator Repair
         </Link>
       </li>
 
-      <li className='text-md'>
+      <li className="text-md">
         <Link
-          to='/vrf-vrv-hvac-solution'
-          className='hover:text-olympic transition-colors'
-          onClick={closeAllDropdowns}
+          to="/vrf-vrv-hvac-solution"
+          className="hover:text-olympic transition-colors"
+          onClick={() => handleNavClick('/vrf-vrv-hvac-solution')}
         >
           VRF/VRV/HVAC Solution
         </Link>
@@ -341,26 +361,26 @@ const Navbar = () => {
       <li>
         <details>
           <summary
-            className='text-md hover:text-olympic transition-colors cursor-pointer'
+            className="text-md hover:text-olympic transition-colors cursor-pointer"
             onClick={(e) => e.stopPropagation()}
           >
             Appliance Repair
           </summary>
-          <ul className='p-2 bg-white'>
+          <ul className="p-2 bg-white">
             <li>
               <Link
-                to='/washing-machine-service'
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                to="/washing-machine-service"
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/washing-machine-service')}
               >
                 Washing Machine Service
               </Link>
             </li>
             <li>
               <Link
-                to='/tv-service'
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                to="/tv-service"
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/tv-service')}
               >
                 TV Service
               </Link>
@@ -368,8 +388,8 @@ const Navbar = () => {
             <li>
               <Link
                 to="/oven-service"
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/oven-service')}
               >
                 Oven Service
               </Link>
@@ -377,8 +397,8 @@ const Navbar = () => {
             <li>
               <Link
                 to="/geyser-service"
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/geyser-service')}
               >
                 Geyser Services
               </Link>
@@ -386,8 +406,8 @@ const Navbar = () => {
             <li>
               <Link
                 to="/water-purifier-service"
-                className='hover:text-olympic transition-colors block py-1'
-                onClick={closeAllDropdowns}
+                className="hover:text-olympic transition-colors block py-1"
+                onClick={() => handleNavClick('/water-purifier-service')}
               >
                 Water Purifier Services
               </Link>
@@ -398,15 +418,16 @@ const Navbar = () => {
     </>
   );
 
-  if (isLoading) {
-    return null;
-  }
+  if (isLoading) return null;
 
   return (
     <>
       <header className="text-black bg-white w-full fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out">
-        <div className={`navbar px-4 lg:px-24 ${isSticky ? "shadow-md bg-white" : ""}`}>
-
+        <div
+          className={`navbar px-4 lg:px-24 ${
+            isSticky ? 'shadow-md bg-white' : ''
+          }`}
+        >
           {/* Mobile Menu */}
           <div className="navbar-start">
             <div className="dropdown">
@@ -416,8 +437,19 @@ const Navbar = () => {
                 className="btn btn-ghost lg:hidden"
                 onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h8m-8 6h16"
+                  />
                 </svg>
               </div>
               <ul
@@ -429,9 +461,9 @@ const Navbar = () => {
               </ul>
             </div>
             <Link
-              to='/'
+              to="/"
               className="btn btn-ghost text-xl"
-              onClick={closeAllDropdowns}
+              onClick={() => handleNavClick('/')}
             >
               Pacific
             </Link>
@@ -466,7 +498,7 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* User Profile */}
+            {/* User Profile / Login */}
             {user ? (
               <div
                 className="dropdown dropdown-end"
@@ -480,7 +512,11 @@ const Navbar = () => {
                   <div className="w-10 rounded-full items-center">
                     {user.photo ? (
                       <img
-                        src={user.photo.startsWith('http') ? user.photo : `${import.meta.env.VITE_API_URL}${user.photo}`}
+                        src={
+                          user.photo.startsWith('http')
+                            ? user.photo
+                            : `${import.meta.env.VITE_API_URL}${user.photo}`
+                        }
                         alt="Profile"
                       />
                     ) : (
@@ -493,18 +529,12 @@ const Navbar = () => {
                   className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
                 >
                   <li>
-                    <Link
-                      to="/profile"
-                      onClick={closeAllDropdowns}
-                    >
+                    <Link to="/profile" onClick={closeAllDropdowns}>
                       Profile
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      to="/orders"
-                      onClick={closeAllDropdowns}
-                    >
+                    <Link to="/orders" onClick={closeAllDropdowns}>
                       Orders
                     </Link>
                   </li>
@@ -512,7 +542,7 @@ const Navbar = () => {
                     <button
                       onClick={() => {
                         handleLogout();
-                        navigate("/");
+                        navigate('/');
                         closeAllDropdowns();
                       }}
                     >
@@ -523,7 +553,7 @@ const Navbar = () => {
               </div>
             ) : (
               <button
-                onClick={() => document.getElementById("nav_modal").showModal()}
+                onClick={() => document.getElementById('nav_modal').showModal()}
                 className="btn flex items-center gap-2 rounded-full px-6 bg-olympic text-white hover:bg-olympic-dark"
               >
                 <FaRegUser /> Login
@@ -532,42 +562,51 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Signin Modal */}
         <SigninModals />
       </header>
 
-      {/* Notification Sidebar */}
+      {/* ============================================================
+          📬 NOTIFICATION SIDEBAR
+          ============================================================ */}
       {notificationSidebarOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
             onClick={() => setNotificationSidebarOpen(false)}
           />
 
-          {/* Sidebar */}
           <div
             ref={sidebarRef}
             className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-base-100 shadow-2xl transform transition-transform duration-300 ease-in-out notification-sidebar"
-            style={{ transform: notificationSidebarOpen ? 'translateX(0)' : 'translateX(100%)' }}
+            style={{
+              transform: notificationSidebarOpen
+                ? 'translateX(0)'
+                : 'translateX(100%)',
+            }}
           >
             <div className="flex flex-col h-full">
-              {/* Header - bg-olympic class ব্যবহার */}
+              {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-base-300 bg-olympic">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-white/20">
                     <FaBell className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">Notifications</h2>
+                    <h2 className="text-xl font-bold text-white">
+                      Notifications
+                    </h2>
                     <p className="text-sm text-white/80">
-                      {unreadCount > 0 ? `${unreadCount} unread` : 'All caught up!'}
+                      {unreadCount > 0
+                        ? `${unreadCount} unread`
+                        : 'All caught up!'}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    className={`btn btn-ghost btn-circle btn-sm ${refreshing ? 'loading' : ''} hover:bg-white/20`}
+                    className={`btn btn-ghost btn-circle btn-sm ${
+                      refreshing ? 'loading' : ''
+                    } hover:bg-white/20`}
                     onClick={handleRefresh}
                     disabled={refreshing}
                   >
@@ -586,22 +625,34 @@ const Navbar = () => {
               <div className="p-4 border-b border-base-300">
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   <button
-                    className={`btn btn-sm ${activeFilter === 'all' ? 'btn-primary bg-olympic border-olympic' : 'btn-ghost'}`}
+                    className={`btn btn-sm ${
+                      activeFilter === 'all'
+                        ? 'btn-primary bg-olympic border-olympic'
+                        : 'btn-ghost'
+                    }`}
                     onClick={() => setActiveFilter('all')}
                   >
                     All ({notifications.length})
                   </button>
                   <button
-                    className={`btn btn-sm ${activeFilter === 'unread' ? 'btn-primary bg-olympic border-olympic' : 'btn-ghost'}`}
+                    className={`btn btn-sm ${
+                      activeFilter === 'unread'
+                        ? 'btn-primary bg-olympic border-olympic'
+                        : 'btn-ghost'
+                    }`}
                     onClick={() => setActiveFilter('unread')}
                   >
-                    Unread ({notifications.filter(n => !n.is_read).length})
+                    Unread ({notifications.filter((n) => !n.is_read).length})
                   </button>
                   <button
-                    className={`btn btn-sm ${activeFilter === 'read' ? 'btn-primary bg-olympic border-olympic' : 'btn-ghost'}`}
+                    className={`btn btn-sm ${
+                      activeFilter === 'read'
+                        ? 'btn-primary bg-olympic border-olympic'
+                        : 'btn-ghost'
+                    }`}
                     onClick={() => setActiveFilter('read')}
                   >
-                    Read ({notifications.filter(n => n.is_read).length})
+                    Read ({notifications.filter((n) => n.is_read).length})
                   </button>
                 </div>
               </div>
@@ -616,11 +667,13 @@ const Navbar = () => {
                 ) : filteredNotifications.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                     <FaBell className="w-20 h-20 text-base-300 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No notifications</h3>
+                    <h3 className="text-lg font-semibold mb-2">
+                      No notifications
+                    </h3>
                     <p className="text-base-content/60">
                       {activeFilter === 'unread'
                         ? "You're all caught up!"
-                        : "No notifications found"}
+                        : 'No notifications found'}
                     </p>
                   </div>
                 ) : (
@@ -628,25 +681,37 @@ const Navbar = () => {
                     {filteredNotifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className={`p-4 hover:bg-base-200 transition-colors duration-200 cursor-pointer ${!notification.is_read ? 'bg-olympic/5' : ''
-                          }`}
+                        className={`p-4 hover:bg-base-200 transition-colors duration-200 cursor-pointer ${
+                          !notification.is_read ? 'bg-olympic/5' : ''
+                        }`}
                         onClick={() => markAsRead(notification.id)}
                       >
                         <div className="flex gap-3">
                           <div className="flex-shrink-0">
-                            <div className={`p-3 rounded-xl ${getNotificationColor(notification.type)}`}>
+                            <div
+                              className={`p-3 rounded-xl ${getNotificationColor(
+                                notification.type
+                              )}`}
+                            >
                               {getNotificationIcon(notification.type)}
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start mb-1">
-                              <h4 className={`font-semibold ${!notification.is_read ? 'text-olympic' : 'text-base-content'
-                                }`}>
+                              <h4
+                                className={`font-semibold ${
+                                  !notification.is_read
+                                    ? 'text-olympic'
+                                    : 'text-base-content'
+                                }`}
+                              >
                                 {notification.title}
                               </h4>
                               <button
                                 className="btn btn-ghost btn-xs btn-circle opacity-0 group-hover:opacity-100 transition-opacity hover:bg-error hover:text-error-content"
-                                onClick={(e) => deleteNotification(notification.id, e)}
+                                onClick={(e) =>
+                                  deleteNotification(notification.id, e)
+                                }
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -672,7 +737,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Footer Actions */}
+              {/* Footer */}
               <div className="p-4 border-t border-base-300 bg-base-200/50">
                 <div className="flex flex-col sm:flex-row gap-2">
                   <button

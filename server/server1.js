@@ -610,6 +610,201 @@ const initializeDatabase = async () => {
       console.log("ℹ️ order_reports table already exists or error:", err.message);
     }
 
+
+    // ============================================================
+// 🎯 PAYMENT METHODS TABLE
+// ============================================================
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS payment_methods (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      method_name VARCHAR(50) NOT NULL UNIQUE,
+      display_name VARCHAR(100) NOT NULL,
+      account_number VARCHAR(100),
+      account_name VARCHAR(255),
+      bank_name VARCHAR(255),
+      branch VARCHAR(255),
+      instructions TEXT,
+      icon VARCHAR(100),
+      is_active TINYINT(1) DEFAULT 1,
+      display_order INT DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
+  console.log("✅ payment_methods table created");
+
+  await db.query(`
+    INSERT IGNORE INTO payment_methods 
+    (method_name, display_name, account_number, account_name, instructions, icon, display_order) 
+    VALUES 
+    ('bkash', 'bKash', '01712345678', 'Pacific Services', 'Send money, then enter Transaction ID', 'FaMobileAlt', 1),
+    ('nagad', 'Nagad', '01712345678', 'Pacific Services', 'Send money, then enter Transaction ID', 'FaMobileAlt', 2),
+    ('rocket', 'Rocket', '017123456781', 'Pacific Services', 'Send money and enter Transaction ID', 'FaMobileAlt', 3),
+    ('bank', 'Bank Transfer', '1234567890123', 'Pacific Services Ltd.', 'Transfer to this account', 'FaUniversity', 4)
+  `);
+  console.log("✅ Default payment methods inserted");
+
+} catch (err) {
+  console.log("ℹ️ payment_methods:", err.message);
+}
+
+// ============================================================
+// 🎯 VENDOR PAYMENTS TABLE
+// ============================================================
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS vendor_payments (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      vendor_id INT NOT NULL,
+      amount DECIMAL(10,2) NOT NULL,
+      payment_method VARCHAR(50) NOT NULL,
+      sender_number VARCHAR(50) NOT NULL,
+      transaction_id VARCHAR(100) NOT NULL UNIQUE,
+      bank_name VARCHAR(255),
+      account_holder VARCHAR(255),
+      notes TEXT,
+      status VARCHAR(50) DEFAULT 'pending',
+      rejection_reason TEXT,
+      approved_by VARCHAR(50),
+      approved_at DATETIME,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (vendor_id) REFERENCES vendors(id) ON DELETE CASCADE,
+      INDEX idx_vendor_id (vendor_id),
+      INDEX idx_status (status)
+    )
+  `);
+  console.log("✅ vendor_payments table created");
+} catch (err) {
+  console.log("ℹ️ vendor_payments:", err.message);
+}
+
+
+// 1. HERO BANNERS 
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS hero_banners (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      category VARCHAR(100) NOT NULL,
+      badge VARCHAR(255),
+      title VARCHAR(255) NOT NULL,
+      highlight VARCHAR(255),
+      subtitle TEXT,
+      image VARCHAR(500) NOT NULL,
+      cta_primary VARCHAR(100),
+      cta_secondary VARCHAR(100),
+      cta_primary_link VARCHAR(500),
+      cta_secondary_link VARCHAR(500),
+      display_order INT DEFAULT 0,
+      is_active TINYINT(1) DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      INDEX idx_hero_category (category),
+      INDEX idx_hero_active (is_active)
+    )
+  `);
+  console.log("✅ hero_banners table created");
+} catch (err) {
+  console.log("ℹ️ hero_banners:", err.message);
+}
+
+// 2. SITE SETTINGS
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS site_settings (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      setting_key VARCHAR(100) UNIQUE NOT NULL,
+      setting_value TEXT,
+      setting_type VARCHAR(50) DEFAULT 'text',
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )
+  `);
+  console.log("✅ site_settings table created");
+
+  const defaultSettings = [
+    ['site_name', 'Pacific'],
+    ['site_tagline', 'Home Services At Your Doorstep'],
+    ['phone_number', '09638-787878'],
+    ['whatsapp_number', '8809638787878'],
+    ['email', 'support@pacific.com'],
+    ['address', 'Dhaka, Bangladesh'],
+    ['facebook_url', ''],
+    ['youtube_url', ''],
+    ['instagram_url', ''],
+    ['service_cities', 'Dhaka, Chittagong, Sylhet'],
+    ['working_hours', '24/7 Service Available'],
+    ['footer_text', '© 2024 Pacific. All rights reserved.'],
+  ];
+
+  for (const [key, value] of defaultSettings) {
+    await db.query(
+      `INSERT IGNORE INTO site_settings (setting_key, setting_value) VALUES (?, ?)`,
+      [key, value]
+    );
+  }
+  console.log("✅ Default site settings inserted");
+} catch (err) {
+  console.log("ℹ️ site_settings:", err.message);
+}
+
+// 3. WARRANTY POLICIES
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS warranty_policies (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      category VARCHAR(100) NOT NULL,
+      icon VARCHAR(100) DEFAULT 'FaShieldAlt',
+      title VARCHAR(255) NOT NULL,
+      description TEXT,
+      display_order INT DEFAULT 0,
+      is_active TINYINT(1) DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_warranty_category (category)
+    )
+  `);
+  console.log("✅ warranty_policies table created");
+} catch (err) {
+  console.log("ℹ️ warranty_policies:", err.message);
+}
+
+// 4. FAQs
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS faqs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      category VARCHAR(100) NOT NULL,
+      question TEXT NOT NULL,
+      answer TEXT NOT NULL,
+      display_order INT DEFAULT 0,
+      is_active TINYINT(1) DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_faq_category (category)
+    )
+  `);
+  console.log("✅ faqs table created");
+} catch (err) {
+  console.log("ℹ️ faqs:", err.message);
+}
+
+// 5. COMMON PROBLEMS
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS common_problems (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      category VARCHAR(100) NOT NULL,
+      problem_text VARCHAR(500) NOT NULL,
+      display_order INT DEFAULT 0,
+      is_active TINYINT(1) DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_problem_category (category)
+    )
+  `);
+  console.log("✅ common_problems table created");
+} catch (err) {
+  console.log("ℹ️ common_problems:", err.message);
+}
+
     console.log("🎉 Database initialization completed successfully!");
 
   } catch (error) {
@@ -1202,6 +1397,141 @@ const sendOtpEmail = async (email, otp, name) => {
 // ============================================================
 // API ENDPOINTS
 // ============================================================
+// ============================================================
+// 🎯 HERO BANNERS API
+// ============================================================
+
+// GET — 
+app.get("/api/hero/:category", async (req, res) => {
+  const { category } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM hero_banners 
+       WHERE category = ? AND is_active = 1 
+       ORDER BY display_order ASC, id DESC`,
+      [category]
+    );
+
+    res.json({
+      success: true,
+      banners: rows.map((b) => ({
+        id: b.id,
+        badge: b.badge,
+        title: b.title,
+        highlight: b.highlight,
+        subtitle: b.subtitle,
+        image: b.image,
+        ctaPrimary: b.cta_primary,
+        ctaSecondary: b.cta_secondary,
+        ctaPrimaryLink: b.cta_primary_link,
+        ctaSecondaryLink: b.cta_secondary_link,
+      })),
+    });
+  } catch (error) {
+    console.error("Hero fetch error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch hero" });
+  }
+});
+
+// POST — Admin: hero add
+app.post("/api/admin/hero", authenticateAdmin, async (req, res) => {
+  const {
+    category,
+    badge,
+    title,
+    highlight,
+    subtitle,
+    image,
+    ctaPrimary,
+    ctaSecondary,
+    ctaPrimaryLink,
+    ctaSecondaryLink,
+    displayOrder = 0,
+  } = req.body;
+
+  if (!category || !title || !image) {
+    return res.status(400).json({
+      success: false,
+      message: "Category, title, and image are required",
+    });
+  }
+
+  try {
+    const [result] = await db.query(
+      `INSERT INTO hero_banners 
+       (category, badge, title, highlight, subtitle, image, 
+        cta_primary, cta_secondary, cta_primary_link, cta_secondary_link, display_order) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        category,
+        badge,
+        title,
+        highlight,
+        subtitle,
+        image,
+        ctaPrimary,
+        ctaSecondary,
+        ctaPrimaryLink,
+        ctaSecondaryLink,
+        displayOrder,
+      ]
+    );
+
+    res.json({ success: true, id: result.insertId });
+  } catch (error) {
+    console.error("Hero insert error:", error);
+    res.status(500).json({ success: false, message: "Failed to add hero" });
+  }
+});
+
+// PUT — Admin: hero update
+app.put("/api/admin/hero/:id", authenticateAdmin, async (req, res) => {
+  const { id } = req.params;
+  const {
+    badge, title, highlight, subtitle, image,
+    ctaPrimary, ctaSecondary, ctaPrimaryLink, ctaSecondaryLink,
+    displayOrder, isActive,
+  } = req.body;
+
+  try {
+    await db.query(
+      `UPDATE hero_banners SET 
+        badge = ?, title = ?, highlight = ?, subtitle = ?, image = ?,
+        cta_primary = ?, cta_secondary = ?, 
+        cta_primary_link = ?, cta_secondary_link = ?,
+        display_order = ?, is_active = ?
+       WHERE id = ?`,
+      [
+        badge, title, highlight, subtitle, image,
+        ctaPrimary, ctaSecondary, ctaPrimaryLink, ctaSecondaryLink,
+        displayOrder, isActive, id,
+      ]
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Hero update error:", error);
+    res.status(500).json({ success: false, message: "Failed to update hero" });
+  }
+});
+
+// DELETE — Admin: hero remove
+app.delete("/api/admin/hero/:id", authenticateAdmin, async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query("DELETE FROM hero_banners WHERE id = ?", [id]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Hero delete error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete" });
+  }
+});
+
+// ============================================================
+// 🎯 SERVICES API (Category-based)
+// ============================================================
+
 
 // ---------- VENDOR ORDER ASSIGNMENT ----------
 // ============================================================
@@ -6673,6 +7003,396 @@ app.put('/api/admin/payment-methods/:id', verifyToken(['admin', 'superadmin']), 
 });
 
 // ============================================================
+// 🎯 ADMIN: GET ALL PAYMENT METHODS (with all fields)
+// ============================================================
+app.get("/api/admin/payment-methods", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const [methods] = await db.query(
+      "SELECT * FROM payment_methods ORDER BY display_order ASC, id ASC"
+    );
+    res.json({ success: true, methods });
+  } catch (error) {
+    console.error("Payment methods fetch error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch" });
+  }
+});
+
+// ============================================================
+// 🎯 ADMIN: CREATE NEW PAYMENT METHOD
+// ============================================================
+app.post("/api/admin/payment-methods", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const {
+    method_name, display_name, account_number, account_name,
+    bank_name, branch, instructions, icon, display_order = 0,
+  } = req.body;
+
+  if (!method_name || !display_name) {
+    return res.status(400).json({
+      success: false,
+      message: "Method name and display name required",
+    });
+  }
+
+  try {
+    const [result] = await db.query(
+      `INSERT INTO payment_methods 
+       (method_name, display_name, account_number, account_name, 
+        bank_name, branch, instructions, icon, display_order) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        method_name, display_name, account_number || null, account_name || null,
+        bank_name || null, branch || null, instructions || null,
+        icon || null, display_order,
+      ]
+    );
+    res.json({ success: true, id: result.insertId, message: "Payment method added" });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({ success: false, message: "Method name already exists" });
+    }
+    console.error("Add error:", error);
+    res.status(500).json({ success: false, message: "Failed to add" });
+  }
+});
+
+// ============================================================
+// 🎯 ADMIN: TOGGLE ACTIVE STATUS
+// ============================================================
+app.patch("/api/admin/payment-methods/:id/toggle", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    await db.query(
+      "UPDATE payment_methods SET is_active = NOT is_active, updated_at = NOW() WHERE id = ?",
+      [req.params.id]
+    );
+    res.json({ success: true, message: "Status toggled" });
+  } catch (error) {
+    console.error("Toggle error:", error);
+    res.status(500).json({ success: false, message: "Failed to toggle" });
+  }
+});
+
+// ============================================================
+// 🎯 ADMIN: DELETE PAYMENT METHOD
+// ============================================================
+app.delete("/api/admin/payment-methods/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    await db.query("DELETE FROM payment_methods WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Payment method deleted" });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ success: false, message: "Failed to delete" });
+  }
+});
+
+console.log("✅ Payment Methods admin routes registered");
+
+
+// ============================================================
+// 🎯 ADMIN: GET HERO LIST (all with filter)
+// ============================================================
+app.get("/api/admin/hero-list", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category } = req.query;
+  try {
+    let query = "SELECT * FROM hero_banners";
+    const params = [];
+    if (category) {
+      query += " WHERE category = ?";
+      params.push(category);
+    }
+    query += " ORDER BY display_order ASC, id DESC";
+    const [rows] = await db.query(query, params);
+    res.json({
+      success: true,
+      banners: rows.map((b) => ({
+        id: b.id, category: b.category, badge: b.badge, title: b.title,
+        highlight: b.highlight, subtitle: b.subtitle, image: b.image,
+        ctaPrimary: b.cta_primary, ctaSecondary: b.cta_secondary,
+        ctaPrimaryLink: b.cta_primary_link, ctaSecondaryLink: b.cta_secondary_link,
+        displayOrder: b.display_order, isActive: b.is_active,
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+// ============================================================
+// 🎯 SITE SETTINGS API
+// ============================================================
+app.get("/api/site-settings", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM site_settings");
+    const settings = {};
+    rows.forEach((r) => { settings[r.setting_key] = r.setting_value; });
+    res.json({ success: true, settings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.get("/api/admin/site-settings", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM site_settings ORDER BY id ASC");
+    res.json({ success: true, settings: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.put("/api/admin/site-settings", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { settings } = req.body;
+  if (!settings || typeof settings !== "object") {
+    return res.status(400).json({ success: false, message: "Settings object required" });
+  }
+  try {
+    for (const [key, value] of Object.entries(settings)) {
+      await db.query(
+        `INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) 
+         ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)`,
+        [key, value]
+      );
+    }
+    res.json({ success: true, message: "Settings updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+// ============================================================
+// 🎯 WARRANTY POLICIES API
+// ============================================================
+app.get("/api/warranty/:category", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM warranty_policies WHERE category = ? AND is_active = 1 ORDER BY display_order ASC`,
+      [req.params.category]
+    );
+    res.json({ success: true, policies: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.get("/api/admin/warranty", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category } = req.query;
+  try {
+    let query = "SELECT * FROM warranty_policies";
+    const params = [];
+    if (category) { query += " WHERE category = ?"; params.push(category); }
+    query += " ORDER BY display_order ASC";
+    const [rows] = await db.query(query, params);
+    res.json({ success: true, policies: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.post("/api/admin/warranty", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category, icon, title, description, displayOrder = 0 } = req.body;
+  if (!category || !title) {
+    return res.status(400).json({ success: false, message: "Category & title required" });
+  }
+  try {
+    const [result] = await db.query(
+      `INSERT INTO warranty_policies (category, icon, title, description, display_order) VALUES (?, ?, ?, ?, ?)`,
+      [category, icon || "FaShieldAlt", title, description, displayOrder]
+    );
+    res.json({ success: true, id: result.insertId, message: "Policy added" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.put("/api/admin/warranty/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category, icon, title, description, displayOrder, isActive } = req.body;
+  try {
+    await db.query(
+      `UPDATE warranty_policies SET category=?, icon=?, title=?, description=?, display_order=?, is_active=? WHERE id=?`,
+      [category, icon, title, description, displayOrder, isActive, req.params.id]
+    );
+    res.json({ success: true, message: "Policy updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.delete("/api/admin/warranty/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    await db.query("DELETE FROM warranty_policies WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Policy deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+// ============================================================
+// 🎯 FAQ API
+// ============================================================
+app.get("/api/faqs/:category", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM faqs WHERE category = ? AND is_active = 1 ORDER BY display_order ASC`,
+      [req.params.category]
+    );
+    res.json({ success: true, faqs: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.get("/api/admin/faqs", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category } = req.query;
+  try {
+    let query = "SELECT * FROM faqs";
+    const params = [];
+    if (category) { query += " WHERE category = ?"; params.push(category); }
+    query += " ORDER BY display_order ASC";
+    const [rows] = await db.query(query, params);
+    res.json({ success: true, faqs: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.post("/api/admin/faqs", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category, question, answer, displayOrder = 0 } = req.body;
+  if (!category || !question || !answer) {
+    return res.status(400).json({ success: false, message: "All fields required" });
+  }
+  try {
+    const [result] = await db.query(
+      `INSERT INTO faqs (category, question, answer, display_order) VALUES (?, ?, ?, ?)`,
+      [category, question, answer, displayOrder]
+    );
+    res.json({ success: true, id: result.insertId, message: "FAQ added" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.put("/api/admin/faqs/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category, question, answer, displayOrder, isActive } = req.body;
+  try {
+    await db.query(
+      `UPDATE faqs SET category=?, question=?, answer=?, display_order=?, is_active=? WHERE id=?`,
+      [category, question, answer, displayOrder, isActive, req.params.id]
+    );
+    res.json({ success: true, message: "FAQ updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.delete("/api/admin/faqs/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    await db.query("DELETE FROM faqs WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "FAQ deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+// ============================================================
+// 🎯 COMMON PROBLEMS API
+// ============================================================
+app.get("/api/problems/:category", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM common_problems WHERE category = ? AND is_active = 1 ORDER BY display_order ASC`,
+      [req.params.category]
+    );
+    res.json({ success: true, problems: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.get("/api/admin/problems", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category } = req.query;
+  try {
+    let query = "SELECT * FROM common_problems";
+    const params = [];
+    if (category) { query += " WHERE category = ?"; params.push(category); }
+    query += " ORDER BY display_order ASC";
+    const [rows] = await db.query(query, params);
+    res.json({ success: true, problems: rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.post("/api/admin/problems", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category, problemText, displayOrder = 0 } = req.body;
+  if (!category || !problemText) {
+    return res.status(400).json({ success: false, message: "All fields required" });
+  }
+  try {
+    const [result] = await db.query(
+      `INSERT INTO common_problems (category, problem_text, display_order) VALUES (?, ?, ?)`,
+      [category, problemText, displayOrder]
+    );
+    res.json({ success: true, id: result.insertId, message: "Problem added" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.put("/api/admin/problems/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  const { category, problemText, displayOrder, isActive } = req.body;
+  try {
+    await db.query(
+      `UPDATE common_problems SET category=?, problem_text=?, display_order=?, is_active=? WHERE id=?`,
+      [category, problemText, displayOrder, isActive, req.params.id]
+    );
+    res.json({ success: true, message: "Updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+app.delete("/api/admin/problems/:id", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    await db.query("DELETE FROM common_problems WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+// ============================================================
+// 🎯 ADMIN SETTINGS STATS
+// ============================================================
+app.get("/api/admin/settings-stats", verifyToken(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const [[heroes]] = await db.query("SELECT COUNT(*) as count FROM hero_banners");
+    const [[services]] = await db.query("SELECT COUNT(*) as count FROM services");
+    const [[warranties]] = await db.query("SELECT COUNT(*) as count FROM warranty_policies");
+    const [[faqs]] = await db.query("SELECT COUNT(*) as count FROM faqs");
+    const [[problems]] = await db.query("SELECT COUNT(*) as count FROM common_problems");
+    const [[settings]] = await db.query("SELECT COUNT(*) as count FROM site_settings");
+    const [[payments]] = await db.query("SELECT COUNT(*) as count FROM payment_methods");
+
+    res.json({
+      success: true,
+      stats: {
+        heroes: heroes.count,
+        services: services.count,
+        warranties: warranties.count,
+        faqs: faqs.count,
+        problems: problems.count,
+        settings: settings.count,
+        payments: payments.count,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed" });
+  }
+});
+
+console.log("✅ Admin Settings routes registered");
+
+
+// ============================================================
 // VENDOR PAYMENTS
 // ============================================================
 
@@ -7064,6 +7784,8 @@ app.patch('/api/admin/payments/:id/reject', verifyToken(['admin', 'superadmin'])
 });
 
 console.log('✅ Payment routes registered');
+
+
 
 // ---------- ERROR HANDLING MIDDLEWARE ----------
 app.use((err, req, res, next) => {
