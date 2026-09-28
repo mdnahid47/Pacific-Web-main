@@ -454,7 +454,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
-              if (trailing != null) trailing,
+              ?trailing,
             ],
           ),
           const SizedBox(height: 12),

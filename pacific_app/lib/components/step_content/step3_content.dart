@@ -128,6 +128,7 @@ import '../searchable_dropdown.dart';
 import '../custom_filepicker.dart';
 import '../../models/file_model.dart';
 import '../../services/location_service.dart';
+import '../../config/app_colors.dart';
 
 class Step3Content extends StatefulWidget {
   final String? selectedDivision;
@@ -169,25 +170,24 @@ class _Step3ContentState extends State<Step3Content> {
   @override
   void initState() {
     super.initState();
-    _initializeData();
+    _init();
   }
 
-  Future<void> _initializeData() async {
+  Future<void> _init() async {
     if (!LocationService.isLoaded) {
       await LocationService.loadLocations();
     }
+    if (!mounted) return;
     setState(() => _isLoading = false);
   }
 
-  List<String> _getAvailableServiceThanas() {
+  List<String> _availableThanas() {
     if (widget.selectedDivision == null) {
       return LocationService.getAllThanas();
     }
-
     if (widget.selectedDistrict == null) {
       return LocationService.getThanasByDivision(widget.selectedDivision!);
     }
-
     return LocationService.getThanasByDivisionAndDistrict(
       widget.selectedDivision!,
       widget.selectedDistrict!,
@@ -196,43 +196,32 @@ class _Step3ContentState extends State<Step3Content> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (_isLoading) return const Center(child: CircularProgressIndicator());
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
       child: Column(
         children: [
-          // Service Area Section
           FormCard(
-            icon: Icons.location_city,
+            icon: Icons.map_outlined,
             title: 'Service Areas',
-            description:
-                'Select division, district and thanas where you provide services',
+            description: 'Where do you provide services?',
             children: [
-              _buildLabel('Division'),
+              _label('Division'),
               SearchableDropdown(
                 value: widget.selectedDivision,
                 items: LocationService.getDivisionNames(),
                 hintText: 'Search division...',
-                onChanged: (value) {
-                  widget.onDivisionChanged(value);
+                onChanged: (v) {
+                  widget.onDivisionChanged(v);
                   widget.onDistrictChanged(null);
                   widget.onServiceThanasChanged([]);
                 },
-                enabled: true,
                 showClearButton: true,
-                isMultiSelect: false,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
                 showSelectedChips: true,
               ),
-              const SizedBox(height: 20),
-
-              _buildLabel('District'),
+              const SizedBox(height: 18),
+              _label('District'),
               SearchableDropdown(
                 value: widget.selectedDistrict,
                 items: widget.selectedDivision != null
@@ -242,26 +231,20 @@ class _Step3ContentState extends State<Step3Content> {
                     ? 'Search district...'
                     : 'Select division first',
                 onChanged: widget.selectedDivision != null
-                    ? (value) {
-                        widget.onDistrictChanged(value);
+                    ? (v) {
+                        widget.onDistrictChanged(v);
                         widget.onServiceThanasChanged([]);
                       }
                     : null,
                 enabled: widget.selectedDivision != null,
                 showClearButton: true,
-                isMultiSelect: false,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
                 showSelectedChips: true,
               ),
-              const SizedBox(height: 20),
-
-              _buildLabel('Select Service Thanas'),
+              const SizedBox(height: 18),
+              _label('Service Thanas'),
               SearchableDropdown(
                 selectedValues: widget.selectedServiceThanas,
-                items: _getAvailableServiceThanas(),
+                items: _availableThanas(),
                 hintText: widget.selectedDivision != null
                     ? 'Search and select thanas...'
                     : 'Select division first',
@@ -270,53 +253,56 @@ class _Step3ContentState extends State<Step3Content> {
                 showClearButton: true,
                 isMultiSelect: true,
                 showSelectedChips: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
               ),
-              const SizedBox(height: 8),
-
-              if (widget.selectedServiceThanas.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Selected: ${widget.selectedServiceThanas.length} thana(s)',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).primaryColor,
+              Offstage(
+                offstage: widget.selectedServiceThanas.isEmpty,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primarySoft,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle_outline,
+                          size: 16,
+                          color: AppColors.olympic,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${widget.selectedServiceThanas.length} thana(s) selected',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.olympic,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+              ),
             ],
           ),
-
           const SizedBox(height: 16),
-
-          // Documents Section
           FormCard(
-            icon: Icons.attach_file,
+            icon: Icons.attach_file_rounded,
             title: 'Documents',
-            description: 'Upload required documents',
+            description: 'PDF preferred',
             children: [
-              Text(
-                'Please upload the following documents (PDF format preferred)',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 16),
-
-              // CV/Resume Upload
               CustomFilePicker(
-                label: 'CV/Resume',
+                label: 'CV / Resume',
                 file: widget.cvFile,
                 onPick: widget.onPickCv,
                 onRemove: widget.onRemoveCv,
               ),
-
-              const SizedBox(height: 16),
-
-              // Trade License Upload
+              const SizedBox(height: 14),
               CustomFilePicker(
                 label: 'Trade License',
                 file: widget.tradeLicenseFile,
@@ -330,17 +316,15 @@ class _Step3ContentState extends State<Step3Content> {
     );
   }
 
-  Widget _buildLabel(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: Colors.grey[700],
+  Widget _label(String text) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 13.5,
+            fontWeight: FontWeight.w600,
+            color: AppColors.text,
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

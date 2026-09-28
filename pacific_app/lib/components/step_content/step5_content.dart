@@ -532,15 +532,13 @@
 //   }
 // }
 
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:pacific_app/models/file_model.dart';
 import 'package:pacific_app/services/image_picker_service.dart';
 import '../form_card.dart';
-// Import AppFile
-// Import the service
+import '../../config/app_colors.dart';
 
 class Step5Content extends StatefulWidget {
   final AppFile? selfieImage;
@@ -567,88 +565,68 @@ class Step5Content extends StatefulWidget {
 }
 
 class _Step5ContentState extends State<Step5Content> {
-  Future<void> _pickImage(Function(AppFile?) callback) async {
+  Future<void> _pick(Function(AppFile?) cb) async {
     final image = await ImagePickerService.showImageSourceDialog(context);
-    if (image != null) {
-      callback(image);
-    }
+    if (image != null) cb(image);
   }
 
-  // Helper to display image from AppFile
-  Widget _buildImagePreview(AppFile? image) {
+  Widget _preview(AppFile? image) {
     if (image == null) {
       return Container(
-        width: double.infinity,
-        height: 200,
+        height: 180,
         decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.border,
+            width: 1.4,
+            style: BorderStyle.solid,
+          ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.photo_camera, size: 48, color: Colors.grey[400]),
-            const SizedBox(height: 8),
-            Text(
-              'No image selected',
-              style: TextStyle(color: Colors.grey[500]),
-            ),
-          ],
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add_photo_alternate_outlined,
+                  size: 42, color: AppColors.muted),
+              SizedBox(height: 8),
+              Text(
+                'No image selected',
+                style: TextStyle(
+                  color: AppColors.muted,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    // Check if we're on web (has bytes) or mobile (has path)
+    ImageProvider? provider;
     if (image.isWebFile && image.bytes != null) {
-      // For web - use MemoryImage
-      return Container(
-        width: double.infinity,
-        height: 200,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          image: DecorationImage(
-            image: MemoryImage(Uint8List.fromList(image.bytes!)),
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
+      provider = MemoryImage(Uint8List.fromList(image.bytes!));
     } else if (image.path != null) {
-      // For mobile/desktop - use FileImage
       final file = File(image.path!);
-      if (file.existsSync()) {
-        return Container(
-          width: double.infinity,
-          height: 200,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(image: FileImage(file), fit: BoxFit.cover),
-          ),
-        );
-      }
+      if (file.existsSync()) provider = FileImage(file);
     }
 
-    // Fallback if image can't be displayed
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.image, size: 48, color: Colors.grey[400]),
-          const SizedBox(height: 8),
-          Text('Image loaded', style: TextStyle(color: Colors.grey[500])),
-          const SizedBox(height: 4),
-          Text(
-            '${(image.size / 1024).toStringAsFixed(1)} KB',
-            style: TextStyle(color: Colors.grey[500], fontSize: 12),
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        height: 180,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          image: provider != null
+              ? DecorationImage(image: provider, fit: BoxFit.cover)
+              : null,
+        ),
+        child: provider == null
+            ? const Center(
+                child: Icon(Icons.image, size: 42, color: AppColors.muted),
+              )
+            : null,
       ),
     );
   }
@@ -656,109 +634,77 @@ class _Step5ContentState extends State<Step5Content> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+      child: FormCard(
+        icon: Icons.verified_user_outlined,
+        title: 'KYC Verification',
+        description: 'Clear images with good lighting',
         children: [
-          FormCard(
-            icon: Icons.verified_user,
-            title: 'KYC Verification',
-            description: 'Please provide valid identification documents',
-            children: [
-              Text(
-                'Please capture clear images for verification. You can either take a photo or upload from gallery.',
-                style: TextStyle(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
+          _imageBlock(
+            icon: Icons.face_outlined,
+            title: 'Selfie',
+            description: 'Take a clear selfie',
+            image: widget.selfieImage,
+            onPick: () => _pick(widget.onSelfieChanged),
+            onRemove: () => widget.onSelfieChanged(null),
+          ),
+          const Divider(height: 32, color: AppColors.border),
+          _imageBlock(
+            icon: Icons.credit_card_outlined,
+            title: 'NID Front Side',
+            description: 'Front of your NID card',
+            image: widget.nidFrontImage,
+            onPick: () => _pick(widget.onNidFrontChanged),
+            onRemove: () => widget.onNidFrontChanged(null),
+          ),
+          const Divider(height: 32, color: AppColors.border),
+          _imageBlock(
+            icon: Icons.credit_card_outlined,
+            title: 'NID Back Side',
+            description: 'Back of your NID card',
+            image: widget.nidBackImage,
+            onPick: () => _pick(widget.onNidBackChanged),
+            onRemove: () => widget.onNidBackChanged(null),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppColors.primarySoft,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppColors.olympic.withValues(alpha: 0.15),
               ),
-              const SizedBox(height: 24),
-
-              // Selfie Image Section
-              _buildImageSection(
-                context,
-                icon: Icons.face,
-                title: 'Selfie Image',
-                description: 'Take a clear selfie with good lighting',
-                image: widget.selfieImage,
-                onChange: widget.onSelfieChanged,
-                onPick: () => _pickImage(widget.onSelfieChanged),
-                onRemove: () => widget.onSelfieChanged(null),
-              ),
-
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 24),
-
-              // NID Front Image Section
-              _buildImageSection(
-                context,
-                icon: Icons.credit_card,
-                title: 'NID Front Side',
-                description: 'Capture the front side of your NID card',
-                image: widget.nidFrontImage,
-                onChange: widget.onNidFrontChanged,
-                onPick: () => _pickImage(widget.onNidFrontChanged),
-                onRemove: () => widget.onNidFrontChanged(null),
-              ),
-
-              const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 24),
-
-              // NID Back Image Section
-              _buildImageSection(
-                context,
-                icon: Icons.credit_card,
-                title: 'NID Back Side',
-                description: 'Capture the back side of your NID card',
-                image: widget.nidBackImage,
-                onChange: widget.onNidBackChanged,
-                onPick: () => _pickImage(widget.onNidBackChanged),
-                onRemove: () => widget.onNidBackChanged(null),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Image Requirements
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  '📋 Image Requirements',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.olympic,
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '📋 Image Requirements:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('• High quality and clear images'),
-                    const Text('• Good lighting with no shadows'),
-                    const Text('• All text should be readable'),
-                    const Text('• No glare or reflections'),
-                    const Text('• Image should be in focus'),
-                  ],
-                ),
-              ),
-            ],
+                SizedBox(height: 8),
+                _Bullet('High quality, clear images'),
+                _Bullet('Good lighting, no shadows'),
+                _Bullet('All text should be readable'),
+                _Bullet('No glare or reflections'),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildImageSection(
-    BuildContext context, {
+  Widget _imageBlock({
     required IconData icon,
     required String title,
     required String description,
     required AppFile? image,
-    required Function(AppFile?) onChange,
     required VoidCallback onPick,
     required VoidCallback onRemove,
   }) {
@@ -767,102 +713,109 @@ class _Step5ContentState extends State<Step5Content> {
       children: [
         Row(
           children: [
-            Icon(icon, color: Theme.of(context).primaryColor),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(width: 4),
-            const Text(
-              '*',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: AppColors.primarySoft,
+                borderRadius: BorderRadius.circular(9),
               ),
+              child: Icon(icon, color: AppColors.olympic, size: 17),
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          description,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        const SizedBox(height: 12),
-
-        // Image Preview and Controls
-        if (image != null)
-          Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildImagePreview(image),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton.icon(
-                      onPressed: onPick,
-                      icon: const Icon(Icons.edit),
-                      label: const Text('Change'),
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton.icon(
-                      onPressed: onRemove,
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      label: const Text(
-                        'Remove',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-        if (image == null)
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Take Photo Button
-                  ElevatedButton.icon(
-                    onPressed: onPick,
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Take Photo'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.text,
+                        ),
                       ),
-                    ),
+                      const Text(
+                        ' *',
+                        style: TextStyle(
+                          color: AppColors.error,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
-                  // Choose from Gallery Button
-                  OutlinedButton.icon(
-                    onPressed: onPick,
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text('From Gallery'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 12.5,
+                      color: AppColors.muted,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              TextButton(
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _preview(image),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
                 onPressed: onPick,
-                child: const Text('Or choose another option'),
+                icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                label: Text(image == null ? 'Take Photo' : 'Change'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  side: const BorderSide(color: AppColors.olympic),
+                  foregroundColor: AppColors.olympic,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+            if (image != null) ...[
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: onRemove,
+                icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                tooltip: 'Remove',
               ),
             ],
-          ),
+          ],
+        ),
       ],
+    );
+  }
+}
+
+class _Bullet extends StatelessWidget {
+  final String text;
+  const _Bullet(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          const Icon(Icons.circle, size: 5, color: AppColors.olympic),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AppColors.text,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

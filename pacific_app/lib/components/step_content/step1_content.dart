@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../form_card.dart';
-import '../custom_textfield.dart';
+import '../../screens/registration/widgets/custom_textfield.dart';
 import '../custom_datepicker.dart';
 
 class Step1Content extends StatelessWidget {
@@ -40,24 +40,23 @@ class Step1Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
       child: Column(
         children: [
           FormCard(
-            icon: Icons.person,
+            icon: Icons.person_outline_rounded,
             title: 'Personal Information',
+            description: 'Tell us who you are',
             children: [
               CustomTextField(
                 label: 'Full Name',
                 value: name,
                 onChanged: onNameChanged,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter full name';
-                  }
-                  if (value.length < 3) {
-                    return 'Name must be at least 3 characters';
-                  }
+                hintText: 'e.g. Rahim Uddin',
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Please enter full name';
+                  if (v.length < 3) return 'Name must be at least 3 characters';
                   return null;
                 },
               ),
@@ -66,12 +65,12 @@ class Step1Content extends StatelessWidget {
                 label: 'Email',
                 value: email,
                 onChanged: onEmailChanged,
+                hintText: 'you@example.com',
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter email';
-                  }
-                  if (!value.contains('@') || !value.contains('.')) {
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Please enter email';
+                  if (!v.contains('@') || !v.contains('.')) {
                     return 'Please enter valid email';
                   }
                   return null;
@@ -82,14 +81,12 @@ class Step1Content extends StatelessWidget {
                 label: 'Phone Number',
                 value: phone,
                 onChanged: onPhoneChanged,
+                hintText: '01XXXXXXXXX',
                 keyboardType: TextInputType.phone,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter phone number';
-                  }
-                  if (value.length < 11) {
-                    return 'Please enter valid phone number';
-                  }
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Please enter phone number';
+                  if (v.length < 11) return 'Please enter valid phone number';
                   return null;
                 },
               ),
@@ -98,13 +95,13 @@ class Step1Content extends StatelessWidget {
                 label: 'NID Number',
                 value: nidNumber,
                 onChanged: onNidNumberChanged,
+                hintText: '10–17 digits',
                 keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter NID number';
-                  }
-                  if (value.length < 10 || value.length > 17) {
-                    return 'NID number must be 10-17 digits';
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Please enter NID number';
+                  if (v.length < 10 || v.length > 17) {
+                    return 'NID number must be 10–17 digits';
                   }
                   return null;
                 },
@@ -117,22 +114,21 @@ class Step1Content extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 16),
-
           FormCard(
-            icon: Icons.business,
+            icon: Icons.business_outlined,
             title: 'Business Information',
+            description: 'About your business',
             children: [
               CustomTextField(
                 label: 'Business Name',
                 value: businessName,
                 onChanged: onBusinessNameChanged,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter business name';
-                  }
-                  if (value.length < 3) {
+                hintText: 'e.g. Pacific Home Services',
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Please enter business name';
+                  if (v.length < 3) {
                     return 'Business name must be at least 3 characters';
                   }
                   return null;
@@ -143,6 +139,7 @@ class Step1Content extends StatelessWidget {
                 label: 'Business Description',
                 value: businessDescription,
                 onChanged: onBusinessDescriptionChanged,
+                hintText: 'What services do you offer?',
                 maxLines: 4,
               ),
             ],

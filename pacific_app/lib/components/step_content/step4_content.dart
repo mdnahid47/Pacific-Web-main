@@ -85,9 +85,12 @@
 //   }
 // }
 
+// import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
+
 import '../form_card.dart';
-import '../custom_textfield.dart';
+import '../../screens/registration/widgets/custom_textfield.dart';
+import '../../config/app_colors.dart';
 
 class Step4Content extends StatefulWidget {
   final String password;
@@ -121,160 +124,160 @@ class _Step4ContentState extends State<Step4Content> {
 
   void _validatePassword(String value) {
     setState(() {
-      if (value.length < 6) {
-        _passwordError = 'Password must be at least 6 characters';
-      } else {
-        _passwordError = null;
-      }
-
-      // Also validate confirm password when password changes
-      if (widget.confirmPassword.isNotEmpty &&
-          value != widget.confirmPassword) {
-        _confirmPasswordError = 'Passwords do not match';
-      } else {
-        _confirmPasswordError = null;
-      }
+      _passwordError = value.length < 6
+          ? 'Password must be at least 6 characters'
+          : null;
+      _confirmPasswordError =
+          (widget.confirmPassword.isNotEmpty && value != widget.confirmPassword)
+              ? 'Passwords do not match'
+              : null;
     });
   }
 
-  void _validateConfirmPassword(String value) {
+  void _validateConfirm(String value) {
     setState(() {
-      if (value != widget.password) {
-        _confirmPasswordError = 'Passwords do not match';
-      } else {
-        _confirmPasswordError = null;
-      }
+      _confirmPasswordError =
+          (value != widget.password) ? 'Passwords do not match' : null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final match = widget.password.isNotEmpty &&
+        widget.confirmPassword.isNotEmpty &&
+        widget.password == widget.confirmPassword;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+      child: FormCard(
+        icon: Icons.lock_outline_rounded,
+        title: 'Create Password',
+        description: 'Set a secure password for your account',
         children: [
-          FormCard(
-            icon: Icons.lock,
-            title: 'Create Password',
-            description: 'Set a secure password for your account',
-            children: [
-              CustomTextField(
-                label: 'Password',
-                value: widget.password,
-                onChanged: (value) {
-                  widget.onPasswordChanged(value);
-                  _validatePassword(value);
-                },
-                obscureText: !widget.showPassword,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    widget.showPassword
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                    color: Colors.grey[600],
+          CustomTextField(
+            label: 'Password',
+            value: widget.password,
+            onChanged: (v) {
+              widget.onPasswordChanged(v);
+              _validatePassword(v);
+            },
+            obscureText: !widget.showPassword,
+            hintText: '••••••••',
+            errorText: _passwordError,
+            suffixIcon: IconButton(
+              icon: Icon(
+                widget.showPassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: AppColors.muted,
+                size: 20,
+              ),
+              onPressed: widget.onTogglePassword,
+            ),
+            validator: (v) {
+              if (v == null || v.isEmpty) return 'Please enter password';
+              if (v.length < 6) return 'Password must be at least 6 characters';
+              return null;
+            },
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Password requirements:',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text,
                   ),
-                  onPressed: widget.onTogglePassword,
                 ),
-                errorText: _passwordError,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
+                SizedBox(height: 6),
+                _Requirement(text: 'At least 6 characters'),
+                SizedBox(height: 4),
+                _Requirement(text: 'Make it strong and memorable'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          CustomTextField(
+            label: 'Confirm Password',
+            value: widget.confirmPassword,
+            onChanged: (v) {
+              widget.onConfirmPasswordChanged(v);
+              _validateConfirm(v);
+            },
+            obscureText: !widget.showConfirmPassword,
+            hintText: '••••••••',
+            errorText: _confirmPasswordError,
+            suffixIcon: IconButton(
+              icon: Icon(
+                widget.showConfirmPassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: AppColors.muted,
+                size: 20,
               ),
-              const SizedBox(height: 8),
-
-              // Password requirements
-              Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Password requirements:',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    Text(
-                      '• At least 6 characters',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    Text(
-                      '• Make it strong and memorable',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              CustomTextField(
-                label: 'Confirm Password',
-                value: widget.confirmPassword,
-                onChanged: (value) {
-                  widget.onConfirmPasswordChanged(value);
-                  _validateConfirmPassword(value);
-                },
-                obscureText: !widget.showConfirmPassword,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    widget.showConfirmPassword
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                    color: Colors.grey[600],
+              onPressed: widget.onToggleConfirmPassword,
+            ),
+            validator: (v) {
+              if (v == null || v.isEmpty) return 'Please confirm password';
+              if (v != widget.password) return 'Passwords do not match';
+              return null;
+            },
+          ),
+          Offstage(
+            offstage: !(widget.password.isNotEmpty &&
+                widget.confirmPassword.isNotEmpty),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    match ? Icons.check_circle : Icons.error_outline,
+                    color: match ? AppColors.success : AppColors.error,
+                    size: 16,
                   ),
-                  onPressed: widget.onToggleConfirmPassword,
-                ),
-                errorText: _confirmPasswordError,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm password';
-                  }
-                  if (value != widget.password) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
+                  const SizedBox(width: 6),
+                  Text(
+                    match ? 'Passwords match' : 'Passwords do not match',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: match ? AppColors.success : AppColors.error,
+                    ),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 8),
-
-              // Match indicator
-              if (widget.password.isNotEmpty &&
-                  widget.confirmPassword.isNotEmpty)
-                Row(
-                  children: [
-                    Icon(
-                      widget.password == widget.confirmPassword
-                          ? Icons.check_circle
-                          : Icons.error,
-                      color: widget.password == widget.confirmPassword
-                          ? Colors.green
-                          : Colors.red,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      widget.password == widget.confirmPassword
-                          ? 'Passwords match'
-                          : 'Passwords do not match',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: widget.password == widget.confirmPassword
-                            ? Colors.green
-                            : Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-            ],
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _Requirement extends StatelessWidget {
+  final String text;
+  const _Requirement({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.circle, size: 5, color: AppColors.muted),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(fontSize: 12, color: AppColors.muted),
+        ),
+      ],
     );
   }
 }
