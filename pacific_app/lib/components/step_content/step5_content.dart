@@ -532,11 +532,301 @@
 //   }
 // }
 
+// import 'dart:io';
+// import 'dart:typed_data';
+// import 'package:flutter/material.dart';
+// import 'package:pacific_app/models/file_model.dart';
+// import 'package:pacific_app/services/image_picker_service.dart';
+// import '../form_card.dart';
+// import '../../config/app_colors.dart';
+
+// class Step5Content extends StatefulWidget {
+//   final AppFile? selfieImage;
+//   final AppFile? nidFrontImage;
+//   final AppFile? nidBackImage;
+//   final Function(AppFile?) onSelfieChanged;
+//   final Function(AppFile?) onNidFrontChanged;
+//   final Function(AppFile?) onNidBackChanged;
+//   final bool isImageProcessing;
+
+//   const Step5Content({
+//     super.key,
+//     this.selfieImage,
+//     this.nidFrontImage,
+//     this.nidBackImage,
+//     required this.onSelfieChanged,
+//     required this.onNidFrontChanged,
+//     required this.onNidBackChanged,
+//     this.isImageProcessing = false,
+//   });
+
+//   @override
+//   State<Step5Content> createState() => _Step5ContentState();
+// }
+
+// class _Step5ContentState extends State<Step5Content> {
+//   Future<void> _pick(Function(AppFile?) cb) async {
+//     final image = await ImagePickerService.showImageSourceDialog(context);
+//     if (image != null) cb(image);
+//   }
+
+//   Widget _preview(AppFile? image) {
+//     if (image == null) {
+//       return Container(
+//         height: 180,
+//         decoration: BoxDecoration(
+//           color: AppColors.surface,
+//           borderRadius: BorderRadius.circular(14),
+//           border: Border.all(
+//             color: AppColors.border,
+//             width: 1.4,
+//             style: BorderStyle.solid,
+//           ),
+//         ),
+//         child: const Center(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Icon(Icons.add_photo_alternate_outlined,
+//                   size: 42, color: AppColors.muted),
+//               SizedBox(height: 8),
+//               Text(
+//                 'No image selected',
+//                 style: TextStyle(
+//                   color: AppColors.muted,
+//                   fontWeight: FontWeight.w500,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     }
+
+//     ImageProvider? provider;
+//     if (image.isWebFile && image.bytes != null) {
+//       provider = MemoryImage(Uint8List.fromList(image.bytes!));
+//     } else if (image.path != null) {
+//       final file = File(image.path!);
+//       if (file.existsSync()) provider = FileImage(file);
+//     }
+
+//     return ClipRRect(
+//       borderRadius: BorderRadius.circular(14),
+//       child: Container(
+//         height: 180,
+//         width: double.infinity,
+//         decoration: BoxDecoration(
+//           color: AppColors.surface,
+//           image: provider != null
+//               ? DecorationImage(image: provider, fit: BoxFit.cover)
+//               : null,
+//         ),
+//         child: provider == null
+//             ? const Center(
+//                 child: Icon(Icons.image, size: 42, color: AppColors.muted),
+//               )
+//             : null,
+//       ),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SingleChildScrollView(
+//       padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+//       child: FormCard(
+//         icon: Icons.verified_user_outlined,
+//         title: 'KYC Verification',
+//         description: 'Clear images with good lighting',
+//         children: [
+//           _imageBlock(
+//             icon: Icons.face_outlined,
+//             title: 'Selfie',
+//             description: 'Take a clear selfie',
+//             image: widget.selfieImage,
+//             onPick: () => _pick(widget.onSelfieChanged),
+//             onRemove: () => widget.onSelfieChanged(null),
+//           ),
+//           const Divider(height: 32, color: AppColors.border),
+//           _imageBlock(
+//             icon: Icons.credit_card_outlined,
+//             title: 'NID Front Side',
+//             description: 'Front of your NID card',
+//             image: widget.nidFrontImage,
+//             onPick: () => _pick(widget.onNidFrontChanged),
+//             onRemove: () => widget.onNidFrontChanged(null),
+//           ),
+//           const Divider(height: 32, color: AppColors.border),
+//           _imageBlock(
+//             icon: Icons.credit_card_outlined,
+//             title: 'NID Back Side',
+//             description: 'Back of your NID card',
+//             image: widget.nidBackImage,
+//             onPick: () => _pick(widget.onNidBackChanged),
+//             onRemove: () => widget.onNidBackChanged(null),
+//           ),
+//           const SizedBox(height: 20),
+//           Container(
+//             padding: const EdgeInsets.all(14),
+//             decoration: BoxDecoration(
+//               color: AppColors.primarySoft,
+//               borderRadius: BorderRadius.circular(12),
+//               border: Border.all(
+//                 color: AppColors.olympic.withValues(alpha: 0.15),
+//               ),
+//             ),
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: const [
+//                 Text(
+//                   '📋 Image Requirements',
+//                   style: TextStyle(
+//                     fontSize: 13.5,
+//                     fontWeight: FontWeight.w700,
+//                     color: AppColors.olympic,
+//                   ),
+//                 ),
+//                 SizedBox(height: 8),
+//                 _Bullet('High quality, clear images'),
+//                 _Bullet('Good lighting, no shadows'),
+//                 _Bullet('All text should be readable'),
+//                 _Bullet('No glare or reflections'),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _imageBlock({
+//     required IconData icon,
+//     required String title,
+//     required String description,
+//     required AppFile? image,
+//     required VoidCallback onPick,
+//     required VoidCallback onRemove,
+//   }) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Row(
+//           children: [
+//             Container(
+//               width: 32,
+//               height: 32,
+//               decoration: BoxDecoration(
+//                 color: AppColors.primarySoft,
+//                 borderRadius: BorderRadius.circular(9),
+//               ),
+//               child: Icon(icon, color: AppColors.olympic, size: 17),
+//             ),
+//             const SizedBox(width: 10),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Row(
+//                     children: [
+//                       Text(
+//                         title,
+//                         style: const TextStyle(
+//                           fontSize: 14.5,
+//                           fontWeight: FontWeight.w700,
+//                           color: AppColors.text,
+//                         ),
+//                       ),
+//                       const Text(
+//                         ' *',
+//                         style: TextStyle(
+//                           color: AppColors.error,
+//                           fontWeight: FontWeight.w700,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                   Text(
+//                     description,
+//                     style: const TextStyle(
+//                       fontSize: 12.5,
+//                       color: AppColors.muted,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//         const SizedBox(height: 12),
+//         _preview(image),
+//         const SizedBox(height: 10),
+//         Row(
+//           children: [
+//             Expanded(
+//               child: OutlinedButton.icon(
+//                 onPressed: onPick,
+//                 icon: const Icon(Icons.camera_alt_outlined, size: 18),
+//                 label: Text(image == null ? 'Take Photo' : 'Change'),
+//                 style: OutlinedButton.styleFrom(
+//                   padding: const EdgeInsets.symmetric(vertical: 12),
+//                   side: const BorderSide(color: AppColors.olympic),
+//                   foregroundColor: AppColors.olympic,
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(10),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             if (image != null) ...[
+//               const SizedBox(width: 8),
+//               IconButton(
+//                 onPressed: onRemove,
+//                 icon: const Icon(Icons.delete_outline, color: AppColors.error),
+//                 tooltip: 'Remove',
+//               ),
+//             ],
+//           ],
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+// class _Bullet extends StatelessWidget {
+//   final String text;
+//   const _Bullet(this.text);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 3),
+//       child: Row(
+//         children: [
+//           const Icon(Icons.circle, size: 5, color: AppColors.olympic),
+//           const SizedBox(width: 8),
+//           Expanded(
+//             child: Text(
+//               text,
+//               style: const TextStyle(
+//                 fontSize: 12.5,
+//                 color: AppColors.text,
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:pacific_app/models/file_model.dart';
-import 'package:pacific_app/services/image_picker_service.dart';
 import '../form_card.dart';
 import '../../config/app_colors.dart';
 
@@ -565,9 +855,33 @@ class Step5Content extends StatefulWidget {
 }
 
 class _Step5ContentState extends State<Step5Content> {
+  final ImagePicker _picker = ImagePicker();
+
+  /// Opens the camera directly and returns an [AppFile] (or null if cancelled).
+  Future<AppFile?> _captureFromCamera() async {
+    try {
+      final XFile? picked = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 85,
+        preferredCameraDevice: CameraDevice.rear,
+      );
+      if (picked == null) return null;
+
+      // ✅ Use the model's own factory — handles web + mobile correctly.
+      return await AppFile.fromXFile(picked);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open camera: $e')),
+        );
+      }
+      return null;
+    }
+  }
+
   Future<void> _pick(Function(AppFile?) cb) async {
-    final image = await ImagePickerService.showImageSourceDialog(context);
-    if (image != null) cb(image);
+    final file = await _captureFromCamera();
+    if (file != null && mounted) cb(file);
   }
 
   Widget _preview(AppFile? image) {
