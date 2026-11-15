@@ -107,6 +107,8 @@ const corsOptions = {
       'http://192.168.0.4:60174',
       'http://192.168.0.16:5001',
       'http://192.168.0.4',
+      'http://192.168.0.8:5001', 
+       'http://192.168.0.3:5001', 
       'https://pacific-web.vercel.app',
       'https://pacific-web-main-production.up.railway.app',
       CLIENT_URL
