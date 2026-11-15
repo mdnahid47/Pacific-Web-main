@@ -389,9 +389,6 @@ class _Step3ContentState extends State<Step3Content> {
     setState(() => _isLoading = false);
   }
 
-  /// ✅ FIX #1: Never return ALL thanas when nothing is selected.
-  /// Returning an empty list prevents the dropdown from rendering
-  /// thousands of items and prevents accidental selection.
   List<String> _availableThanas() {
     if (widget.selectedDivision == null) return const [];
     if (widget.selectedDistrict == null) {
@@ -403,22 +400,17 @@ class _Step3ContentState extends State<Step3Content> {
     );
   }
 
-  /// ✅ FIX #2: When division changes, clear district AND thanas,
-  /// and force a fresh list by returning a new List instance.
   void _handleDivisionChanged(String? value) {
     widget.onDivisionChanged(value);
     widget.onDistrictChanged(null);
     widget.onServiceThanasChanged(const []);
   }
 
-  /// ✅ FIX #3: When district changes, clear thanas.
   void _handleDistrictChanged(String? value) {
     widget.onDistrictChanged(value);
     widget.onServiceThanasChanged(const []);
   }
 
-  /// ✅ FIX #4: Always pass a fresh copy up to the parent so the
-  /// dropdown cannot mutate the parent's list in place.
   void _handleThanasChanged(List<String> thanas) {
     widget.onServiceThanasChanged(List<String>.from(thanas));
   }
@@ -428,8 +420,6 @@ class _Step3ContentState extends State<Step3Content> {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
 
     final availableThanas = _availableThanas();
-    // Guard: only keep selections that still exist in the current item list.
-    // This prevents the "chip for a thana that isn't in items" bug.
     final validSelectedThanas = widget.selectedServiceThanas
         .where(availableThanas.contains)
         .toList(growable: false);
@@ -442,11 +432,10 @@ class _Step3ContentState extends State<Step3Content> {
             icon: Icons.map_outlined,
             title: 'Service Areas',
             description: 'Where do you provide services?',
+            // ✅ FormCard-এ clipBehavior: Clip.none দেওয়া হয়েছে যাতে ড্রপডাউন বাইরে বের হতে পারে
             children: [
               _label('Division'),
               SearchableDropdown(
-                // ✅ FIX #5: Key forces full rebuild when division changes,
-                // so stale search text / selected state is cleared.
                 key: ValueKey('division-${widget.selectedDivision ?? 'none'}'),
                 value: widget.selectedDivision,
                 items: LocationService.getDivisionNames(),
@@ -478,28 +467,37 @@ class _Step3ContentState extends State<Step3Content> {
               ),
               const SizedBox(height: 18),
               _label('Service Thanas'),
-              SearchableDropdown(
-                // ✅ FIX #6: Key tied to division+district so the multi-select
-                // resets its internal state when the item list changes.
-                key: ValueKey(
-                  'thanas-${widget.selectedDivision ?? 'none'}-'
-                  '${widget.selectedDistrict ?? 'none'}',
-                ),
-                selectedValues: validSelectedThanas,
-                items: availableThanas,
-                hintText: widget.selectedDivision != null
-                    ? 'Search and select thanas...'
-                    : 'Select division first',
-                onMultiChanged: _handleThanasChanged,
-                enabled: widget.selectedDivision != null,
-                showClearButton: true,
-                isMultiSelect: true,
-                showSelectedChips: true,
+              
+              // ✅ এখানে Stack ব্যবহার করা হয়েছে যাতে ড্রপডাউনটি ওভারল্যাপ করতে পারে
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SearchableDropdown(
+                    key: ValueKey(
+                      'thanas-${widget.selectedDivision ?? 'none'}-'
+                      '${widget.selectedDistrict ?? 'none'}',
+                    ),
+                    selectedValues: validSelectedThanas,
+                    items: availableThanas,
+                    hintText: widget.selectedDivision != null
+                        ? 'Search and select thanas...'
+                        : 'Select division first',
+                    onMultiChanged: _handleThanasChanged,
+                    enabled: widget.selectedDivision != null,
+                    showClearButton: true,
+                    isMultiSelect: true,
+                    showSelectedChips: true,
+                  ),
+                ],
               ),
+              
+              // ✅ সিলেক্টেড ব্যানারটি ড্রপডাউনের নিচে রাখার জন্য কিছুটা মার্জিন দেওয়া হয়েছে
+              const SizedBox(height: 8), 
+              
               Offstage(
                 offstage: validSelectedThanas.isEmpty,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 12),
+                  padding: const EdgeInsets.only(top: 4),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,

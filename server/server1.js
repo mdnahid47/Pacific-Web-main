@@ -804,7 +804,41 @@ try {
 } catch (err) {
   console.log("ℹ️ common_problems:", err.message);
 }
+// ============================================================
+// SUPER ADMINS TABLE
+// ============================================================
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS superadmins (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  console.log("✅ superadmins table checked/created");
+} catch (err) {
+  console.log("ℹ️ superadmins:", err.message);
+}
 
+// ============================================================
+// ADMINS TABLE
+// ============================================================
+try {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS admins (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      verified TINYINT(1) DEFAULT 1,
+      created_by INT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  console.log("✅ admins table checked/created");
+} catch (err) {
+  console.log("ℹ️ admins:", err.message);
+}
     console.log("🎉 Database initialization completed successfully!");
 
   } catch (error) {
