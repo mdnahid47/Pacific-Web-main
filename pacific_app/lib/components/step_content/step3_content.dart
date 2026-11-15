@@ -122,214 +122,6 @@
 // }
 
 // step3_content.dart
-// import 'package:flutter/material.dart';
-// import '../form_card.dart';
-// import '../searchable_dropdown.dart';
-// import '../custom_filepicker.dart';
-// import '../../models/file_model.dart';
-// import '../../services/location_service.dart';
-// import '../../config/app_colors.dart';
-
-// class Step3Content extends StatefulWidget {
-//   final String? selectedDivision;
-//   final String? selectedDistrict;
-//   final List<String> selectedServiceThanas;
-//   final AppFile? cvFile;
-//   final AppFile? tradeLicenseFile;
-//   final ValueChanged<String?> onDivisionChanged;
-//   final ValueChanged<String?> onDistrictChanged;
-//   final ValueChanged<List<String>> onServiceThanasChanged;
-//   final VoidCallback onPickCv;
-//   final VoidCallback onPickTradeLicense;
-//   final VoidCallback? onRemoveCv;
-//   final VoidCallback? onRemoveTradeLicense;
-
-//   const Step3Content({
-//     super.key,
-//     required this.selectedDivision,
-//     required this.selectedDistrict,
-//     required this.selectedServiceThanas,
-//     this.cvFile,
-//     this.tradeLicenseFile,
-//     required this.onDivisionChanged,
-//     required this.onDistrictChanged,
-//     required this.onServiceThanasChanged,
-//     required this.onPickCv,
-//     required this.onPickTradeLicense,
-//     this.onRemoveCv,
-//     this.onRemoveTradeLicense,
-//   });
-
-//   @override
-//   State<Step3Content> createState() => _Step3ContentState();
-// }
-
-// class _Step3ContentState extends State<Step3Content> {
-//   bool _isLoading = true;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _init();
-//   }
-
-//   Future<void> _init() async {
-//     if (!LocationService.isLoaded) {
-//       await LocationService.loadLocations();
-//     }
-//     if (!mounted) return;
-//     setState(() => _isLoading = false);
-//   }
-
-//   List<String> _availableThanas() {
-//     if (widget.selectedDivision == null) {
-//       return LocationService.getAllThanas();
-//     }
-//     if (widget.selectedDistrict == null) {
-//       return LocationService.getThanasByDivision(widget.selectedDivision!);
-//     }
-//     return LocationService.getThanasByDivisionAndDistrict(
-//       widget.selectedDivision!,
-//       widget.selectedDistrict!,
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     if (_isLoading) return const Center(child: CircularProgressIndicator());
-
-//     return SingleChildScrollView(
-//       padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
-//       child: Column(
-//         children: [
-//           FormCard(
-//             icon: Icons.map_outlined,
-//             title: 'Service Areas',
-//             description: 'Where do you provide services?',
-//             children: [
-//               _label('Division'),
-//               SearchableDropdown(
-//                 value: widget.selectedDivision,
-//                 items: LocationService.getDivisionNames(),
-//                 hintText: 'Search division...',
-//                 onChanged: (v) {
-//                   widget.onDivisionChanged(v);
-//                   widget.onDistrictChanged(null);
-//                   widget.onServiceThanasChanged([]);
-//                 },
-//                 showClearButton: true,
-//                 showSelectedChips: true,
-//               ),
-//               const SizedBox(height: 18),
-//               _label('District'),
-//               SearchableDropdown(
-//                 value: widget.selectedDistrict,
-//                 items: widget.selectedDivision != null
-//                     ? LocationService.getDistrictNames(widget.selectedDivision!)
-//                     : [],
-//                 hintText: widget.selectedDivision != null
-//                     ? 'Search district...'
-//                     : 'Select division first',
-//                 onChanged: widget.selectedDivision != null
-//                     ? (v) {
-//                         widget.onDistrictChanged(v);
-//                         widget.onServiceThanasChanged([]);
-//                       }
-//                     : null,
-//                 enabled: widget.selectedDivision != null,
-//                 showClearButton: true,
-//                 showSelectedChips: true,
-//               ),
-//               const SizedBox(height: 18),
-//               _label('Service Thanas'),
-//               SearchableDropdown(
-//                 selectedValues: widget.selectedServiceThanas,
-//                 items: _availableThanas(),
-//                 hintText: widget.selectedDivision != null
-//                     ? 'Search and select thanas...'
-//                     : 'Select division first',
-//                 onMultiChanged: widget.onServiceThanasChanged,
-//                 enabled: widget.selectedDivision != null,
-//                 showClearButton: true,
-//                 isMultiSelect: true,
-//                 showSelectedChips: true,
-//               ),
-//               Offstage(
-//                 offstage: widget.selectedServiceThanas.isEmpty,
-//                 child: Padding(
-//                   padding: const EdgeInsets.only(top: 12),
-//                   child: Container(
-//                     padding: const EdgeInsets.symmetric(
-//                       horizontal: 12,
-//                       vertical: 10,
-//                     ),
-//                     decoration: BoxDecoration(
-//                       color: AppColors.primarySoft,
-//                       borderRadius: BorderRadius.circular(10),
-//                     ),
-//                     child: Row(
-//                       children: [
-//                         const Icon(
-//                           Icons.check_circle_outline,
-//                           size: 16,
-//                           color: AppColors.olympic,
-//                         ),
-//                         const SizedBox(width: 8),
-//                         Text(
-//                           '${widget.selectedServiceThanas.length} thana(s) selected',
-//                           style: const TextStyle(
-//                             fontSize: 13,
-//                             fontWeight: FontWeight.w600,
-//                             color: AppColors.olympic,
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(height: 16),
-//           FormCard(
-//             icon: Icons.attach_file_rounded,
-//             title: 'Documents',
-//             description: 'PDF preferred',
-//             children: [
-//               CustomFilePicker(
-//                 label: 'CV / Resume',
-//                 file: widget.cvFile,
-//                 onPick: widget.onPickCv,
-//                 onRemove: widget.onRemoveCv,
-//               ),
-//               const SizedBox(height: 14),
-//               CustomFilePicker(
-//                 label: 'Trade License',
-//                 file: widget.tradeLicenseFile,
-//                 onPick: widget.onPickTradeLicense,
-//                 onRemove: widget.onRemoveTradeLicense,
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _label(String text) => Padding(
-//         padding: const EdgeInsets.only(bottom: 8),
-//         child: Text(
-//           text,
-//           style: const TextStyle(
-//             fontSize: 13.5,
-//             fontWeight: FontWeight.w600,
-//             color: AppColors.text,
-//           ),
-//         ),
-//       );
-// }
-
-// step3_content.dart
 import 'package:flutter/material.dart';
 import '../form_card.dart';
 import '../searchable_dropdown.dart';
@@ -390,7 +182,9 @@ class _Step3ContentState extends State<Step3Content> {
   }
 
   List<String> _availableThanas() {
-    if (widget.selectedDivision == null) return const [];
+    if (widget.selectedDivision == null) {
+      return LocationService.getAllThanas();
+    }
     if (widget.selectedDistrict == null) {
       return LocationService.getThanasByDivision(widget.selectedDivision!);
     }
@@ -400,29 +194,9 @@ class _Step3ContentState extends State<Step3Content> {
     );
   }
 
-  void _handleDivisionChanged(String? value) {
-    widget.onDivisionChanged(value);
-    widget.onDistrictChanged(null);
-    widget.onServiceThanasChanged(const []);
-  }
-
-  void _handleDistrictChanged(String? value) {
-    widget.onDistrictChanged(value);
-    widget.onServiceThanasChanged(const []);
-  }
-
-  void _handleThanasChanged(List<String> thanas) {
-    widget.onServiceThanasChanged(List<String>.from(thanas));
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
-
-    final availableThanas = _availableThanas();
-    final validSelectedThanas = widget.selectedServiceThanas
-        .where(availableThanas.contains)
-        .toList(growable: false);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
@@ -432,34 +206,35 @@ class _Step3ContentState extends State<Step3Content> {
             icon: Icons.map_outlined,
             title: 'Service Areas',
             description: 'Where do you provide services?',
-            // ✅ FormCard-এ clipBehavior: Clip.none দেওয়া হয়েছে যাতে ড্রপডাউন বাইরে বের হতে পারে
             children: [
               _label('Division'),
               SearchableDropdown(
-                key: ValueKey('division-${widget.selectedDivision ?? 'none'}'),
                 value: widget.selectedDivision,
                 items: LocationService.getDivisionNames(),
                 hintText: 'Search division...',
-                onChanged: _handleDivisionChanged,
+                onChanged: (v) {
+                  widget.onDivisionChanged(v);
+                  widget.onDistrictChanged(null);
+                  widget.onServiceThanasChanged([]);
+                },
                 showClearButton: true,
                 showSelectedChips: true,
               ),
               const SizedBox(height: 18),
               _label('District'),
               SearchableDropdown(
-                key: ValueKey(
-                  'district-${widget.selectedDivision ?? 'none'}-'
-                  '${widget.selectedDistrict ?? 'none'}',
-                ),
                 value: widget.selectedDistrict,
                 items: widget.selectedDivision != null
                     ? LocationService.getDistrictNames(widget.selectedDivision!)
-                    : const [],
+                    : [],
                 hintText: widget.selectedDivision != null
                     ? 'Search district...'
                     : 'Select division first',
                 onChanged: widget.selectedDivision != null
-                    ? _handleDistrictChanged
+                    ? (v) {
+                        widget.onDistrictChanged(v);
+                        widget.onServiceThanasChanged([]);
+                      }
                     : null,
                 enabled: widget.selectedDivision != null,
                 showClearButton: true,
@@ -467,37 +242,22 @@ class _Step3ContentState extends State<Step3Content> {
               ),
               const SizedBox(height: 18),
               _label('Service Thanas'),
-              
-              // ✅ এখানে Stack ব্যবহার করা হয়েছে যাতে ড্রপডাউনটি ওভারল্যাপ করতে পারে
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SearchableDropdown(
-                    key: ValueKey(
-                      'thanas-${widget.selectedDivision ?? 'none'}-'
-                      '${widget.selectedDistrict ?? 'none'}',
-                    ),
-                    selectedValues: validSelectedThanas,
-                    items: availableThanas,
-                    hintText: widget.selectedDivision != null
-                        ? 'Search and select thanas...'
-                        : 'Select division first',
-                    onMultiChanged: _handleThanasChanged,
-                    enabled: widget.selectedDivision != null,
-                    showClearButton: true,
-                    isMultiSelect: true,
-                    showSelectedChips: true,
-                  ),
-                ],
+              SearchableDropdown(
+                selectedValues: widget.selectedServiceThanas,
+                items: _availableThanas(),
+                hintText: widget.selectedDivision != null
+                    ? 'Search and select thanas...'
+                    : 'Select division first',
+                onMultiChanged: widget.onServiceThanasChanged,
+                enabled: widget.selectedDivision != null,
+                showClearButton: true,
+                isMultiSelect: true,
+                showSelectedChips: true,
               ),
-              
-              // ✅ সিলেক্টেড ব্যানারটি ড্রপডাউনের নিচে রাখার জন্য কিছুটা মার্জিন দেওয়া হয়েছে
-              const SizedBox(height: 8), 
-              
               Offstage(
-                offstage: validSelectedThanas.isEmpty,
+                offstage: widget.selectedServiceThanas.isEmpty,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.only(top: 12),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -516,7 +276,7 @@ class _Step3ContentState extends State<Step3Content> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '${validSelectedThanas.length} thana(s) selected',
+                          '${widget.selectedServiceThanas.length} thana(s) selected',
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -568,3 +328,243 @@ class _Step3ContentState extends State<Step3Content> {
         ),
       );
 }
+
+// // step3_content.dart
+// import 'package:flutter/material.dart';
+// import '../form_card.dart';
+// import '../searchable_dropdown.dart';
+// import '../custom_filepicker.dart';
+// import '../../models/file_model.dart';
+// import '../../services/location_service.dart';
+// import '../../config/app_colors.dart';
+
+// class Step3Content extends StatefulWidget {
+//   final String? selectedDivision;
+//   final String? selectedDistrict;
+//   final List<String> selectedServiceThanas;
+//   final AppFile? cvFile;
+//   final AppFile? tradeLicenseFile;
+//   final ValueChanged<String?> onDivisionChanged;
+//   final ValueChanged<String?> onDistrictChanged;
+//   final ValueChanged<List<String>> onServiceThanasChanged;
+//   final VoidCallback onPickCv;
+//   final VoidCallback onPickTradeLicense;
+//   final VoidCallback? onRemoveCv;
+//   final VoidCallback? onRemoveTradeLicense;
+
+//   const Step3Content({
+//     super.key,
+//     required this.selectedDivision,
+//     required this.selectedDistrict,
+//     required this.selectedServiceThanas,
+//     this.cvFile,
+//     this.tradeLicenseFile,
+//     required this.onDivisionChanged,
+//     required this.onDistrictChanged,
+//     required this.onServiceThanasChanged,
+//     required this.onPickCv,
+//     required this.onPickTradeLicense,
+//     this.onRemoveCv,
+//     this.onRemoveTradeLicense,
+//   });
+
+//   @override
+//   State<Step3Content> createState() => _Step3ContentState();
+// }
+
+// class _Step3ContentState extends State<Step3Content> {
+//   bool _isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _init();
+//   }
+
+//   Future<void> _init() async {
+//     if (!LocationService.isLoaded) {
+//       await LocationService.loadLocations();
+//     }
+//     if (!mounted) return;
+//     setState(() => _isLoading = false);
+//   }
+
+//   List<String> _availableThanas() {
+//     if (widget.selectedDivision == null) return const [];
+//     if (widget.selectedDistrict == null) {
+//       return LocationService.getThanasByDivision(widget.selectedDivision!);
+//     }
+//     return LocationService.getThanasByDivisionAndDistrict(
+//       widget.selectedDivision!,
+//       widget.selectedDistrict!,
+//     );
+//   }
+
+//   void _handleDivisionChanged(String? value) {
+//     widget.onDivisionChanged(value);
+//     widget.onDistrictChanged(null);
+//     widget.onServiceThanasChanged(const []);
+//   }
+
+//   void _handleDistrictChanged(String? value) {
+//     widget.onDistrictChanged(value);
+//     widget.onServiceThanasChanged(const []);
+//   }
+
+//   void _handleThanasChanged(List<String> thanas) {
+//     widget.onServiceThanasChanged(List<String>.from(thanas));
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     if (_isLoading) return const Center(child: CircularProgressIndicator());
+
+//     final availableThanas = _availableThanas();
+//     final validSelectedThanas = widget.selectedServiceThanas
+//         .where(availableThanas.contains)
+//         .toList(growable: false);
+
+//     return SingleChildScrollView(
+//       padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+//       child: Column(
+//         children: [
+//           FormCard(
+//             icon: Icons.map_outlined,
+//             title: 'Service Areas',
+//             description: 'Where do you provide services?',
+//             // ✅ FormCard-এ clipBehavior: Clip.none দেওয়া হয়েছে যাতে ড্রপডাউন বাইরে বের হতে পারে
+//             children: [
+//               _label('Division'),
+//               SearchableDropdown(
+//                 key: ValueKey('division-${widget.selectedDivision ?? 'none'}'),
+//                 value: widget.selectedDivision,
+//                 items: LocationService.getDivisionNames(),
+//                 hintText: 'Search division...',
+//                 onChanged: _handleDivisionChanged,
+//                 showClearButton: true,
+//                 showSelectedChips: true,
+//               ),
+//               const SizedBox(height: 18),
+//               _label('District'),
+//               SearchableDropdown(
+//                 key: ValueKey(
+//                   'district-${widget.selectedDivision ?? 'none'}-'
+//                   '${widget.selectedDistrict ?? 'none'}',
+//                 ),
+//                 value: widget.selectedDistrict,
+//                 items: widget.selectedDivision != null
+//                     ? LocationService.getDistrictNames(widget.selectedDivision!)
+//                     : const [],
+//                 hintText: widget.selectedDivision != null
+//                     ? 'Search district...'
+//                     : 'Select division first',
+//                 onChanged: widget.selectedDivision != null
+//                     ? _handleDistrictChanged
+//                     : null,
+//                 enabled: widget.selectedDivision != null,
+//                 showClearButton: true,
+//                 showSelectedChips: true,
+//               ),
+//               const SizedBox(height: 18),
+//               _label('Service Thanas'),
+              
+//               // ✅ এখানে Stack ব্যবহার করা হয়েছে যাতে ড্রপডাউনটি ওভারল্যাপ করতে পারে
+//               Stack(
+//                 clipBehavior: Clip.none,
+//                 children: [
+//                   SearchableDropdown(
+//                     key: ValueKey(
+//                       'thanas-${widget.selectedDivision ?? 'none'}-'
+//                       '${widget.selectedDistrict ?? 'none'}',
+//                     ),
+//                     selectedValues: validSelectedThanas,
+//                     items: availableThanas,
+//                     hintText: widget.selectedDivision != null
+//                         ? 'Search and select thanas...'
+//                         : 'Select division first',
+//                     onMultiChanged: _handleThanasChanged,
+//                     enabled: widget.selectedDivision != null,
+//                     showClearButton: true,
+//                     isMultiSelect: true,
+//                     showSelectedChips: true,
+//                   ),
+//                 ],
+//               ),
+              
+//               // ✅ সিলেক্টেড ব্যানারটি ড্রপডাউনের নিচে রাখার জন্য কিছুটা মার্জিন দেওয়া হয়েছে
+//               const SizedBox(height: 8), 
+              
+//               Offstage(
+//                 offstage: validSelectedThanas.isEmpty,
+//                 child: Padding(
+//                   padding: const EdgeInsets.only(top: 4),
+//                   child: Container(
+//                     padding: const EdgeInsets.symmetric(
+//                       horizontal: 12,
+//                       vertical: 10,
+//                     ),
+//                     decoration: BoxDecoration(
+//                       color: AppColors.primarySoft,
+//                       borderRadius: BorderRadius.circular(10),
+//                     ),
+//                     child: Row(
+//                       children: [
+//                         const Icon(
+//                           Icons.check_circle_outline,
+//                           size: 16,
+//                           color: AppColors.olympic,
+//                         ),
+//                         const SizedBox(width: 8),
+//                         Text(
+//                           '${validSelectedThanas.length} thana(s) selected',
+//                           style: const TextStyle(
+//                             fontSize: 13,
+//                             fontWeight: FontWeight.w600,
+//                             color: AppColors.olympic,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 16),
+//           FormCard(
+//             icon: Icons.attach_file_rounded,
+//             title: 'Documents',
+//             description: 'PDF preferred',
+//             children: [
+//               CustomFilePicker(
+//                 label: 'CV / Resume',
+//                 file: widget.cvFile,
+//                 onPick: widget.onPickCv,
+//                 onRemove: widget.onRemoveCv,
+//               ),
+//               const SizedBox(height: 14),
+//               CustomFilePicker(
+//                 label: 'Trade License',
+//                 file: widget.tradeLicenseFile,
+//                 onPick: widget.onPickTradeLicense,
+//                 onRemove: widget.onRemoveTradeLicense,
+//               ),
+//             ],
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _label(String text) => Padding(
+//         padding: const EdgeInsets.only(bottom: 8),
+//         child: Text(
+//           text,
+//           style: const TextStyle(
+//             fontSize: 13.5,
+//             fontWeight: FontWeight.w600,
+//             color: AppColors.text,
+//           ),
+//         ),
+//       );
+// }
